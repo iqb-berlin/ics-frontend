@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.column {
+  padding: 10px;
+  height: 100%;
+}
+
+.column:first-of-type {
+  border-right: 3px solid silver;
+  flex: 75%;
+}
+
+.column:last-of-type {
+  border-right: none;
+  flex: 25%;
+}
