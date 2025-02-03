@@ -1,25 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Option, Service } from '../interfaces/interfaces';
-import { IQBVariable } from '../interfaces/iqb.interfaces';
-import { DefaultService, ServiceInfo, TaskAction } from '../../gen';
+import { ServiceInfo } from '../interfaces/api.interfaces';
+import { Response } from '@iqb/responses';
+import { BackendService } from './backend.service';
+import { Services } from '../services';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  public services: { [key: string]: Service } = {
-    localDefault: {
-      name: "Standard",
-      url: "http://localhost/"
-    }
-  };
+  services: { [key: string]: Service } = Services;
 
-  selectedService = 'localDefault';
+  selectedService: keyof typeof Services = 'localDefault';
 
-  serviceInfo: ServiceInfo = {};
+  serviceInfo: ServiceInfo | null = null;
 
-  data: IQBVariable[] = [
+  data: Response[] = [
     { id: 'a', value: 'A', status: 'VALUE_CHANGED' },
     { id: 'b', value: 'B', status: 'VALUE_CHANGED' },
     { id: 'c', value: 'C', status: 'VALUE_CHANGED' },
@@ -33,9 +30,14 @@ export class DataService {
   ];
 
   constructor(
-    private ds: DefaultService
+    private readonly bs: BackendService
   ) {
-    this.ds.infoGet()
+
+  }
+
+  selectService(service: keyof typeof Services) {
+    this.selectedService = service;
+    this.bs.getInfo(this.selectedService)
       .subscribe(info => {
         this.serviceInfo = info;
       });

@@ -8,7 +8,7 @@ import {
   MatRow, MatRowDef,
   MatTable, MatTableDataSource
 } from '@angular/material/table';
-import { IQBVariable } from '../../../interfaces/iqb.interfaces';
+import { Response } from '@iqb/responses';
 import { DataService } from '../../../services/data.service';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 
@@ -34,7 +34,7 @@ import { MatSort, MatSortHeader } from '@angular/material/sort';
 export class DatatableComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   displayedColumns: string[] = ['id', 'subform', 'status', 'value', 'code', 'score'];
-  dataSource: MatTableDataSource<IQBVariable> = new MatTableDataSource();
+  dataSource: MatTableDataSource<Response> = new MatTableDataSource();
   constructor(
     public ds: DataService
   ) {
