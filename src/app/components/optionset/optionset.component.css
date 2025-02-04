@@ -1,0 +1,10 @@
+#config {
+  width: 100%;
+  height: 500px;
+}
+
+#config-input {
+  width: 100%;
+  height: 100%;
+  font-family: monospace;
+}

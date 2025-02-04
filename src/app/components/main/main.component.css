@@ -1,19 +1,24 @@
+.header {
+  border-bottom: 3px solid silver;
+  width: 100%;
+}
+
 .container {
   display: flex;
   height: 100%;
 }
 
 .column {
-  padding: 10px;
-  height: 100%;
+  padding: 1em;
 }
 
-.column:first-of-type {
+.column1 {
   border-right: 3px solid silver;
-  flex: 75%;
+  flex-basis: 75%;
 }
 
-.column:last-of-type {
-  border-right: none;
-  flex: 25%;
+.column2 {
+  flex-basis: 25%;
 }
+
+

@@ -5,7 +5,8 @@ export const checkCondition = <T>(conditionFn: (value: unknown) => value is T) =
     source.pipe(
       map(value => {
         if (!conditionFn(value)) {
-          throw new Error('Condition not met: ' + conditionFn.name);
+          console.log(conditionFn, value);
+          throw new Error('Condition not met: ');
         }
         return value;
       })

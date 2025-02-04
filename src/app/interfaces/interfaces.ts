@@ -1,13 +1,14 @@
+import { TaskEventType, TaskType } from '../../../../autocoder-service/src/interfaces/api.interfaces';
+
 export interface Service {
-  name: string;
-  url: string;
+  readonly name: string;
+  readonly url: string;
 }
 
-export interface Option {
-  id: string;
-  label: string;
-  type: 'number' | 'text' | 'select';
-  value: number | string;
-  range?: [number, number];
-  options?: string[];
+export interface TaskOverview {
+  readonly id: string;
+  readonly type: TaskType;
+  readonly status: TaskEventType | 'draft';
+  readonly message: string;
+  readonly timestamp: number;
 }

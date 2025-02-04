@@ -1,18 +1,36 @@
 import { Component } from '@angular/core';
 import { DatatableComponent } from '../datatable/datatable/datatable.component';
-import { ServiceSelectorComponent } from '../service-selector/service-selector.component';
 import { OptionsetComponent } from '../optionset/optionset.component';
+import { HeaderComponent } from '../header/header.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DataService } from '../../services/data.service';
+import { filter } from 'rxjs';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-main',
   imports: [
-    DatatableComponent,
-    ServiceSelectorComponent,
-    OptionsetComponent
+    HeaderComponent,
+    RouterOutlet
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
 export class MainComponent {
+  constructor(
+    public readonly snackBar: MatSnackBar,
+    private readonly ds: DataService
+  ) {
+    this.ds.errors$
+      .pipe(
+        filter(isError => !!isError)
+      )
+      .subscribe(e => this.showError(e));
+  }
 
+  showError(error: string) {
+    this.snackBar.open(error, 'OK', {
+      duration: 10000,
+    });
+  }
 }

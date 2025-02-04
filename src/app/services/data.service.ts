@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Option, Service } from '../interfaces/interfaces';
-import { ServiceInfo } from '../interfaces/api.interfaces';
+import { Service } from '../interfaces/interfaces';
+import { isJsonSchema, ServiceInfo, Task } from '../interfaces/api.interfaces';
 import { Response } from '@iqb/responses';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
+import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  services: { [key: string]: Service } = Services;
+  readonly services: { [key: string]: Service } = Services;
 
-  selectedService: keyof typeof Services = 'localDefault';
+  selectedService: keyof typeof Services | null = null;
 
   serviceInfo: ServiceInfo | null = null;
 
@@ -23,23 +25,26 @@ export class DataService {
     { id: 'd', value: 'D', status: 'VALUE_CHANGED' },
   ];
 
-  config: Option[] = [
-    { id: 'model', label: 'Model', type: 'select', options: ['default'], value: 'default' },
-    { id: 'num_train_epochs', label: 'num_train_epochs', type: 'number', value: 3, range: [1, 5] },
-    { id: 'per_device_train_batch_size', label: 'per_device_train_batch_size', type: 'number', value: 2, range: [1, 5] },
-  ];
+  readonly errors$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(
-    private readonly bs: BackendService
+    private readonly bs: BackendService,
+    private router: Router
   ) {
-
+    this.selectService('localDefault');
   }
 
   selectService(service: keyof typeof Services) {
-    this.selectedService = service;
-    this.bs.getInfo(this.selectedService)
+    this.serviceInfo = null;
+    this.selectedService = null;
+    this.bs.getInfo(service)
       .subscribe(info => {
         this.serviceInfo = info;
-      });
+        this.selectedService = service;
+        this.router.navigate(['tasks']);
+      }, err => {
+        this.errors$.next('Error');
+        console.error(err);
+      })
   }
 }

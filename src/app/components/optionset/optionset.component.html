@@ -1,29 +1,6 @@
-<form>
-  @for (option of ds.config; track option) {
-    <mat-form-field style="display: block">
-      <mat-label>{{option.label}}</mat-label>
-      @switch (option.type) {
-        @case ('text') {
-          <input matInput [name]="option.id" [(ngModel)]="option.value" />
-        }
-        @case ('number') {
-          <input
-            type="number"
-            matInput
-            name="option.id"
-            [(ngModel)]="option.value"
-            [min]="option.range ? (option.range[0] || 0) : 0"
-            [max]="option.range ? (option.range[1] || Infinity) : Infinity"
-          />
-        }
-        @case ('select') {
-          <mat-select [name]="option.id" [(ngModel)]="option.value">
-            @for (optionItem of option.options; track optionItem) {
-              <option [value]="option">{{option}}</option>
-            }
-          </mat-select>
-        }
-      }
-    </mat-form-field>
+<div id="config">
+  @if (ds.serviceInfo) {
+    <p>Format: {{ds.serviceInfo.instructionsSchema.$scheme}}</p>
+    <textarea id="config-input"></textarea>
   }
-</form>
+</div>
