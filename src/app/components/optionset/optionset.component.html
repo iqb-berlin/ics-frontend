@@ -1,6 +1,6 @@
 <div id="config">
   @if (ds.serviceInfo) {
-    <p>Format: {{ds.serviceInfo.instructionsSchema.$scheme}}</p>
-    <textarea id="config-input"></textarea>
+    <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
+    <textarea id="config-input">{{ ds.task?.instructions | json }}</textarea>
   }
 </div>

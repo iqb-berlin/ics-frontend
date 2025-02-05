@@ -12,6 +12,7 @@ import {
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { TaskOverview } from '../../interfaces/interfaces';
 import { isA, Task, TaskEventType, TaskEventTypes } from '../../interfaces/api.interfaces';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-tasks',
@@ -27,7 +28,8 @@ import { isA, Task, TaskEventType, TaskEventTypes } from '../../interfaces/api.i
     MatSort,
     MatSortHeader,
     MatTable,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    RouterLink
   ],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css'
@@ -36,7 +38,6 @@ export class TasksComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   protected readonly displayedColumns = ['id', 'type', 'status'];
   dataSource: MatTableDataSource<TaskOverview> = new MatTableDataSource();
-  protected readonly tasks: TaskOverview[] = [];
 
   constructor(
     protected readonly ds: DataService,
@@ -45,7 +46,7 @@ export class TasksComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.tasks.length = 0;
+    this.dataSource.connect().next([]);
     this.bs.getTasks()
       .subscribe(data => {
         const taskOverviews = data.map((task: Task) : TaskOverview => {
@@ -61,13 +62,11 @@ export class TasksComponent implements OnInit, AfterViewInit {
             message: lastEvent.message
           };
         });
-        this.tasks.push(...taskOverviews);
-        console.log(this.tasks);
+        this.dataSource.connect().next(taskOverviews);
       });
   }
 
   ngAfterViewInit() {
-    this.dataSource = new MatTableDataSource(this.tasks);
     this.dataSource.sort = this.sort;
   }
 }

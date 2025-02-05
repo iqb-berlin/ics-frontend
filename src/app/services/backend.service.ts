@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { isArrayOf, isTask, ServiceInfo, Task } from '../interfaces/api.interfaces';
+import { isArrayOf, isTask, ServiceInfo, Task, isServiceInfo } from '../interfaces/api.interfaces';
+import { Response } from '@iqb/responses';
 import { HttpClient } from '@angular/common/http';
 import { Services } from '../services';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { isServiceInfo } from '../../../../autocoder-service/src/interfaces/api.interfaces';
 import { checkCondition } from '../functions/checkCondition';
 import { Router } from '@angular/router';
+import { isResponseList } from '../interfaces/iqb.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,6 @@ export class BackendService {
         checkCondition(isServiceInfo),
         tap(serviceInfo => {
           this.url = Services[service].url;
-          console.log('!', this.url)
         }),
         catchError(e => {
           this.url = '';
@@ -34,12 +34,28 @@ export class BackendService {
   }
 
   getTasks(): Observable<Task[]> {
-    console.log('##', this.url)
     if (!this.url) {
       this.router.navigate(['']); // TODO move this to routeguard
       return of([]);
     }
     return this.http.get<Task[]>(`${this.url}/tasks`)
       .pipe(checkCondition(response => isArrayOf<Task>(response, isTask)))
+  }
+
+  getTask(taskId: string): Observable<Task> {
+    if (!this.url) throw new Error('not connected'); // TODO move this to routeguard
+    return this.http.get<Task>(`${this.url}/tasks/${taskId}`)
+      .pipe(checkCondition(isTask));
+  }
+
+  getTaskData(taskId: string, chunkId: string): Observable<Response[]> {
+    if (!this.url) throw new Error('not connected'); // TODO move this to routeguard
+    return this.http.get<Response[]>(`${this.url}/tasks/${taskId}/data/${chunkId}`)
+      .pipe(checkCondition(isResponseList));
+  }
+
+  patchTask(taskId: string): Observable<Task> {
+    return this.http.patch<Task>(`${this.url}/tasks/${taskId}`, { action: 'commit' })
+      .pipe(checkCondition(isTask));
   }
 }

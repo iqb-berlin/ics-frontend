@@ -1,0 +1,18 @@
+:host {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+h2, h3, .inner {
+  padding: 0 1em;
+}
+
+.column1 {
+  border-right: 3px solid silver;
+  flex-basis: 75%;
+}
+
+.column2 {
+  flex-basis: 25%;
+}

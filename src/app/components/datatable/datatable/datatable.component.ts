@@ -31,17 +31,14 @@ import { MatSort, MatSortHeader } from '@angular/material/sort';
   templateUrl: './datatable.component.html',
   styleUrl: './datatable.component.css'
 })
-export class DatatableComponent implements AfterViewInit {
+export class DatatableComponent {
   @ViewChild(MatSort) sort!: MatSort;
   displayedColumns: string[] = ['id', 'subform', 'status', 'value', 'code', 'score'];
-  dataSource: MatTableDataSource<Response> = new MatTableDataSource();
+  readonly dataSource: MatTableDataSource<Response> = new MatTableDataSource();
   constructor(
     public ds: DataService
   ) {
-  }
-
-  ngAfterViewInit() {
-    this.dataSource = new MatTableDataSource(this.ds.data);
     this.dataSource.sort = this.sort;
+    this.dataSource.data = this.ds.data;
   }
 }

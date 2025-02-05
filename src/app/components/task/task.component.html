@@ -1,8 +1,23 @@
-<div class="column column1">
-  <h2>Data</h2>
-  <app-datatable />
-</div>
-<div class="column column2">
-  <h2>Config</h2>
-  <app-optionset />
-</div>
+@if (ds.task) {
+  <div class="column column1">
+    <h2>Task {{ds.task.id}}
+      <mat-form-field>
+        <mat-label>DataChunk</mat-label>
+        <mat-select (selectionChange)="loadData($event)" [(ngModel)]="ds.currentChunk">
+          @for (dataChunk of ds.task.data; track dataChunk.id) {
+            <mat-option [value]="dataChunk.id">{{dataChunk.id}} (type: {{dataChunk.type}})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button (click)="startEncoding()">Commit Task</button>
+    </h2>
+    <app-datatable />
+  </div>
+  <div class="column column2">
+    <h3>Config</h3>
+    <div class="inner">
+      <app-optionset />
+    </div>
+  </div>
+}
+

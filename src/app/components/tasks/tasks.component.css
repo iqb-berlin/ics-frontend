@@ -1,0 +1,11 @@
+:host, table {
+  width: 100%;
+}
+
+.row td {
+  cursor: pointer;
+}
+
+.row:hover {
+  background: grey;
+}

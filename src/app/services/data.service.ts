@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Service } from '../interfaces/interfaces';
-import { isJsonSchema, ServiceInfo, Task } from '../interfaces/api.interfaces';
+import { ServiceInfo, Task } from '../interfaces/api.interfaces';
 import { Response } from '@iqb/responses';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
@@ -18,14 +18,13 @@ export class DataService {
 
   serviceInfo: ServiceInfo | null = null;
 
-  data: Response[] = [
-    { id: 'a', value: 'A', status: 'VALUE_CHANGED' },
-    { id: 'b', value: 'B', status: 'VALUE_CHANGED' },
-    { id: 'c', value: 'C', status: 'VALUE_CHANGED' },
-    { id: 'd', value: 'D', status: 'VALUE_CHANGED' },
-  ];
+  task: Task | null = null;
+
+  data: Response[] = [];
 
   readonly errors$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
+  currentChunk: string = '';
 
   constructor(
     private readonly bs: BackendService,
@@ -46,5 +45,35 @@ export class DataService {
         this.errors$.next('Error');
         console.error(err);
       })
+  }
+
+  getTask(taskId: string): void {
+    this.bs.getTask(taskId)
+      .subscribe(task => {
+        this.task = task;
+        const firstInputChunk = task.data.find(d => d.type === 'input');
+        if (!firstInputChunk) {
+          // TODO create new input chunk
+        } else {
+          this.getTaskData(firstInputChunk.id);
+        }
+      });
+  }
+
+  getTaskData(chunkId: string): void {
+    if (!this.task) return;
+    this.bs.getTaskData(this.task.id, chunkId)
+      .subscribe(data => {
+        this.data = data;
+        this.currentChunk = chunkId;
+      });
+  }
+
+  startEncoding() {
+    if (!this.task) return;
+    this.bs.patchTask(this.task.id)
+      .subscribe(task => {
+        this.task = task;
+      });
   }
 }

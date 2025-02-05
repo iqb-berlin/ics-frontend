@@ -2,7 +2,7 @@
   <mat-form-field>
     <mat-label>Service</mat-label>
     <mat-select [(ngModel)]="ds.selectedService">
-      @for (service of ds.services  | keyvalue; track service) {
+      @for (service of ds.services  | keyvalue; track $index) {
         <mat-option [value]="service.key">{{service.value.name}}</mat-option>
       }
     </mat-select>
