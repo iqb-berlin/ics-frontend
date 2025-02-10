@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Service } from '../interfaces/interfaces';
-import { ServiceInfo, Task } from '../interfaces/api.interfaces';
-import { Response } from '@iqb/responses';
+import { ResponseRow, ServiceInfo, Task } from '../interfaces/api.interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
 import { BehaviorSubject } from 'rxjs';
@@ -20,7 +19,7 @@ export class DataService {
 
   task: Task | null = null;
 
-  data: Response[] = [];
+  data: ResponseRow[] = [];
 
   readonly errors$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 

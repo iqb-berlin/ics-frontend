@@ -11,8 +11,10 @@ import {
 } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { TaskOverview } from '../../interfaces/interfaces';
-import { isA, Task, TaskEventType, TaskEventTypes } from '../../interfaces/api.interfaces';
+import { Task, TaskEventType, TaskEventTypes } from '../../interfaces/api.interfaces';
 import { RouterLink } from '@angular/router';
+import { isA } from '../../interfaces/iqb.interfaces';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-tasks',
@@ -29,7 +31,8 @@ import { RouterLink } from '@angular/router';
     MatSortHeader,
     MatTable,
     MatHeaderCellDef,
-    RouterLink
+    RouterLink,
+    MatTooltip
   ],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css'

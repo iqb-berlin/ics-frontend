@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { isArrayOf, isTask, ServiceInfo, Task, isServiceInfo } from '../interfaces/api.interfaces';
-import { Response } from '@iqb/responses';
+import { isTask, ServiceInfo, Task, isServiceInfo, ResponseRow, isResponseRowList } from '../interfaces/api.interfaces';
 import { HttpClient } from '@angular/common/http';
 import { Services } from '../services';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { checkCondition } from '../functions/checkCondition';
 import { Router } from '@angular/router';
-import { isResponseList } from '../interfaces/iqb.interfaces';
+import { isArrayOf } from '../interfaces/iqb.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +38,7 @@ export class BackendService {
       return of([]);
     }
     return this.http.get<Task[]>(`${this.url}/tasks`)
-      .pipe(checkCondition(response => isArrayOf<Task>(response, isTask)))
+      .pipe(checkCondition(response => isArrayOf(response, isTask)))
   }
 
   getTask(taskId: string): Observable<Task> {
@@ -48,10 +47,10 @@ export class BackendService {
       .pipe(checkCondition(isTask));
   }
 
-  getTaskData(taskId: string, chunkId: string): Observable<Response[]> {
+  getTaskData(taskId: string, chunkId: string): Observable<ResponseRow[]> {
     if (!this.url) throw new Error('not connected'); // TODO move this to routeguard
-    return this.http.get<Response[]>(`${this.url}/tasks/${taskId}/data/${chunkId}`)
-      .pipe(checkCondition(isResponseList));
+    return this.http.get<ResponseRow[]>(`${this.url}/tasks/${taskId}/data/${chunkId}`)
+      .pipe(checkCondition(isResponseRowList));
   }
 
   patchTask(taskId: string): Observable<Task> {

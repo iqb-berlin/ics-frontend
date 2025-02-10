@@ -1,10 +1,15 @@
 <table mat-table [dataSource]="ds.data" matSort>
+  <ng-container matColumnDef="setId">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>User-ID</th>
+    <td mat-cell *matCellDef="let element">{{element.setId}}</td>
+  </ng-container>
+
   <ng-container matColumnDef="id">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
     <td mat-cell *matCellDef="let element">{{element.id}}</td>
   </ng-container>
 
-  <ng-container matColumnDef="subform">
+  <ng-container matColumnDef="subForm">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>SubForm</th>
     <td mat-cell *matCellDef="let element">{{element.subform}}</td>
   </ng-container>
