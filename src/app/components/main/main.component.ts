@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { DatatableComponent } from '../datatable/datatable/datatable.component';
-import { OptionsetComponent } from '../optionset/optionset.component';
 import { HeaderComponent } from '../header/header.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../../services/data.service';

@@ -1,6 +1,9 @@
 <div id="config">
   @if (ds.serviceInfo) {
     <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
-    <textarea id="config-input">{{ ds.task?.instructions | json }}</textarea>
+    <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="fields">
+      <formly-form [model]="" [fields]="fields" [options]="options" [form]="form"></formly-form>
+      <button type="submit" class="btn btn-primary submit-button" [disabled]="!form.valid">Submit</button>
+    </form>
   }
 </div>
