@@ -10,4 +10,5 @@
   @if (ds.selectedService) {
     <p>Verbunden mit {{ds.serviceInfo?.id}} ({{ds.serviceInfo?.type}} version {{ds.serviceInfo?.version}})</p>
   }
+  <button mat-button (click)="ds.addTask()">Train</button>
 </div>

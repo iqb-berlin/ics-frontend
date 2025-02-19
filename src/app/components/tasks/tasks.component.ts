@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { BackendService } from '../../services/backend.service';
 import {
@@ -12,12 +12,12 @@ import {
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { TaskOverview } from '../../interfaces/interfaces';
 import { Task, TaskEventType, TaskEventTypes } from '../../interfaces/api.interfaces';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { isA } from '../../interfaces/iqb.interfaces';
 import { MatTooltip } from '@angular/material/tooltip';
+import { interval, Subscription, switchMap } from 'rxjs';
 
 @Component({
-  selector: 'app-tasks',
   imports: [
     MatCell,
     MatCellDef,
@@ -37,10 +37,11 @@ import { MatTooltip } from '@angular/material/tooltip';
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css'
 })
-export class TasksComponent implements OnInit, AfterViewInit {
+export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
   protected readonly displayedColumns = ['id', 'type', 'status'];
   dataSource: MatTableDataSource<TaskOverview> = new MatTableDataSource();
+  subscriptions: { [key: string]: Subscription } = {};
 
   constructor(
     protected readonly ds: DataService,
@@ -50,8 +51,10 @@ export class TasksComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource.connect().next([]);
-    this.bs.getTasks()
+    this.subscriptions['tasks'] = interval(1000)
+      .pipe(switchMap(() => this.bs.getTasks()))
       .subscribe(data => {
+        console.log('tasks', data);
         const taskOverviews = data.map((task: Task) : TaskOverview => {
           const lastEvent =
             task.events.length ?
@@ -66,6 +69,14 @@ export class TasksComponent implements OnInit, AfterViewInit {
           };
         });
         this.dataSource.connect().next(taskOverviews);
+      });
+  }
+
+  ngOnDestroy() {
+    Object.keys(this.subscriptions)
+      .forEach(key => {
+        this.subscriptions[key].unsubscribe();
+        delete this.subscriptions[key];
       });
   }
 

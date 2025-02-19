@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { isTask, ServiceInfo, Task, isServiceInfo, ResponseRow, isResponseRowList } from '../interfaces/api.interfaces';
+import { isTask, ServiceInfo, Task, isServiceInfo, ResponseRow, isResponseRowList, TaskType } from '../interfaces/api.interfaces';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { checkCondition } from '../functions/checkCondition';
@@ -54,6 +54,11 @@ export class BackendService {
 
   patchTask(taskId: string): Observable<Task> {
     return this.http.patch<Task>(`${this.url}/tasks/${taskId}`, { action: 'commit' })
+      .pipe(checkCondition(isTask));
+  }
+
+  putTask(type: TaskType, instructions: object): Observable<Task> {
+    return this.http.put<Task>(`${this.url}/tasks`, { type, instructions })
       .pipe(checkCondition(isTask));
   }
 }

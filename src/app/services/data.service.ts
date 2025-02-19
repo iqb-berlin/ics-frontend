@@ -85,4 +85,12 @@ export class DataService {
         this.task = task;
       });
   }
+
+  addTask(): void {
+    this.bs.putTask('train', {})
+      .subscribe(task => {
+        this.task = task;
+        this.router.navigate(['task', this.task.id]);
+      });
+  }
 }
