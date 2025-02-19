@@ -1,11 +1,13 @@
 <div class="service-selector">
   <mat-form-field>
     <mat-label>Service</mat-label>
-    <mat-select [(ngModel)]="ds.selectedService">
+    <mat-select (selectionChange)="ds.selectService($event.value)" [ngModel]="ds.selectedService">
       @for (service of ds.services  | keyvalue; track $index) {
         <mat-option [value]="service.key">{{service.value.name}}</mat-option>
       }
     </mat-select>
   </mat-form-field>
-  <p>Verbunden mit {{ds.serviceInfo?.id}} ({{ds.serviceInfo?.type}} version {{ds.serviceInfo?.version}})</p>
+  @if (ds.selectedService) {
+    <p>Verbunden mit {{ds.serviceInfo?.id}} ({{ds.serviceInfo?.type}} version {{ds.serviceInfo?.version}})</p>
+  }
 </div>

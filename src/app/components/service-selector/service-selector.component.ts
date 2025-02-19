@@ -21,7 +21,5 @@ export class ServiceSelectorComponent {
   constructor(
     public ds: DataService
   ) {
-
   }
-
 }

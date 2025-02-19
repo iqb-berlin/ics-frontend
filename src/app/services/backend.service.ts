@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { isTask, ServiceInfo, Task, isServiceInfo, ResponseRow, isResponseRowList } from '../interfaces/api.interfaces';
 import { HttpClient } from '@angular/common/http';
-import { Services } from '../services';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { checkCondition } from '../functions/checkCondition';
 import { Router } from '@angular/router';
@@ -18,12 +17,12 @@ export class BackendService {
     private readonly router: Router,
   ) { }
 
-  getInfo(service: keyof typeof Services): Observable<ServiceInfo> {
-    return this.http.get<ServiceInfo>(Services[service].url + '/info')
+  getInfo(serviceUrl: string): Observable<ServiceInfo> {
+    return this.http.get<ServiceInfo>(serviceUrl + '/info')
       .pipe(
         checkCondition(isServiceInfo),
         tap(serviceInfo => {
-          this.url = Services[service].url;
+          this.url = serviceUrl;
         }),
         catchError(e => {
           this.url = '';
