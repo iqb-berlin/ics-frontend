@@ -8,6 +8,7 @@ import { NullTypeComponent } from './components/null-type.component';
 import { ArrayTypeComponent } from './components/array-type.component';
 import { ObjectTypeComponent } from './components/object-type.component';
 import { MultiSchemaTypeComponent } from './components/multi-schema-component';
+import { EnumTypeComponent } from './components/enum-type.component';
 
 
 export function minItemsValidationMessage(error: any, field: FormlyFieldConfig) {
@@ -89,6 +90,7 @@ export const appConfig: ApplicationConfig = {
             { name: 'array', component: ArrayTypeComponent },
             { name: 'object', component: ObjectTypeComponent },
             { name: 'multischema', component: MultiSchemaTypeComponent },
+            { name: 'enum', component: EnumTypeComponent },
           ],
         }
       )

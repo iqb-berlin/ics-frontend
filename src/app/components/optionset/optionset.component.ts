@@ -5,6 +5,7 @@ import { FormlyForm, FormlyFormOptions, FormlyFieldConfig, FormlyModule } from '
 import { FormlyJsonschema } from '@ngx-formly/core/json-schema';
 import { FormlyMatFormFieldModule } from '@ngx-formly/material/form-field';
 import { CommonModule } from '@angular/common';
+import { MatButton } from '@angular/material/button';
 
 
 
@@ -15,7 +16,8 @@ import { CommonModule } from '@angular/common';
     ReactiveFormsModule,
     FormlyModule,
     FormlyMatFormFieldModule,
-    CommonModule
+    CommonModule,
+    MatButton
   ],
   templateUrl: './optionset.component.html',
   styleUrl: './optionset.component.css'
@@ -28,8 +30,8 @@ export class OptionsetComponent {
       "model": {
         "type": "string",
         "enum": [
-          "default",
-          "test_pred_data"
+          "A",
+          "B"
         ]
       }
     },
@@ -44,11 +46,13 @@ export class OptionsetComponent {
   options: FormlyFormOptions = {};
   fields: FormlyFieldConfig[] = [];
 
+  errors: any[] = [];
+
   constructor(
     public ds: DataService,
     private formlyJsonschema: FormlyJsonschema
   ) {
-    this.loadSchema(this.testSchema);
+    if (ds.serviceInfo?.instructionsSchema) this.loadSchema(ds.serviceInfo.instructionsSchema);
   }
 
   loadSchema(schema: object): void {
@@ -58,6 +62,14 @@ export class OptionsetComponent {
   }
 
   submit() {
-    console.log(this.options);
+    console.log(Object.keys(this.form.controls));
+    this.errors = Object.keys(this.form.controls)
+      .flatMap(key => {
+        const control = this.form.get(key);
+        if (control && control.errors) {
+          return [[key, control.errors]];
+        }
+        return []
+      });
   }
 }
