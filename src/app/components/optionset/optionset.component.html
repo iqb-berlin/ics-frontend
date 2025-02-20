@@ -1,17 +1,65 @@
 <div id="config">
-  @if (ds.serviceInfo) {
-    <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
-    <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="fields">
-      <formly-form [model]="" [fields]="fields" [options]="options" [form]="form"></formly-form>
-      <button type="submit" mat-raised-button class="btn btn-primary">Submit</button>
-    </form>
-
-    <p>Status: {{form.valid ? 'Valid' : 'Invalid'}}</p>
-
-    <ul>
-      @for (e of errors; track $index) {
-        <li>{{e | json}}</li>
+  <form [formGroup]="form" (submit)="submit()" [(ngModel)]="ds.task?.instructions">
+    @if (ds.serviceInfo) {
+      <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
+      @for (control of controls; track $index) {
+        @if (['text', 'password', 'email', 'number', 'search', 'tel', 'url'].includes(control.type)) {
+          <mat-form-field>
+            <mat-label>{{ control.label }}</mat-label>
+            <input
+              matInput
+              [type]="control.type"
+              [formControlName]="control.name"
+              [value]="control.value"
+              [minlength]="control.validators?.minLength || 0"
+              [required]="control.validators?.required || false"
+            />
+          </mat-form-field>
+        } @else if (control.type === 'textarea') {
+          <mat-form-field>
+            <mat-label>{{ control.label }}</mat-label>
+            <textarea
+            matInput
+            [formControlName]="control.name"
+            [value]="control.value"
+          ></textarea>
+          </mat-form-field>
+        } @else if (control.type === 'checkbox') {
+          <mat-form-field>
+            <mat-checkbox
+            [formControlName]="control.name"
+            [checked]="control.value"
+          >{{ control.label }}</mat-checkbox>
+          </mat-form-field>
+        } @else if (control.type === 'range') {
+          <mat-form-field>
+            <mat-slider
+            [formControlName]="control.name"
+            [min]="control.options?.min || 0"
+            [max]="control.options?.max || 100"
+          >
+          </mat-slider>
+          </mat-form-field>
+        } @else if (control.type === 'select') {
+          <mat-form-field>
+            <mat-label>{{ control.label }}</mat-label>
+            <mat-select [formControlName]="control.name" [required]="control.validators?.required || false">
+              @for (opt of control.options?.options || []; track $index) {
+                <mat-option [value]="opt">{{opt}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        } @else {
+          <mat-error>unknown control: {{control.name}}</mat-error>
+        }
+        @for (e of errors; track $index) {
+          <mat-error>{{ e }}</mat-error>
+        }
       }
-    </ul>
-  }
+    }
+    <hr>
+    <p>is valid: {{form.valid}}</p>
+    <button mat-raised-button type="submit">Submit</button>
+    <pre>{{this.form.value|json}}</pre>
+  </form>
 </div>
