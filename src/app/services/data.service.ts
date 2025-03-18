@@ -85,7 +85,7 @@ export class DataService {
   addTask(type: TaskType): Promise<boolean> | boolean {
     try {
       return lastValueFrom(
-        this.bs.putTask(type, {})
+        this.bs.putTask(type)
           .pipe(map(task => {
             this.task = task;
             return true;
@@ -96,5 +96,16 @@ export class DataService {
       console.error(error);
       return false;
     }
+  }
+
+  patchTaskInstructions(instructions: unknown): void {
+    if (!this.task) {
+      console.log('!!');
+      return;
+    }
+    this.bs.patchTaskInstructions(this.task.id, instructions)
+      .subscribe(task => {
+        this.task = task;
+      });
   }
 }

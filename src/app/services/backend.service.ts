@@ -57,8 +57,13 @@ export class BackendService {
       .pipe(checkCondition(isTask));
   }
 
-  putTask(type: TaskType, instructions: object): Observable<Task> {
-    return this.http.put<Task>(`${this.url}/tasks`, { type, instructions })
+  putTask(type: TaskType): Observable<Task> {
+    return this.http.put<Task>(`${this.url}/tasks`, { type })
+      .pipe(checkCondition(isTask));
+  }
+
+  patchTaskInstructions(taskId: string, instructions: unknown): Observable<Task> {
+    return this.http.patch<void>(`${this.url}/tasks/${taskId}/instructions`, instructions)
       .pipe(checkCondition(isTask));
   }
 }

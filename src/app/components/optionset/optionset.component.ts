@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.service';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -8,42 +8,8 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatButton } from '@angular/material/button';
 import { MatSlider } from '@angular/material/slider';
 import { MatOption, MatSelect } from '@angular/material/select';
-
-interface JsonFormValidators {
-  min?: number;
-  max?: number;
-  required?: boolean;
-  requiredTrue?: boolean;
-  email?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: string;
-  nullValidator?: boolean;
-}
-
-interface JsonFormControlOptions {
-  min?: string;
-  max?: string;
-  step?: string;
-  icon?: string;
-  options?: string[];
-}
-
-interface JsonFormControls {
-  name: string;
-  label: string;
-  value: string;
-  type: string;
-  options?: JsonFormControlOptions;
-  required?: boolean;
-  validators: JsonFormValidators;
-}
-
-export interface JsonFormData {
-  controls: JsonFormControls[];
-}
-
-
+import { JsonFormControl } from '../../interfaces/optionset.interfaces';
+import { JSONSchema7TypeName } from 'json-schema';
 
 @Component({
   selector: 'app-optionset',
@@ -67,7 +33,7 @@ export interface JsonFormData {
 export class OptionsetComponent {
   form: FormGroup = new FormGroup({});
   errors: any[] = [];
-  controls: JsonFormControls[] =[];
+  controls: JsonFormControl[] =[];
 
   constructor(
     public ds: DataService,
@@ -77,7 +43,7 @@ export class OptionsetComponent {
   }
 
 
-  createForm(controls: JsonFormControls[]) {
+  createForm(controls: JsonFormControl[]) {
     for (const control of controls) {
       const validatorsToAdd = [];
 
@@ -136,11 +102,12 @@ export class OptionsetComponent {
       this.errors.push(controls);
       return;
     }
+    console.log(controls);
     this.controls = controls;
     this.createForm(controls);
   }
 
-  convertJsonSchemaToJsonForms(schema: unknown): JsonFormControls[] | string {
+  convertJsonSchemaToJsonForms(schema: unknown): JsonFormControl[] | string {
     if ((typeof schema !== 'object') || (schema == null)) return 'invalid schema';
     if (!('type' in schema)) return 'Property "type" is required';
     if (schema.type !== 'object') return 'Property "type" is required';
@@ -158,6 +125,21 @@ export class OptionsetComponent {
       }
       return 'textarea';
     }
+    const getValue = (propId: string, propType: 'string' | 'number' | 'boolean'): string | number | boolean => {
+      const value: unknown = this.ds.task?.instructions[propId];
+      console.log({
+        propId,
+        propType,
+        value
+      })
+      switch (propType) {
+        case 'string': return String(value);
+        case 'number': return Number(value);
+        case 'boolean': return Boolean(value);
+        default: return JSON.stringify(value);
+      }
+    }
+    console.log(this.ds.task?.instructions);
     return Object.entries(schema.properties)
       .map(([id, prop]) => {
           if ((typeof prop !== 'object') && (prop == null)) throw new Error('Property "prop" is required');
@@ -176,22 +158,40 @@ export class OptionsetComponent {
           }
           return [id, prop];
       })
-      .map(([id, prop]): JsonFormControls => ({
+      .map(([id, prop]): JsonFormControl => ({
         name: id,
         label: prop.title || id,
-        value: prop.type,
+        value: getValue(id, prop.type),
         type: chooseControl(prop),
         validators: {
-          required: required.includes(id)
+          required: required.includes(id),
         },
         options: {
           options: prop.enum || undefined,
-        }
+        },
+        originalType: prop.type
       }));
   }
 
   submit() {
-    console.log(this.form.getRawValue());
-
+    const formRawValue: { [prop: string]: string | number | boolean } = this.form.getRawValue();
+    const instructions: { [prop: string]: unknown } = {};
+    const transformValue = (
+      value: string | number | boolean,
+      type: JSONSchema7TypeName | JSONSchema7TypeName[] | undefined
+    ) => {
+      switch (type) {
+        case 'string': return String(value);
+        case 'number': return Number(value);
+        case 'boolean': return Number(value);
+        default: return JSON.parse((typeof value === 'string') ? value : '')
+      }
+    }
+    this.controls
+      .forEach(control => {
+        const value = formRawValue[control.name];
+        instructions[control.name] = transformValue(value, control.originalType);
+      });
+    this.ds.patchTaskInstructions(instructions);
   }
 }
