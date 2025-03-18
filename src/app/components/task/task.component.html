@@ -1,23 +1,49 @@
 @if (ds.task) {
-  <div class="column column1">
-    <h2>Task {{ds.task.id}}
-      <mat-form-field>
-        <mat-label>DataChunk</mat-label>
-        <mat-select (selectionChange)="loadData($event)" [(ngModel)]="ds.currentChunk">
-          @for (dataChunk of ds.task.data; track dataChunk.id) {
-            <mat-option [value]="dataChunk.id">{{dataChunk.id}} (type: {{dataChunk.type}})</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <button mat-raised-button (click)="startEncoding()">Commit Task</button>
-    </h2>
-    <app-datatable />
-  </div>
-  <div class="column column2">
-    <h3>Config</h3>
-    <div class="inner">
-      <app-optionset />
-    </div>
-  </div>
+  <mat-tab-group (selectedTabChange)="onTabChange($event)">
+    @for (tab of tabs; track tab; let index = $index) {
+      <mat-tab [label]="tab.label" [bodyClass]="[tab.type, 'tab-body']" [labelClass]="[tab.type, 'tab-label']">
+        @if (tab.id === 'overview') {
+          <table>
+            <tr>
+              <td>Id</td>
+              <td>{{ds.task.id}}</td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>{{ds.task.type}}</td>
+            </tr>
+            <tr>
+              <td>Status</td>
+              <td>{{ds.task | status}}d</td>
+            </tr>
+          </table>
+          <h3>Events:</h3>
+
+          <table>
+            <thead>
+              <tr>
+                <td>date</td>
+                <td>status</td>
+                <td>message</td>
+              </tr>
+            </thead>
+            <tbody>
+              @for (event of ds.task.events; track $index) {
+                <tr>
+                  <td>{{event.timestamp * 1000 | date : 'short'}}</td>
+                  <td>{{event.status}}</td>
+                  <td>{{event.message}}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else if (tab.id === 'config') {
+          <app-optionset />
+        } @else {
+          <app-datatable />
+        }
+      </mat-tab>
+    }
+  </mat-tab-group>
 }
 

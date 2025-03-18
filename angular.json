@@ -5,6 +5,9 @@
   "projects": {
     "coding-service-frontend": {
       "projectType": "application",
+      "i18n": {
+        "sourceLocale": "de"
+      },
       "schematics": {},
       "root": "",
       "sourceRoot": "src",

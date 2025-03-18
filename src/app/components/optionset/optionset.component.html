@@ -1,7 +1,7 @@
 <div id="config">
-  <form [formGroup]="form" (submit)="submit()" [(ngModel)]="ds.task?.instructions">
-    @if (ds.serviceInfo) {
-      <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
+  @if (ds.serviceInfo) {
+    <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
+    <form [formGroup]="form" (submit)="submit()">
       @for (control of controls; track $index) {
         @if (['text', 'password', 'email', 'number', 'search', 'tel', 'url'].includes(control.type)) {
           <mat-form-field>
@@ -11,8 +11,8 @@
               [type]="control.type"
               [formControlName]="control.name"
               [value]="control.value"
-              [minlength]="control.validators?.minLength || 0"
-              [required]="control.validators?.required || false"
+              [minlength]="control.validators.minLength || 0"
+              [required]="control.validators.required || false"
             />
           </mat-form-field>
         } @else if (control.type === 'textarea') {
@@ -43,7 +43,7 @@
         } @else if (control.type === 'select') {
           <mat-form-field>
             <mat-label>{{ control.label }}</mat-label>
-            <mat-select [formControlName]="control.name" [required]="control.validators?.required || false">
+            <mat-select [formControlName]="control.name" [required]="control.validators.required || false">
               @for (opt of control.options?.options || []; track $index) {
                 <mat-option [value]="opt">{{opt}}</mat-option>
               }
@@ -56,10 +56,14 @@
           <mat-error>{{ e }}</mat-error>
         }
       }
-    }
-    <hr>
-    <p>is valid: {{form.valid}}</p>
-    <button mat-raised-button type="submit">Submit</button>
-    <pre>{{this.form.value|json}}</pre>
-  </form>
+    </form>
+  }
+</div>
+
+<hr>
+
+<div id="config-footer">
+  <p>is valid: {{form.valid}}</p>
+  <button mat-raised-button type="submit">Submit</button>
+  <pre>{{this.form.value|json}}</pre>
 </div>

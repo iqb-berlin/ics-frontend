@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { KeyValuePipe } from '@angular/common';
-import { MatFormField, MatOption, MatSelect, MatLabel } from '@angular/material/select';
+import { MatFormField, MatOption, MatSelect, MatLabel, MatSelectChange } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-service-selector',
@@ -13,15 +13,20 @@ import { MatButton } from '@angular/material/button';
     MatOption,
     MatFormField,
     MatLabel,
-    FormsModule,
-    MatButton
+    FormsModule
   ],
   templateUrl: './service-selector.component.html',
   styleUrl: './service-selector.component.css'
 })
 export class ServiceSelectorComponent {
   constructor(
-    public ds: DataService
+    public ds: DataService,
+    private router: Router
   ) {
+  }
+
+  async selectService($event: MatSelectChange) {
+    await this.ds.selectService($event.value)
+    await this.router.navigate(['tasks']);
   }
 }

@@ -7,4 +7,5 @@ export const routes: Routes = [
   { path: 'task/:id', component: TaskComponent },
   { path: 'tasks', component: TasksComponent },
   { path: '', component: StartComponent },
+  { path: 'start', component: StartComponent },
 ];

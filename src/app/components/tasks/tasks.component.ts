@@ -12,10 +12,11 @@ import {
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { TaskOverview } from '../../interfaces/interfaces';
 import { Task, TaskEventType, TaskEventTypes } from '../../interfaces/api.interfaces';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { isA } from '../../interfaces/iqb.interfaces';
 import { MatTooltip } from '@angular/material/tooltip';
 import { interval, Subscription, switchMap } from 'rxjs';
+import { StatusPipe } from '../../pipe/status.pipe';
 
 @Component({
   imports: [
@@ -54,18 +55,14 @@ export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions['tasks'] = interval(1000)
       .pipe(switchMap(() => this.bs.getTasks()))
       .subscribe(data => {
-        console.log('tasks', data);
         const taskOverviews = data.map((task: Task) : TaskOverview => {
-          const lastEvent =
-            task.events.length ?
-              task.events.sort((a, b) => a.timestamp < b.timestamp ? 1 : -1)[0] :
-              { status: 'create', message: '(new)', timestamp: Date.now() };
+          const lastEvent = StatusPipe.getLastEvent(task);
           return {
             id: task.id,
             type: task.type,
-            status: isA<TaskEventType>(TaskEventTypes, lastEvent.status) ? lastEvent.status : 'draft',
-            timestamp: lastEvent.timestamp,
-            message: lastEvent.message
+            status: StatusPipe.getStatus(task),
+            timestamp: lastEvent?.timestamp || Date.now (),
+            message: lastEvent?.message || 'draft'
           };
         });
         this.dataSource.connect().next(taskOverviews);

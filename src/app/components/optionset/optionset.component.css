@@ -1,10 +1,9 @@
 #config {
-  width: 100%;
-  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-#config-input {
+form, mat-form-field {
   width: 100%;
-  height: 100%;
-  font-family: monospace;
 }

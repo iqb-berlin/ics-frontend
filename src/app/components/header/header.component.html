@@ -1,1 +1,20 @@
-<app-service-selector />
+<a mat-raised-button href="/start">
+  <b>Coding Service:</b>
+  @if (ds.selectedService) {
+    {{ds.serviceInfo?.id}} ({{ds.serviceInfo?.type}} version {{ds.serviceInfo?.version}})
+  }
+</a>
+@if (ds.selectedService) {
+  @if (!ds.task) {
+    <a mat-raised-button href="/tasks">Tasks</a>
+    <button mat-raised-button (click)="addTask('train')">New Task: Train</button>
+    <button mat-raised-button href="/xx">New Task: Code</button>
+  } @else {
+    <a mat-raised-button href="/tasks"><b>Task: </b>{{ds.task.type}} {{ds.task.id}} <b>{{ds.task | status}}d</b></a>
+    <button mat-raised-button (click)="commit()">Commit</button>
+  }
+}
+
+
+
+
