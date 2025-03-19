@@ -1,53 +1,54 @@
 import { Injectable } from '@angular/core';
 import { isTask, ServiceInfo, Task, isServiceInfo, ResponseRow, isResponseRowList, TaskType } from '../interfaces/api.interfaces';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap } from 'rxjs';
 import { checkCondition } from '../functions/checkCondition';
-import { Router } from '@angular/router';
 import { isArrayOf } from '../interfaces/iqb.interfaces';
+import { ServiceConnection } from '../interfaces/interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-  private url: string = '';
+  connection$: BehaviorSubject<ServiceConnection | null> = new BehaviorSubject<ServiceConnection | null>(null);
+
+  private get url(): string {
+    const service = this.connection$.getValue();
+    if (!service) throw new Error('No service connected');
+    return service.url;
+  }
 
   constructor(
     private readonly http: HttpClient,
-    private readonly router: Router,
-  ) { }
+  ) {
+  }
 
-  getInfo(serviceUrl: string): Observable<ServiceInfo> {
-    return this.http.get<ServiceInfo>(serviceUrl + '/info')
+  getInfo(url: string): Observable<ServiceInfo> {
+    return this.http.get<ServiceInfo>(url + '/info')
       .pipe(
         checkCondition(isServiceInfo),
-        tap(serviceInfo => {
-          this.url = serviceUrl;
+        tap(info => {
+          this.connection$.next({ url, info });
         }),
         catchError(e => {
-          this.url = '';
+          this.connection$.next(null);
           throw e;
         })
       );
   }
 
   getTasks(): Observable<Task[]> {
-    if (!this.url) {
-      this.router.navigate(['']); // TODO move this to routeguard
-      return of([]);
-    }
     return this.http.get<Task[]>(`${this.url}/tasks`)
       .pipe(checkCondition(response => isArrayOf(response, isTask)))
   }
 
   getTask(taskId: string): Observable<Task> {
-    if (!this.url) throw new Error('not connected'); // TODO move this to routeguard
+
     return this.http.get<Task>(`${this.url}/tasks/${taskId}`)
       .pipe(checkCondition(isTask));
   }
 
   getTaskData(taskId: string, chunkId: string): Observable<ResponseRow[]> {
-    if (!this.url) throw new Error('not connected'); // TODO move this to routeguard
     return this.http.get<ResponseRow[]>(`${this.url}/tasks/${taskId}/data/${chunkId}`)
       .pipe(checkCondition(isResponseRowList));
   }

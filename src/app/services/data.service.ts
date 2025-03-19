@@ -27,11 +27,10 @@ export class DataService {
     private readonly bs: BackendService,
     private readonly es: ErrorService
   ) {
-    this.selectService(Object.keys(Services).pop() || null);
+    this.selectService(Object.keys(Services).pop() || null); // TODO instead reconnect last used service
   }
 
   selectService(serviceId: string | null): Promise<boolean> | boolean {
-    console.log('SelectService', serviceId);
     this.serviceInfo = null;
     this.selectedService = null;
     if (!serviceId) return false;
@@ -40,21 +39,15 @@ export class DataService {
       return false;
     }
     const service = this.services[serviceId];
-    try {
-      return lastValueFrom(this.bs.getInfo(service.url)
-        .pipe(
-           map(info => {
-            this.serviceInfo = info;
-            this.selectedService = serviceId;
-            return true;
-          })
-        )
-      );
-    } catch (error) {
-      this.es.errors$.next('Error');
-      console.error(error);
-      return false;
-    }
+    return lastValueFrom(this.bs.getInfo(service.url)
+      .pipe(
+         map(info => {
+          this.serviceInfo = info;
+          this.selectedService = serviceId;
+          return true;
+        })
+      )
+    );
   }
 
   getTask(taskId: string): Observable<Task> {
@@ -82,19 +75,13 @@ export class DataService {
   }
 
   addTask(type: TaskType): Promise<boolean> | boolean {
-    try {
-      return lastValueFrom(
-        this.bs.putTask(type)
-          .pipe(map(task => {
-            this.task = task;
-            return true;
-          }))
-      );
-    } catch (error) {
-      this.es.errors$.next('Error');
-      console.error(error);
-      return false;
-    }
+    return lastValueFrom(
+      this.bs.putTask(type)
+        .pipe(map(task => {
+          this.task = task;
+          return true;
+        }))
+    );
   }
 
   patchTaskInstructions(instructions: unknown): void {
