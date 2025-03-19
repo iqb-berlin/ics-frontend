@@ -17,7 +17,7 @@ export interface TaskOverview {
 }
 
 export interface TaskTab {
-  type: ChunkType | 'config' | 'overview';
+  type: ChunkType | 'config' | 'overview' | 'add';
   id: string;
   label: string;
 }
@@ -26,3 +26,4 @@ export interface ServiceConnection {
   info: ServiceInfo;
   url: string;
 }
+

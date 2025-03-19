@@ -12,6 +12,7 @@ import { ChunkType, ChunkTypes, DataChunk } from '../../interfaces/api.interface
 import { StatusPipe } from '../../pipe/status.pipe';
 import { DatePipe } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
+import { UploadComponent } from '../upload/upload.component';
 
 @Component({
   selector: 'app-task',
@@ -22,7 +23,8 @@ import { BackendService } from '../../services/backend.service';
     MatTabGroup,
     MatTab,
     StatusPipe,
-    DatePipe
+    DatePipe,
+    UploadComponent
   ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
@@ -60,7 +62,8 @@ export class TaskComponent implements OnInit {
               label: chunk.type + ': ' + chunk.id,
               id: chunk.id
             }
-          })
+          }),
+          { id: 'add', label: task.data.length ? '+' : 'Add input Data', type: 'add' },
         ];
       });
 
@@ -69,6 +72,9 @@ export class TaskComponent implements OnInit {
   onTabChange($event: MatTabChangeEvent) {
     if (isA<ChunkType>(ChunkTypes, this.tabs[$event.index].type)) {
       this.ds.getTaskData(this.tabs[$event.index].id);
+    }
+    if (this.tabs[$event.index].type === 'add') {
+      console.log('!');
     }
   }
 }

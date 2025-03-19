@@ -39,6 +39,8 @@
           </table>
         } @else if (tab.id === 'config') {
           <app-optionset />
+        } @else if (tab.id === 'add') {
+          <app-upload />
         } @else {
           <app-datatable />
         }

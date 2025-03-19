@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { isTask, ServiceInfo, Task, isServiceInfo, ResponseRow, isResponseRowList, TaskType } from '../interfaces/api.interfaces';
+import {
+  isTask,
+  ServiceInfo,
+  Task,
+  isServiceInfo,
+  ResponseRow,
+  isResponseRowList,
+  TaskType,
+  DataChunk, isDataChunk
+} from '../interfaces/api.interfaces';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, Observable, tap } from 'rxjs';
 import { checkCondition } from '../functions/checkCondition';
@@ -43,7 +52,6 @@ export class BackendService {
   }
 
   getTask(taskId: string): Observable<Task> {
-
     return this.http.get<Task>(`${this.url}/tasks/${taskId}`)
       .pipe(checkCondition(isTask));
   }
@@ -51,6 +59,11 @@ export class BackendService {
   getTaskData(taskId: string, chunkId: string): Observable<ResponseRow[]> {
     return this.http.get<ResponseRow[]>(`${this.url}/tasks/${taskId}/data/${chunkId}`)
       .pipe(checkCondition(isResponseRowList));
+  }
+
+  putTaskData(taskId: string, fileContent: ResponseRow[]): Observable<DataChunk> {
+    return this.http.put<DataChunk>(`${this.url}/tasks/${taskId}/data/`, fileContent)
+      .pipe(checkCondition(isDataChunk));
   }
 
   patchTask(taskId: string): Observable<Task> {
@@ -67,4 +80,6 @@ export class BackendService {
     return this.http.patch<void>(`${this.url}/tasks/${taskId}/instructions`, instructions)
       .pipe(checkCondition(isTask));
   }
+
+
 }
