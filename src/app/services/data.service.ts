@@ -5,6 +5,7 @@ import { BackendService } from './backend.service';
 import { Services } from '../services';
 import { lastValueFrom, map, Observable, tap } from 'rxjs';
 import { ErrorService } from './error.service';
+import { catchError } from 'rxjs/operators';
 
 
 @Injectable({
@@ -24,10 +25,11 @@ export class DataService {
   currentChunk: string = '';
 
   constructor(
-    private readonly bs: BackendService,
-    private readonly es: ErrorService
+    private readonly bs: BackendService
   ) {
-    this.selectService(Object.keys(Services).pop() || null); // TODO instead reconnect last used service
+    const lastServiceId = localStorage.getItem('csf-service');
+    const service = lastServiceId && (lastServiceId in this.services)  ? lastServiceId : null;
+    this.selectService(service);
   }
 
   selectService(serviceId: string | null): Promise<boolean> | boolean {
@@ -35,7 +37,6 @@ export class DataService {
     this.selectedService = null;
     if (!serviceId) return false;
     if (!Object.hasOwn(Services, serviceId)) {
-      this.es.errors$.next('unknown service: ' + serviceId);
       return false;
     }
     const service = this.services[serviceId];
@@ -44,7 +45,14 @@ export class DataService {
          map(info => {
           this.serviceInfo = info;
           this.selectedService = serviceId;
+          localStorage.setItem('csf-service', serviceId);
           return true;
+        }),
+        catchError(err => {
+          this.serviceInfo = null;
+          this.selectedService = null;
+          localStorage.removeItem('csf-service');
+          throw err;
         })
       )
     );
