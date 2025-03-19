@@ -3,8 +3,8 @@ import { Service } from '../interfaces/interfaces';
 import { ResponseRow, ServiceInfo, Task, TaskType } from '../interfaces/api.interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
-import { BehaviorSubject, catchError, lastValueFrom, map, Observable, Subscription, switchMap, tap } from 'rxjs';
-import { Router } from '@angular/router';
+import { lastValueFrom, map, Observable, tap } from 'rxjs';
+import { ErrorService } from './error.service';
 
 
 @Injectable({
@@ -21,12 +21,11 @@ export class DataService {
 
   data: ResponseRow[] = [];
 
-  readonly errors$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-
   currentChunk: string = '';
 
   constructor(
-    private readonly bs: BackendService
+    private readonly bs: BackendService,
+    private readonly es: ErrorService
   ) {
     this.selectService(Object.keys(Services).pop() || null);
   }
@@ -37,7 +36,7 @@ export class DataService {
     this.selectedService = null;
     if (!serviceId) return false;
     if (!Object.hasOwn(Services, serviceId)) {
-      this.errors$.next('unknown service: ' + serviceId);
+      this.es.errors$.next('unknown service: ' + serviceId);
       return false;
     }
     const service = this.services[serviceId];
@@ -52,7 +51,7 @@ export class DataService {
         )
       );
     } catch (error) {
-      this.errors$.next('Error');
+      this.es.errors$.next('Error');
       console.error(error);
       return false;
     }
@@ -92,7 +91,7 @@ export class DataService {
           }))
       );
     } catch (error) {
-      this.errors$.next('Error');
+      this.es.errors$.next('Error');
       console.error(error);
       return false;
     }
@@ -100,7 +99,6 @@ export class DataService {
 
   patchTaskInstructions(instructions: unknown): void {
     if (!this.task) {
-      console.log('!!');
       return;
     }
     this.bs.patchTaskInstructions(this.task.id, instructions)

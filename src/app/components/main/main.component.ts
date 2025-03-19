@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from '../../services/data.service';
 import { filter } from 'rxjs';
 import { RouterOutlet } from '@angular/router';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-main',
@@ -17,9 +18,9 @@ import { RouterOutlet } from '@angular/router';
 export class MainComponent {
   constructor(
     public readonly snackBar: MatSnackBar,
-    private readonly ds: DataService
+    private readonly es: ErrorService
   ) {
-    this.ds.errors$
+    this.es.errors$
       .pipe(
         filter(isError => !!isError)
       )

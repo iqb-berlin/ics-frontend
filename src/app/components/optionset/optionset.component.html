@@ -52,6 +52,14 @@
         } @else {
           <mat-error>unknown control: {{control.name}}</mat-error>
         }
+        @for (err of (form.get(control.name)?.errors || {}) | keyvalue; track $index) {
+          <mat-error>{{typeof err.value === 'string' ? err.value : 'invalid: ' + err.key }}</mat-error>
+          <div>{{err|json}}</div>
+        }
+      }
+
+      @if (errors.length) {
+        <h3>Error in JSON schema</h3>
         @for (e of errors; track $index) {
           <mat-error>{{ e }}</mat-error>
         }
@@ -60,11 +68,4 @@
       <button mat-raised-button type="submit" [disabled]="!form.valid">Save</button>
     </form>
   }
-</div>
-
-<hr>
-
-<div id="config-footer">
-
-  <pre>{{this.form.value|json}}</pre>
 </div>

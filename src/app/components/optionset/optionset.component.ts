@@ -1,6 +1,14 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.service';
-import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule, ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -8,7 +16,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatButton } from '@angular/material/button';
 import { MatSlider } from '@angular/material/slider';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { JsonFormControl } from '../../interfaces/optionset.interfaces';
+import { JsonFormControl, JsonFormValidators } from '../../interfaces/optionset.interfaces';
 import { JSONSchema7TypeName } from 'json-schema';
 
 @Component({
@@ -45,53 +53,51 @@ export class OptionsetComponent {
 
   createForm(controls: JsonFormControl[]) {
     for (const control of controls) {
-      const validatorsToAdd = [];
-
-      for (const [key, value] of Object.entries(control.validators)) {
-        switch (key) {
-          case 'min':
-            validatorsToAdd.push(Validators.min(value));
-            break;
-          case 'max':
-            validatorsToAdd.push(Validators.max(value));
-            break;
-          case 'required':
-            if (value) {
-              validatorsToAdd.push(Validators.required);
-            }
-            break;
-          case 'requiredTrue':
-            if (value) {
-              validatorsToAdd.push(Validators.requiredTrue);
-            }
-            break;
-          case 'email':
-            if (value) {
-              validatorsToAdd.push(Validators.email);
-            }
-            break;
-          case 'minLength':
-            validatorsToAdd.push(Validators.minLength(value));
-            break;
-          case 'maxLength':
-            validatorsToAdd.push(Validators.maxLength(value));
-            break;
-          case 'pattern':
-            validatorsToAdd.push(Validators.pattern(value));
-            break;
-          case 'nullValidator':
-            if (value) {
-              validatorsToAdd.push(Validators.nullValidator);
-            }
-            break;
-          default:
-            break;
-        }
-      }
-
+      const validators: ValidatorFn[] = Object.entries(control.validators)
+        .map(([key, value]: [string, unknown]) => {
+          switch (key as keyof JsonFormValidators) {
+            case 'min':
+              return Validators.min(Number(value));
+            case 'max':
+              return Validators.max(Number(value));
+            case 'required':
+              return value ? Validators.required : null;
+            case 'requiredTrue':
+              return value ? Validators.requiredTrue : null;
+            case 'email':
+              return value ? Validators.email : null;
+            case 'minLength':
+              return Validators.minLength(Number(value));
+            case 'maxLength':
+              return Validators.maxLength(Number(value));
+            case 'pattern':
+              return value ? Validators.pattern(String(value)) : null;
+            case 'nullValidator':
+              return value ? Validators.nullValidator : null;
+            case 'jsonValidate':
+              return value ?
+                (control: AbstractControl): ValidationErrors | null => {
+                  const value = control.value;
+                  try {
+                    JSON.parse(value);
+                  } catch (e) {
+                    if (e instanceof SyntaxError) {
+                      return {'json': e.message}
+                    } else {
+                      return {'json-unknown': e}
+                    }
+                  }
+                  return null;
+                } :
+                null;
+            default:
+              return null;
+          }
+        })
+        .filter(v => !!v);
       this.form.addControl(
         control.name,
-        this.fb.control(control.value, validatorsToAdd)
+        this.fb.control(control.value, validators)
       );
     }
   }
@@ -102,7 +108,6 @@ export class OptionsetComponent {
       this.errors.push(controls);
       return;
     }
-    console.log(controls);
     this.controls = controls;
     this.createForm(controls);
   }
@@ -127,11 +132,6 @@ export class OptionsetComponent {
     }
     const getValue = (propId: string, propType: 'string' | 'number' | 'boolean'): string | number | boolean => {
       const value: unknown = this.ds.task?.instructions[propId];
-      console.log({
-        propId,
-        propType,
-        value
-      })
       switch (propType) {
         case 'string': return String(value);
         case 'number': return Number(value);
@@ -139,7 +139,6 @@ export class OptionsetComponent {
         default: return JSON.stringify(value);
       }
     }
-    console.log(this.ds.task?.instructions);
     return Object.entries(schema.properties)
       .map(([id, prop]) => {
           if ((typeof prop !== 'object') && (prop == null)) throw new Error('Property "prop" is required');
@@ -165,6 +164,8 @@ export class OptionsetComponent {
         type: chooseControl(prop),
         validators: {
           required: required.includes(id),
+          jsonValidate: !['number', 'boolean', 'string'].includes(prop.type),
+          pattern: ('pattern' in prop) ? prop.pattern : null,
         },
         options: {
           options: prop.enum || undefined,
