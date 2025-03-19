@@ -18,6 +18,7 @@ import { MatSlider } from '@angular/material/slider';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { JsonFormControl, JsonFormValidators } from '../../interfaces/optionset.interfaces';
 import { JSONSchema7TypeName } from 'json-schema';
+import { StatusPipe } from '../../pipe/status.pipe';
 
 @Component({
   selector: 'app-optionset',
@@ -33,7 +34,8 @@ import { JSONSchema7TypeName } from 'json-schema';
     MatSlider,
     MatSelect,
     MatOption,
-    MatError
+    MatError,
+    StatusPipe
   ],
   templateUrl: './optionset.component.html',
   styleUrl: './optionset.component.css'

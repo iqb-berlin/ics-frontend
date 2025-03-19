@@ -1,8 +1,5 @@
 import { JSONSchema7TypeName } from 'json-schema';
 
-const availableValidators = ['min' , 'max' , 'required' , 'requiredTrue' , 'email' , 'minLength' ,
-  'maxLength' , 'pattern' , 'nullValidator' , 'jsonValidate'] as const;
-
 export interface JsonFormValidators {
   min?: number;
   max?: number;

@@ -1,5 +1,5 @@
 <div id="config">
-  @if (ds.serviceInfo) {
+  @if (ds.serviceInfo && ds.task) {
     <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
     <form [formGroup]="form" (submit)="submit()">
       @for (control of controls; track $index) {
@@ -54,7 +54,6 @@
         }
         @for (err of (form.get(control.name)?.errors || {}) | keyvalue; track $index) {
           <mat-error>{{typeof err.value === 'string' ? err.value : 'invalid: ' + err.key }}</mat-error>
-          <div>{{err|json}}</div>
         }
       }
 
@@ -64,8 +63,7 @@
           <mat-error>{{ e }}</mat-error>
         }
       }
-      <p>is valid: {{form.valid}}</p>
-      <button mat-raised-button type="submit" [disabled]="!form.valid">Save</button>
+      <button mat-raised-button type="submit" [disabled]="!form.valid || ((ds.task | status) !== 'create')">Save</button>
     </form>
   }
 </div>

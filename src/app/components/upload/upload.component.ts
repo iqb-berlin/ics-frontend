@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { isResponseList } from '../../interfaces/iqb.interfaces';
-import { isResponseRowList, ResponseRow } from '../../interfaces/api.interfaces';
+import { isResponseRowList, ResponseRow, Task } from '../../interfaces/api.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { DataService } from '../../services/data.service';
 
@@ -14,10 +14,17 @@ import { DataService } from '../../services/data.service';
   styleUrl: './upload.component.css'
 })
 export class UploadComponent {
+  @ViewChild('fileInput') private fileInput: ElementRef | undefined;
+
   constructor(
     private bs: BackendService,
     private ds: DataService,
   ) {
+  }
+
+  openFileDialog(): void {
+    console.log(this.fileInput);
+    if (this.fileInput) this.fileInput.nativeElement.click();
   }
 
   onFileSelected($event: Event): void {
@@ -46,15 +53,12 @@ export class UploadComponent {
       !('result' in $event.target) ||
       !($event.target.result instanceof ArrayBuffer)
     ) {
-      console.log($event);
       throw new Error('Upload error (1)');
     }
-    console.log($event);
-    const text = new TextDecoder().decode($event.target.result);
 
+    const text = new TextDecoder().decode($event.target.result);
     const fileContent = this.parseFile(text);
-    console.log(fileContent);
-    this.bs.putTaskData(this.ds.task.id, fileContent).subscribe()
+    this.bs.putTaskData(this.ds.task.id, fileContent).subscribe();
   }
 
   parseFile(content: string): ResponseRow[] {
@@ -65,7 +69,6 @@ export class UploadComponent {
     if (isResponseRowList(contentJson)) {
       return contentJson;
     }
-
     throw new Error('File does not contain responses');
   }
 }
