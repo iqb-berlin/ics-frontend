@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.service';
-import { KeyValuePipe } from '@angular/common';
+import { JsonPipe, KeyValuePipe } from '@angular/common';
 import { MatFormField, MatOption, MatSelect, MatLabel, MatSelectChange } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -13,7 +13,8 @@ import { Router } from '@angular/router';
     MatOption,
     MatFormField,
     MatLabel,
-    FormsModule
+    FormsModule,
+    JsonPipe
   ],
   templateUrl: './service-selector.component.html',
   styleUrl: './service-selector.component.css'
@@ -26,7 +27,6 @@ export class ServiceSelectorComponent {
   }
 
   async selectService($event: MatSelectChange) {
-    await this.ds.selectService($event.value)
-    await this.router.navigate(['tasks']);
+    if (await this.ds.selectService($event.value)) await this.router.navigate(['tasks']);
   }
 }

@@ -3,9 +3,10 @@ import { Service } from '../interfaces/interfaces';
 import { ResponseRow, ServiceInfo, Task, TaskType } from '../interfaces/api.interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
-import { lastValueFrom, map, Observable, tap } from 'rxjs';
+import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
 import { ErrorService } from './error.service';
 import { catchError } from 'rxjs/operators';
+import { isA } from '../interfaces/iqb.interfaces';
 
 
 @Injectable({
@@ -13,27 +14,23 @@ import { catchError } from 'rxjs/operators';
 })
 export class DataService {
   readonly services: { [key: string]: Service } = Services;
-
-  selectedService: string | null = null;
-
+  selectedService: keyof typeof Services | null | undefined = null; // undefined as starting value breaks the binding
   serviceInfo: ServiceInfo | null = null;
-
   task: Task | null = null;
-
   data: ResponseRow[] = [];
-
   currentChunk: string = '';
 
   constructor(
     private readonly bs: BackendService
   ) {
+    this.serviceInfo = null;
     const lastServiceId = localStorage.getItem('csf-service');
     const service = lastServiceId && (lastServiceId in this.services)  ? lastServiceId : null;
     this.selectService(service);
   }
 
   selectService(serviceId: string | null): Promise<boolean> | boolean {
-    this.serviceInfo = null;
+    this.serviceInfo = null; // important
     this.selectedService = null;
     if (!serviceId) return false;
     if (!Object.hasOwn(Services, serviceId)) {
@@ -43,6 +40,7 @@ export class DataService {
     return lastValueFrom(this.bs.getInfo(service.url)
       .pipe(
          map(info => {
+          if (!isA<keyof typeof Services>(Object.keys(Services), serviceId)) throw new Error('Unknown ServiceId');
           this.serviceInfo = info;
           this.selectedService = serviceId;
           localStorage.setItem('csf-service', serviceId);
@@ -50,9 +48,10 @@ export class DataService {
         }),
         catchError(err => {
           this.serviceInfo = null;
-          this.selectedService = null;
+          this.selectedService = undefined;
+          console.log('!', this.selectedService);
           localStorage.removeItem('csf-service');
-          throw err;
+          return of(false);
         })
       )
     );
