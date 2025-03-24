@@ -11,9 +11,8 @@ import {
 } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { TaskOverview } from '../../interfaces/interfaces';
-import { Task, TaskEventType, TaskEventTypes } from '../../interfaces/api.interfaces';
+import { Task } from '../../interfaces/api.interfaces';
 import { RouterLink } from '@angular/router';
-import { isA } from '../../interfaces/iqb.interfaces';
 import { MatTooltip } from '@angular/material/tooltip';
 import { interval, Subscription, switchMap } from 'rxjs';
 import { StatusPipe } from '../../pipe/status.pipe';

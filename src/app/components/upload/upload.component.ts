@@ -1,7 +1,7 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { isResponseList } from '../../interfaces/iqb.interfaces';
-import { isResponseRowList, ResponseRow, Task } from '../../interfaces/api.interfaces';
+import { DataChunk, isResponseRowList, ResponseRow } from '../../interfaces/api.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { DataService } from '../../services/data.service';
 
@@ -15,10 +15,11 @@ import { DataService } from '../../services/data.service';
 })
 export class UploadComponent {
   @ViewChild('fileInput') private fileInput: ElementRef | undefined;
+  @Output() added = new EventEmitter<DataChunk>();
 
   constructor(
     private bs: BackendService,
-    private ds: DataService,
+    private ds: DataService
   ) {
   }
 
@@ -58,7 +59,16 @@ export class UploadComponent {
 
     const text = new TextDecoder().decode($event.target.result);
     const fileContent = this.parseFile(text);
-    this.bs.putTaskData(this.ds.task.id, fileContent).subscribe();
+    const taskId = this.ds.task.id;
+    this.bs.putTaskData(taskId, fileContent)
+      .subscribe(chunk => {
+        if (taskId !== this.ds.task?.id) {
+          // active task changed meanwhile
+          return;
+        }
+        this.ds.task.data.push(chunk);
+        this.added.emit(chunk);
+      });
   }
 
   parseFile(content: string): ResponseRow[] {

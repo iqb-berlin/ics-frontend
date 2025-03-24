@@ -4,7 +4,6 @@ import { ResponseRow, ServiceInfo, Task, TaskType } from '../interfaces/api.inte
 import { BackendService } from './backend.service';
 import { Services } from '../services';
 import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
-import { ErrorService } from './error.service';
 import { catchError } from 'rxjs/operators';
 import { isA } from '../interfaces/iqb.interfaces';
 
@@ -18,7 +17,6 @@ export class DataService {
   serviceInfo: ServiceInfo | null = null;
   task: Task | null = null;
   data: ResponseRow[] = [];
-  currentChunk: string = '';
 
   constructor(
     private readonly bs: BackendService
@@ -49,7 +47,6 @@ export class DataService {
         catchError(err => {
           this.serviceInfo = null;
           this.selectedService = undefined;
-          console.log('!', this.selectedService);
           localStorage.removeItem('csf-service');
           return of(false);
         })
@@ -69,7 +66,6 @@ export class DataService {
     this.bs.getTaskData(this.task.id, chunkId)
       .subscribe(data => {
         this.data = data;
-        this.currentChunk = chunkId;
       });
   }
 

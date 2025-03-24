@@ -1,5 +1,5 @@
 import { TaskEventType, TaskType } from '../../../../autocoder-service/src/interfaces/api.interfaces';
-import { ChunkType, ServiceInfo } from './api.interfaces';
+import { ChunkTypes, ServiceInfo } from './api.interfaces';
 
 export interface Service {
   readonly name: string;
@@ -16,8 +16,11 @@ export interface TaskOverview {
   readonly timestamp: number;
 }
 
+export const TabTypes = [...ChunkTypes, 'config', 'overview', 'add'] as const;
+export type TabType = typeof TabTypes[number];
+
 export interface TaskTab {
-  type: ChunkType | 'config' | 'overview' | 'add';
+  type: TabType;
   id: string;
   label: string;
 }
