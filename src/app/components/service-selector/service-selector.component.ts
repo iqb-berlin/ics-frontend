@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.service';
-import { JsonPipe, KeyValuePipe } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 import { MatFormField, MatOption, MatSelect, MatLabel, MatSelectChange } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -13,8 +13,7 @@ import { Router } from '@angular/router';
     MatOption,
     MatFormField,
     MatLabel,
-    FormsModule,
-    JsonPipe
+    FormsModule
   ],
   templateUrl: './service-selector.component.html',
   styleUrl: './service-selector.component.css'
