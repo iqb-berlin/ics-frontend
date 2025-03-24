@@ -3,55 +3,8 @@
     <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
     <form [formGroup]="form" (submit)="submit()">
       @for (control of controls; track $index) {
-        @if (['text', 'password', 'email', 'number', 'search', 'tel', 'url'].includes(control.type)) {
-          <mat-form-field>
-            <mat-label>{{ control.label }}</mat-label>
-            <input
-              matInput
-              [type]="control.type"
-              [formControlName]="control.name"
-              [value]="control.value"
-              [minlength]="control.validators.minLength || 0"
-              [required]="control.validators.required || false"
-            />
-          </mat-form-field>
-        } @else if (control.type === 'textarea') {
-          <mat-form-field>
-            <mat-label>{{ control.label }}</mat-label>
-            <textarea
-            matInput
-            [formControlName]="control.name"
-            [value]="control.value"
-          ></textarea>
-          </mat-form-field>
-        } @else if (control.type === 'checkbox') {
-          <mat-form-field>
-            <mat-checkbox
-            [formControlName]="control.name"
-            [checked]="control.value"
-          >{{ control.label }}</mat-checkbox>
-          </mat-form-field>
-        } @else if (control.type === 'range') {
-          <mat-form-field>
-            <mat-slider
-            [formControlName]="control.name"
-            [min]="control.options?.min || 0"
-            [max]="control.options?.max || 100"
-          >
-          </mat-slider>
-          </mat-form-field>
-        } @else if (control.type === 'select') {
-          <mat-form-field>
-            <mat-label>{{ control.label }}</mat-label>
-            <mat-select [formControlName]="control.name" [required]="control.validators.required || false">
-              @for (opt of control.options?.options || []; track $index) {
-                <mat-option [value]="opt">{{opt}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        } @else {
-          <mat-error>unknown control: {{control.name}}</mat-error>
-        }
+        <app-control [formGroup]="form" [control]="control" />
+
         @for (err of (form.get(control.name)?.errors || {}) | keyvalue; track $index) {
           <mat-error>{{typeof err.value === 'string' ? err.value : 'invalid: ' + err.key }}</mat-error>
         }

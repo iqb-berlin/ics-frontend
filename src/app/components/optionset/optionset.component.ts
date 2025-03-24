@@ -10,15 +10,18 @@ import {
   Validators
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatCheckbox } from '@angular/material/checkbox';
+import { MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
-import { MatSlider } from '@angular/material/slider';
-import { MatOption, MatSelect } from '@angular/material/select';
-import { JsonFormControl, JsonFormValidators } from '../../interfaces/optionset.interfaces';
+import {
+  isJsonSchemaProperty,
+  JsonFormControl,
+  JsonFormControlValueType,
+  JsonFormValidators,
+  JsonSchemaProperty
+} from '../../interfaces/optionset.interfaces';
 import { JSONSchema7TypeName } from 'json-schema';
 import { StatusPipe } from '../../pipe/status.pipe';
+import { ControlComponent } from '../control/control.component';
 
 @Component({
   selector: 'app-optionset',
@@ -26,16 +29,10 @@ import { StatusPipe } from '../../pipe/status.pipe';
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    MatLabel,
-    MatInput,
-    MatCheckbox,
-    MatFormField,
     MatButton,
-    MatSlider,
-    MatSelect,
-    MatOption,
     MatError,
-    StatusPipe
+    StatusPipe,
+    ControlComponent
   ],
   templateUrl: './optionset.component.html',
   styleUrl: './optionset.component.css'
@@ -52,6 +49,15 @@ export class OptionsetComponent {
     if (ds.serviceInfo?.instructionsSchema) this.loadSchema(ds.serviceInfo.instructionsSchema);
   }
 
+  loadSchema(schema: object): void {
+    const controls = this.convertJsonSchemaToJsonForms(schema);
+    if (typeof controls === 'string') {
+      this.errors.push(controls);
+      return;
+    }
+    this.controls = controls;
+    this.createForm(controls);
+  }
 
   createForm(controls: JsonFormControl[]) {
     for (const control of controls) {
@@ -104,24 +110,8 @@ export class OptionsetComponent {
     }
   }
 
-  loadSchema(schema: object): void {
-    const controls = this.convertJsonSchemaToJsonForms(schema);
-    if (typeof controls === 'string') {
-      this.errors.push(controls);
-      return;
-    }
-    this.controls = controls;
-    this.createForm(controls);
-  }
-
   convertJsonSchemaToJsonForms(schema: unknown): JsonFormControl[] | string {
-    if ((typeof schema !== 'object') || (schema == null)) return 'invalid schema';
-    if (!('type' in schema)) return 'Property "type" is required';
-    if (schema.type !== 'object') return 'Property "type" is required';
-    const required = (('required' in schema) && (Array.isArray(schema.required))) ? schema.required : [];
-    if (!('properties' in schema)) return 'Property "properties" is required';
-    if ((typeof schema.properties !== 'object') || (schema.properties == null)) return 'Property "properties" mus be array';
-    const chooseControl = (prop: { type: string, enum?: string }): string => {
+    const chooseControl = (prop: JsonSchemaProperty): string => {
       if (prop.enum) {
         return 'select';
       }
@@ -129,22 +119,53 @@ export class OptionsetComponent {
         case 'string': return 'text';
         case 'number': return 'number';
         case 'boolean': return 'checkbox';
+        case 'array': return 'array';
       }
       return 'textarea';
     }
-    const getValue = (propId: string, propType: 'string' | 'number' | 'boolean'): string | number | boolean => {
+    const getValue = (propId: string, propType: string): JsonFormControlValueType => {
       const value: unknown = this.ds.task?.instructions[propId];
       switch (propType) {
         case 'string': return String(value);
         case 'number': return Number(value);
         case 'boolean': return Boolean(value);
+        case 'array': return [];
         default: return JSON.stringify(value);
       }
     }
+    const propertyToJsonFormControl = ([id, prop]: [string, JsonSchemaProperty]): JsonFormControl => ({
+        name: id,
+        label: prop.title || id,
+        value: getValue(id, prop.type),
+        type: chooseControl(prop),
+        arrayType: (prop.type === 'array') &&
+          (typeof prop.items === 'object') &&
+          (prop.items != null) &&
+          ('type' in prop.items) &&
+          (isJsonSchemaProperty(prop.items)) ?
+            propertyToJsonFormControl(['??', prop.items]) :
+            undefined,
+        validators: {
+          required: prop.required.includes(id),
+          jsonValidate: !['number', 'boolean', 'string'].includes(prop.type),
+          pattern: prop.pattern || undefined,
+        },
+        options: {
+          options: prop.enum || undefined,
+        },
+        originalType: prop.type
+      });
+
+    if ((typeof schema !== 'object') ||
+      (schema == null) ||
+      !('properties' in  schema) ||
+      !Array.isArray(schema.properties)) {
+      throw 'invalid schema yaya';
+    }
     return Object.entries(schema.properties)
-      .map(([id, prop]) => {
-          if ((typeof prop !== 'object') && (prop == null)) throw new Error('Property "prop" is required');
-          if ('$ref' in prop) {
+      .map(([id, prop]: [string, unknown]): [string, JsonSchemaProperty] => {
+          if ((typeof prop !== 'object') || (prop == null)) throw new Error('Property "prop" is required');
+          if (('$ref' in prop) && (typeof prop.$ref === 'string')) {
             const path: string[] = prop.$ref
               .replace(/^#\//, '')
               .split('/');
@@ -155,25 +176,13 @@ export class OptionsetComponent {
               if (typeof sel[step] !== 'object') throw new Error(`Can not expand path: ${prop.$ref}`);
               sel = sel[step];
             }
+            if (!isJsonSchemaProperty(sel)) throw `NO NO NO (${path}): ${sel}`;
             return [id, sel];
           }
+          if (!isJsonSchemaProperty(prop)) throw "NO NO NO";
           return [id, prop];
       })
-      .map(([id, prop]): JsonFormControl => ({
-        name: id,
-        label: prop.title || id,
-        value: getValue(id, prop.type),
-        type: chooseControl(prop),
-        validators: {
-          required: required.includes(id),
-          jsonValidate: !['number', 'boolean', 'string'].includes(prop.type),
-          pattern: ('pattern' in prop) ? prop.pattern : null,
-        },
-        options: {
-          options: prop.enum || undefined,
-        },
-        originalType: prop.type
-      }));
+      .map(propertyToJsonFormControl);
   }
 
   submit() {
