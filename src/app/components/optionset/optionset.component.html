@@ -1,27 +1,16 @@
-<div id="config">
-  @if (ds.serviceInfo && ds.task) {
-    <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
-    <form [formGroup]="form" (submit)="submit()">
-      @for (control of controls; track $index) {
-        <app-control [formGroup]="form" [control]="control" [hostControl]="form.get(control.name)" />
+@if (ds.serviceInfo && ds.task) {
+  <h3>{{ds.serviceInfo.instructionsSchema.$id}}</h3>
+  <form (submit)="submit()">
+    @for (control of controls; track $index) {
+      <app-control [control]="control" />
+    }
 
-        @for (err of (form.get(control.name)?.errors || {}) | keyvalue; track $index) {
-          <mat-error>{{typeof err.value === 'string' ? err.value : 'invalid: ' + err.key }}</mat-error>
-        }
+    @if (errors.length) {
+      <h3>Error in JSON schema</h3>
+      @for (e of errors; track $index) {
+        <mat-error>{{ e }}</mat-error>
       }
-
-      @if (errors.length) {
-        <h3>Error in JSON schema</h3>
-        @for (e of errors; track $index) {
-          <mat-error>{{ e }}</mat-error>
-        }
-      }
-      <button mat-raised-button type="submit" [disabled]="!form.valid || ((ds.task | status) !== 'create')">Save</button>
-    </form>
-  }
-</div>
-
-<hr>
-<pre id="preview">{{form.getRawValue() | json}}</pre>
-<hr>
-<pre id="debug">{{controls | json}}</pre>
+    }
+    <button mat-raised-button type="submit" [disabled]="(ds.task | status) !== 'create'">Save</button>
+  </form>
+}

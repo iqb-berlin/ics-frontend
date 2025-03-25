@@ -24,15 +24,16 @@ export interface JsonFormControlOptions {
 export type JsonFormControlValueType = string | number | boolean | Array<string | number | boolean>;
 
 export interface JsonFormControl {
-  name: string;
-  label: string;
+  readonly name: string;
+  readonly label: string;
   value: JsonFormControlValueType;
-  controlElementType: string;
-  childrenType?: JsonFormControl | undefined;
-  options?: JsonFormControlOptions;
-  required?: boolean;
-  validators: JsonFormValidators;
-  fieldType?: string | undefined;
+  readonly controlElementType: string;
+  readonly children: JsonFormControl[];
+  readonly childrenType: JsonFormControl | undefined;
+  readonly options: JsonFormControlOptions;
+  readonly required: boolean;
+  readonly validators: JsonFormValidators;
+  readonly fieldType: string | undefined;
 }
 
 export interface JsonSchemaProperty {

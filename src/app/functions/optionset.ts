@@ -29,15 +29,13 @@ export const convertValue = (value: unknown, propType: string): JsonFormControlV
   }
 }
 
-export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, value: unknown): JsonFormControl => ({
+export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, value: unknown = undefined): JsonFormControl => ({
   name: id,
   label: prop.title || id,
   value: convertValue(value, prop.type),
   controlElementType: chooseControl(prop),
-  childrenType:
-    (prop.type === 'array') && (typeof prop.items === 'object') && (isJsonSchemaProperty(prop.items)) ?
-      propertyToJsonFormControl(id, prop.items, value) :
-      undefined,
+  children: [],
+  childrenType: ((prop.type === 'array') && isJsonSchemaProperty(prop.items)) ? propertyToJsonFormControl(id, prop.items) : undefined,
   validators: {
     required: prop.required?.includes(id) || false,
     jsonValidate: !['number', 'boolean', 'string', 'array'].includes(prop.type),
@@ -46,7 +44,8 @@ export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, 
   options: {
     options: prop.enum || undefined,
   },
-  fieldType: prop.type
+  fieldType: prop.type,
+  required: false,  // TODO
 });
 
 export const resolveReferences = (prop: JsonSchemaProperty, schema: JSONSchemaWithProperties): JsonSchemaProperty => {
@@ -65,6 +64,25 @@ export const resolveReferences = (prop: JsonSchemaProperty, schema: JSONSchemaWi
     return sel;
   }
   return prop;
+}
+
+const transformValue = (control: JsonFormControl): unknown => {
+  switch (control.fieldType) {
+    case 'string': return String(control.value);
+    case 'number': return Number(control.value);
+    case 'boolean': return Number(control.value);
+    case 'array': return control.children.map(transformValue);
+    default: return JSON.parse((typeof control.value === 'string') ? control.value : 'error')
+  }
+}
+
+export const getValues = (controls: JsonFormControl[]): object => {
+  const fd: { [key: string]: unknown } = {};
+  controls
+    .forEach(control => {
+      fd[control.name] = transformValue(control);
+    });
+  return fd;
 }
 
 export const JSONSchemaToJSONForms = (schema: unknown, values: {[key: string]: string}): JsonFormControl[] =>

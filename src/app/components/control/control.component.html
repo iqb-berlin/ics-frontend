@@ -1,12 +1,11 @@
-<div [formGroup]="formGroup" style="border: 1px solid red">
-  <pre>{{control|json}}</pre>
+<div>
   @if (['text', 'password', 'email', 'number', 'search', 'tel', 'url'].includes(control.controlElementType)) {
     <mat-form-field>
       <mat-label>{{ control.label }}</mat-label>
       <input
         matInput
         [type]="control.controlElementType"
-        [formControlName]="control.name"
+        [(ngModel)]="control.value"
         [value]="control.value"
         [minlength]="control.validators.minLength || 0"
         [required]="control.validators.required || false"
@@ -17,21 +16,21 @@
       <mat-label>{{ control.label }}</mat-label>
       <textarea
         matInput
-        [formControlName]="control.name"
+        [(ngModel)]="control.value"
         [value]="control.value"
       ></textarea>
     </mat-form-field>
   } @else if (control.controlElementType === 'checkbox') {
     <mat-form-field>
       <mat-checkbox
-        [formControlName]="control.name"
+        [(ngModel)]="control.value"
         [checked]="control.value"
       >{{ control.label }}</mat-checkbox>
     </mat-form-field>
   } @else if (control.controlElementType === 'range') {
     <mat-form-field>
       <mat-slider
-        [formControlName]="control.name"
+        [(ngModel)]="control.value"
         [min]="control.options?.min || 0"
         [max]="control.options?.max || 100"
       >
@@ -40,30 +39,22 @@
   } @else if (control.controlElementType === 'select') {
     <mat-form-field>
       <mat-label>{{ control.label }}</mat-label>
-      <mat-select [formControlName]="control.name" [required]="control.validators.required || false">
+      <mat-select [(ngModel)]="control.value" [required]="control.validators.required || false">
         @for (opt of control.options?.options || []; track $index) {
           <mat-option [value]="opt">{{opt}}</mat-option>
         }
       </mat-select>
     </mat-form-field>
   } @else if (control.controlElementType === 'array') {
-    <h5>{{control.label}}</h5>
-    <pre>!1!</pre>
-    @if (hostControl) {
-      <pre>!2</pre>
-      @if (isFormArray(hostControl)) {
-        <pre>!3</pre>
-        @for (subControl of hostControl.controls; track $index) {
-          <pre>!!</pre>
-          @if (control.childrenType) {
-            <pre>!!!</pre>
-            <div style="background: aquamarine; border: 1px solid green">
-              <app-control [control]="control.childrenType" [formGroup]="formGroup" [hostControl]="subControl" />
-            </div>
-          }
-        }
+    @if (isArray(control.value)) {
+      <mat-label>{{control.label}} <button mat-raised-button (click)="add()">+</button></mat-label>
+      @for (subControl of control.children; track $index) {
+        <div class="sub-control">
+          <button mat-raised-button class='delete' (click)="delete($index)">-</button>
+          <div style="width: 90%"><app-control [control]="subControl" /></div>
+        </div>
       }
-      <button mat-button (click)="add()">+</button>
+
     }
   } @else {
     <mat-error>unknown control: {{control.name}}</mat-error>

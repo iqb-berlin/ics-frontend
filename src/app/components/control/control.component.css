@@ -1,0 +1,12 @@
+form, mat-form-field {
+  width: 100%;
+}
+
+.sub-control {
+  position: relative;
+}
+
+.sub-control .delete {
+  position: absolute;
+  right: 0;
+}
