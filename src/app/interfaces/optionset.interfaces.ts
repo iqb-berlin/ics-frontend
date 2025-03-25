@@ -21,7 +21,7 @@ export interface JsonFormControlOptions {
   options?: string[];
 }
 
-export type JsonFormControlValueType = string | number | boolean | Array<string | number | boolean>;
+export type JsonFormControlValueType = string | number | boolean | Array<JsonFormControlValueType> | null;
 
 export interface JsonFormControl {
   readonly name: string;
@@ -31,7 +31,6 @@ export interface JsonFormControl {
   readonly children: JsonFormControl[];
   readonly childrenType: JsonFormControl | undefined;
   readonly options: JsonFormControlOptions;
-  readonly required: boolean;
   readonly validators: JsonFormValidators;
   readonly fieldType: string | undefined;
 }
@@ -49,5 +48,6 @@ export interface JsonSchemaProperty {
 }
 
 export interface JSONSchemaWithProperties {
-  properties: { [key: string]: JsonSchemaProperty }
+  properties: { [key: string]: JsonSchemaProperty };
+  required?: string[];
 }

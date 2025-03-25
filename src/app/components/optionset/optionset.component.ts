@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { DataService } from '../../services/data.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { JsonFormControl } from '../../interfaces/optionset.interfaces';
@@ -12,9 +10,6 @@ import { getValues, JSONSchemaToJSONForms } from '../../functions/optionset';
 @Component({
   selector: 'app-optionset',
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule,
     MatButton,
     MatError,
     StatusPipe,

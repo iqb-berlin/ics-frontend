@@ -19,33 +19,22 @@ export const chooseControl = (prop: JsonSchemaProperty): string => {
   return 'textarea';
 }
 
-export const convertValue = (value: unknown, propType: string): JsonFormControlValueType => {
-  switch (propType) {
-    case 'string': return value ? String(value) : '';
-    case 'number': return value ? Number(value) : 0;
-    case 'boolean': return Boolean(value);
-    case 'array': return [];
-    default: return JSON.stringify(value);
-  }
-}
-
-export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, value: unknown = undefined): JsonFormControl => ({
+export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, isRequired: boolean = true, value: unknown = undefined): JsonFormControl => ({
   name: id,
   label: prop.title || id,
-  value: convertValue(value, prop.type),
+  value: null,
   controlElementType: chooseControl(prop),
   children: [],
   childrenType: ((prop.type === 'array') && isJsonSchemaProperty(prop.items)) ? propertyToJsonFormControl(id, prop.items) : undefined,
   validators: {
-    required: prop.required?.includes(id) || false,
+    required: isRequired,
     jsonValidate: !['number', 'boolean', 'string', 'array'].includes(prop.type),
     pattern: prop.pattern || undefined,
   },
   options: {
     options: prop.enum || undefined,
   },
-  fieldType: prop.type,
-  required: false,  // TODO
+  fieldType: prop.type
 });
 
 export const resolveReferences = (prop: JsonSchemaProperty, schema: JSONSchemaWithProperties): JsonSchemaProperty => {
@@ -66,13 +55,52 @@ export const resolveReferences = (prop: JsonSchemaProperty, schema: JSONSchemaWi
   return prop;
 }
 
-const transformValue = (control: JsonFormControl): unknown => {
+export const setValue = (control: JsonFormControl, value: unknown): JsonFormControl => {
+  switch (control.fieldType) {
+    case 'string': return {...control, value: value ? String(value) : '' };
+    case 'number': return {...control, value: value ? Number(value) : 0 };
+    case 'boolean': return {...control, value: Boolean(value) };
+    case 'array':
+      const children = (!Array.isArray(value)) ? [] :
+        value
+          .map(v => control.childrenType ? setValue(control.childrenType, v) : null)
+          .filter(v => !!v);
+      return {
+        ...control,
+        children,
+        value: children.map(child => child.value)
+      };
+    default: return {...control, value: JSON.stringify(value) };
+  }
+}
+
+export const JSONSchemaToJSONForms = (schema: unknown, values: {[key: string]: unknown}): JsonFormControl[] =>
+  isSchemaWithProperties(schema) ?
+    Object.entries(schema.properties)
+      .map(([id, prop]: [string, JsonSchemaProperty]): [string, JsonSchemaProperty] =>
+        ([id, resolveReferences(prop, schema)])
+      )
+      .map(([id, prop]: [string, JsonSchemaProperty]): JsonFormControl =>
+        propertyToJsonFormControl(id, prop, (schema.required || []).includes(id), values[id])
+      )
+      .map(
+        control => setValue(control, values[control.name])
+      )
+    : [];
+
+const getValue = (control: JsonFormControl): unknown => {
+  console.log('getValue', control.fieldType, control.value)
   switch (control.fieldType) {
     case 'string': return String(control.value);
     case 'number': return Number(control.value);
     case 'boolean': return Number(control.value);
-    case 'array': return control.children.map(transformValue);
-    default: return JSON.parse((typeof control.value === 'string') ? control.value : 'error')
+    case 'array': return control.children.map(getValue);
+    default: try {
+      return JSON.parse((typeof control.value === 'string') ? control.value : '"error"')
+    } catch (e) {
+      console.error(e);
+      return '';
+    }
   }
 }
 
@@ -80,17 +108,10 @@ export const getValues = (controls: JsonFormControl[]): object => {
   const fd: { [key: string]: unknown } = {};
   controls
     .forEach(control => {
-      fd[control.name] = transformValue(control);
+      fd[control.name] = getValue(control);
     });
   return fd;
 }
-
-export const JSONSchemaToJSONForms = (schema: unknown, values: {[key: string]: string}): JsonFormControl[] =>
-  isSchemaWithProperties(schema) ?
-    Object.entries(schema.properties)
-      .map(([id, prop]: [string, JsonSchemaProperty]): [string, JsonSchemaProperty] => ([id, resolveReferences(prop, schema)]))
-      .map(([id, prop]: [string, JsonSchemaProperty]): JsonFormControl => propertyToJsonFormControl(id, prop, values[id])) :
-    [];
 
 export const isSchemaWithProperties = (thing: unknown): thing is JSONSchemaWithProperties =>
   (typeof thing === 'object') &&

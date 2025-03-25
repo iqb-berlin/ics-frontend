@@ -1,16 +1,14 @@
 @if (ds.serviceInfo && ds.task) {
   <h3>{{ds.serviceInfo.instructionsSchema.$id}}</h3>
-  <form (submit)="submit()">
-    @for (control of controls; track $index) {
-      <app-control [control]="control" />
-    }
+  @for (control of controls; track $index) {
+    <app-control [control]="control" />
+  }
 
-    @if (errors.length) {
-      <h3>Error in JSON schema</h3>
-      @for (e of errors; track $index) {
-        <mat-error>{{ e }}</mat-error>
-      }
+  @if (errors.length) {
+    <h3>Error in JSON schema</h3>
+    @for (e of errors; track $index) {
+      <mat-error>{{ e }}</mat-error>
     }
-    <button mat-raised-button type="submit" [disabled]="(ds.task | status) !== 'create'">Save</button>
-  </form>
+  }
+  <button mat-raised-button type="submit" [disabled]="(ds.task | status) !== 'create'" (click)="submit()">Save</button>
 }

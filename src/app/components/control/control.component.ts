@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -8,11 +7,11 @@ import { MatSelect } from '@angular/material/select';
 import { MatSlider } from '@angular/material/slider';
 import { JsonFormControl } from '../../interfaces/optionset.interfaces';
 import { MatButton } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-control',
   imports: [
-    FormsModule,
     MatCheckbox,
     MatError,
     MatFormField,
@@ -21,7 +20,8 @@ import { MatButton } from '@angular/material/button';
     MatOption,
     MatSelect,
     MatSlider,
-    MatButton
+    MatButton,
+    FormsModule
   ],
   templateUrl: './control.component.html',
   styleUrl: './control.component.css'
