@@ -1,5 +1,4 @@
-import { JSONSchema7TypeName } from 'json-schema';
-import { isA, isArrayOf } from './iqb.interfaces';
+import { isArrayOf } from './iqb.interfaces';
 
 export interface JsonFormValidators {
   min?: number;
@@ -22,24 +21,24 @@ export interface JsonFormControlOptions {
   options?: string[];
 }
 
-export type JsonFormControlValueType = string | number | boolean | string[] | number[];
+export type JsonFormControlValueType = string | number | boolean | Array<string | number | boolean>;
 
 export interface JsonFormControl {
   name: string;
   label: string;
   value: JsonFormControlValueType;
-  type: string;
-  arrayType?: JsonFormControl | undefined;
+  controlElementType: string;
+  childrenType?: JsonFormControl | undefined;
   options?: JsonFormControlOptions;
   required?: boolean;
   validators: JsonFormValidators;
-  originalType?: string | undefined;
+  fieldType?: string | undefined;
 }
 
 export interface JsonSchemaProperty {
   type: string;
   required: string[];
-  properties: JsonSchemaProperty[];
+  properties: { [key: string]: JsonSchemaProperty };
   title?: string;
   items?: {
     type: string;
@@ -48,13 +47,6 @@ export interface JsonSchemaProperty {
   pattern?: string;
 }
 
-export const isJsonSchemaProperty = (thing: unknown): thing is JsonSchemaProperty => {
-  if ((typeof thing !== 'object') || (thing == null)) throw 'invalid schema';
-  if (!('type' in thing)) throw 'Property "type" is required';
-  if (thing.type !== 'object') throw 'Property "type" is required';
-  const required = (('required' in thing) && (Array.isArray(thing.required))) ? thing.required : [];
-  if (!('properties' in thing)) throw 'Property "properties" is required';
-  if ((typeof thing.properties !== 'object') || (thing.properties == null)) throw 'Property "properties" mus be array';
-  if (!isArrayOf<JsonSchemaProperty>(thing.properties, isJsonSchemaProperty)) throw `Invalid Property`;
-  return true;
+export interface JSONSchemaWithProperties {
+  properties: { [key: string]: JsonSchemaProperty }
 }

@@ -1,5 +1,13 @@
-import { Component, forwardRef, Input } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, Input } from '@angular/core';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  isFormArray,
+  ReactiveFormsModule
+} from '@angular/forms';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -7,7 +15,10 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatSlider } from '@angular/material/slider';
 import { JsonFormControl } from '../../interfaces/optionset.interfaces';
-import { isArray } from '@angular/compiler-cli/src/ngtsc/annotations/common';
+import { MatButton } from '@angular/material/button';
+import { JsonPipe } from '@angular/common';
+import { createAngularFormsControl } from '../../functions/optionset-form-builder';
+import { convertValue } from '../../functions/optionset';
 
 @Component({
   selector: 'app-control',
@@ -21,7 +32,9 @@ import { isArray } from '@angular/compiler-cli/src/ngtsc/annotations/common';
     MatOption,
     MatSelect,
     MatSlider,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatButton,
+    JsonPipe
   ],
   templateUrl: './control.component.html',
   styleUrl: './control.component.css'
@@ -29,13 +42,27 @@ import { isArray } from '@angular/compiler-cli/src/ngtsc/annotations/common';
 export class ControlComponent {
   @Input() control!: JsonFormControl;
   @Input() formGroup!: FormGroup;
-  protected readonly isArray = isArray;
+  @Input() hostControl: AbstractControl | null | undefined;
+  protected readonly isArray = Array.isArray;
 
-  isArr(value: string | number | boolean | string[] | number[]): value is string[] | number[] {
-    return Array.isArray(value);
+  constructor(
+    private fb: FormBuilder
+  ) {
   }
 
-  add(control: JsonFormControl): void {
-    this.formGroup.controls[control.name].value.push(control.type === 'string' ? "" : '');
+  add(): void {
+    if (!this.control.childrenType) throw new Error("Not an array control!");
+    const newControl = createAngularFormsControl(this.fb, this.control.childrenType);
+    console.log(this.hostControl && Object.keys(this.hostControl))
+    if (isFormArray(this.hostControl)) {
+      this.hostControl.push(newControl.control);
+      // if (!Array.isArray(this.control.value)) throw new Error("Not an array control! (value)");
+      console.log("!!!!!!!!")
+      // this.control.value.push('');
+    }
   }
+
+  protected readonly Object = Object;
+  protected readonly FormArray = FormArray;
+  protected readonly isFormArray = isFormArray;
 }

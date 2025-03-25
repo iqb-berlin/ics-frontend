@@ -1,17 +1,18 @@
-<div [formGroup]="formGroup">
-  @if (['text', 'password', 'email', 'number', 'search', 'tel', 'url'].includes(control.type)) {
+<div [formGroup]="formGroup" style="border: 1px solid red">
+  <pre>{{control|json}}</pre>
+  @if (['text', 'password', 'email', 'number', 'search', 'tel', 'url'].includes(control.controlElementType)) {
     <mat-form-field>
       <mat-label>{{ control.label }}</mat-label>
       <input
         matInput
-        [type]="control.type"
+        [type]="control.controlElementType"
         [formControlName]="control.name"
         [value]="control.value"
         [minlength]="control.validators.minLength || 0"
         [required]="control.validators.required || false"
       />
     </mat-form-field>
-  } @else if (control.type === 'textarea') {
+  } @else if (control.controlElementType === 'textarea') {
     <mat-form-field>
       <mat-label>{{ control.label }}</mat-label>
       <textarea
@@ -20,14 +21,14 @@
         [value]="control.value"
       ></textarea>
     </mat-form-field>
-  } @else if (control.type === 'checkbox') {
+  } @else if (control.controlElementType === 'checkbox') {
     <mat-form-field>
       <mat-checkbox
         [formControlName]="control.name"
         [checked]="control.value"
       >{{ control.label }}</mat-checkbox>
     </mat-form-field>
-  } @else if (control.type === 'range') {
+  } @else if (control.controlElementType === 'range') {
     <mat-form-field>
       <mat-slider
         [formControlName]="control.name"
@@ -36,7 +37,7 @@
       >
       </mat-slider>
     </mat-form-field>
-  } @else if (control.type === 'select') {
+  } @else if (control.controlElementType === 'select') {
     <mat-form-field>
       <mat-label>{{ control.label }}</mat-label>
       <mat-select [formControlName]="control.name" [required]="control.validators.required || false">
@@ -45,18 +46,25 @@
         }
       </mat-select>
     </mat-form-field>
-  } @else if (control.type === 'array') {
-    @if (isArr(control.value)) {
-      @for (item of control.value; track $index) {
-        <app-control
+  } @else if (control.controlElementType === 'array') {
+    <h5>{{control.label}}</h5>
+    <pre>!1!</pre>
+    @if (hostControl) {
+      <pre>!2</pre>
+      @if (isFormArray(hostControl)) {
+        <pre>!3</pre>
+        @for (subControl of hostControl.controls; track $index) {
+          <pre>!!</pre>
+          @if (control.childrenType) {
+            <pre>!!!</pre>
+            <div style="background: aquamarine; border: 1px solid green">
+              <app-control [control]="control.childrenType" [formGroup]="formGroup" [hostControl]="subControl" />
+            </div>
+          }
+        }
       }
-      <mat-button (click)="add(control)">+</mat-button>
-    } @else {
-      <mat-error>value not array ({{control.value}}</mat-error>
+      <button mat-button (click)="add()">+</button>
     }
-  }
-
-
   } @else {
     <mat-error>unknown control: {{control.name}}</mat-error>
   }

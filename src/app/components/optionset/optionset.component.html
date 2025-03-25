@@ -3,7 +3,7 @@
     <p>Format: {{ds.serviceInfo.instructionsSchema.$id}}</p>
     <form [formGroup]="form" (submit)="submit()">
       @for (control of controls; track $index) {
-        <app-control [formGroup]="form" [control]="control" />
+        <app-control [formGroup]="form" [control]="control" [hostControl]="form.get(control.name)" />
 
         @for (err of (form.get(control.name)?.errors || {}) | keyvalue; track $index) {
           <mat-error>{{typeof err.value === 'string' ? err.value : 'invalid: ' + err.key }}</mat-error>
@@ -20,3 +20,8 @@
     </form>
   }
 </div>
+
+<hr>
+<pre id="preview">{{form.getRawValue() | json}}</pre>
+<hr>
+<pre id="debug">{{controls | json}}</pre>
