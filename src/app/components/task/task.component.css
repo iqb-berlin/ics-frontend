@@ -1,3 +1,21 @@
 .config, .overview {
   margin: 1em;
 }
+
+
+table {
+  width: 100%;
+}
+
+tr
+ {
+
+  min-height: 48px;
+  padding: 0 24px;
+}
+
+td {
+  overflow: hidden;
+  word-wrap: break-word;
+  border-bottom: 1px solid silver;
+}

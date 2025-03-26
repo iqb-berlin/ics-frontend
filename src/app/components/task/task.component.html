@@ -3,6 +3,8 @@
     @for (tab of tabs; track tab; let index = $index) {
       <mat-tab [label]="tab.label" [bodyClass]="[tab.type, 'tab-body']" [labelClass]="[tab.type, 'tab-label']">
         @if (tab.id === 'overview') {
+          <h3>Task #{{ds.task.id}}</h3>
+
           <table>
             <tr>
               <td>Id</td>
@@ -17,6 +19,7 @@
               <td>{{ds.task | status}}d</td>
             </tr>
           </table>
+
           <h3>Events:</h3>
 
           <table>
@@ -32,7 +35,7 @@
                 <tr>
                   <td>{{event.timestamp * 1000 | date : 'short'}}</td>
                   <td>{{event.status}}</td>
-                  <td>{{event.message}}</td>
+                  <td><pre>{{event.message}}</pre></td>
                 </tr>
               }
             </tbody>
