@@ -6,6 +6,7 @@ import { JsonFormControl } from '../../interfaces/optionset.interfaces';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { ControlComponent } from '../control/control.component';
 import { getValues, JSONSchemaToJSONForms } from '../../functions/optionset';
+import {JSONSchema, TaskTypeInfo} from '../../interfaces/api.interfaces';
 
 @Component({
   selector: 'app-optionset',
@@ -21,18 +22,23 @@ import { getValues, JSONSchemaToJSONForms } from '../../functions/optionset';
 export class OptionsetComponent {
   errors: any[] = [];
   controls: JsonFormControl[] = [];
+  instructions: TaskTypeInfo | null = null
 
   constructor(
     public ds: DataService
   ) {
-    if (ds.serviceInfo?.instructionsSchema) this.loadSchema(ds.serviceInfo.instructionsSchema);
+    this.loadSchema();
   }
 
-  loadSchema(schema: object): void {
+  loadSchema(): void {
+    this.errors = [];
+    this.controls = [];
+    this.instructions = null;
     try {
-      this.controls = JSONSchemaToJSONForms(schema, this.ds.task?.instructions || {});
+      this.instructions = this.ds.serviceInfo?.taskTypes[this.ds.task?.type || 'undefined'] || null;
+      if (!this.instructions) throw `No schema given for: ${this.ds.task?.type}`;
+      this.controls = JSONSchemaToJSONForms(this.instructions.instructionsSchema, this.ds.task?.instructions || {});
     } catch (e) {
-      this.controls = []
       this.errors.push(e);
     }
   }

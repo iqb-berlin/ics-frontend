@@ -10,6 +10,7 @@ export type TaskStatus = TaskEventType | 'draft'
 
 export interface TaskOverview {
   readonly id: string;
+  readonly label: string;
   readonly type: TaskType;
   readonly status: TaskStatus;
   readonly message: string;

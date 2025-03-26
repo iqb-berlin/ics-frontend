@@ -58,6 +58,7 @@ export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
           const lastEvent = StatusPipe.getLastEvent(task);
           return {
             id: task.id,
+            label: task.label || task.id,
             type: task.type,
             status: StatusPipe.getStatus(task),
             timestamp: lastEvent?.timestamp || Date.now (),

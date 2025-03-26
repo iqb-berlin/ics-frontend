@@ -7,8 +7,9 @@
 @if (ds.selectedService) {
   @if (!ds.task) {
     <a mat-raised-button href="/tasks">Tasks</a>
-    <button mat-raised-button (click)="addTask('train')">New Task: Train</button>
-    <button mat-raised-button (click)="addTask('code')">New Task: Code</button>
+    @for (taskType of (ds.serviceInfo?.taskTypes || {}) | keyvalue; track $index) {
+      <button mat-raised-button (click)="addTask(taskType.key)">New Task: {{taskType.key}}</button>
+    }
   } @else {
     <a mat-raised-button href="/tasks"><b>Task: </b>{{ds.task.type}} {{ds.task.id}} <b>{{ds.task | status}}d</b></a>
     <button mat-raised-button (click)="commit()">Commit</button>

@@ -24,7 +24,6 @@ export class UploadComponent {
   }
 
   openFileDialog(): void {
-    console.log(this.fileInput);
     if (this.fileInput) this.fileInput.nativeElement.click();
   }
 

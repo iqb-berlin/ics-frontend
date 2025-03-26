@@ -7,7 +7,7 @@ import {
   ResponseRow,
   isResponseRowList,
   TaskType,
-  DataChunk, isDataChunk
+  DataChunk, isDataChunk, TaskSeed
 } from '../interfaces/api.interfaces';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, Observable, tap } from 'rxjs';
@@ -71,8 +71,8 @@ export class BackendService {
       .pipe(checkCondition(isTask));
   }
 
-  putTask(type: TaskType): Observable<Task> {
-    return this.http.put<Task>(`${this.url}/tasks`, { type })
+  putTask(seed: TaskSeed): Observable<Task> {
+    return this.http.put<Task>(`${this.url}/tasks`, seed)
       .pipe(checkCondition(isTask));
   }
 
@@ -80,6 +80,4 @@ export class BackendService {
     return this.http.patch<void>(`${this.url}/tasks/${taskId}/instructions`, instructions)
       .pipe(checkCondition(isTask));
   }
-
-
 }

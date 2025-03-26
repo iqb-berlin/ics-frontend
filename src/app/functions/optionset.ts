@@ -89,7 +89,6 @@ export const JSONSchemaToJSONForms = (schema: unknown, values: {[key: string]: u
     : [];
 
 const getValue = (control: JsonFormControl): unknown => {
-  console.log('getValue', control.fieldType, control.value)
   switch (control.fieldType) {
     case 'string': return String(control.value);
     case 'number': return Number(control.value);

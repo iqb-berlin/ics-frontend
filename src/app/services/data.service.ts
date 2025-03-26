@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Service } from '../interfaces/interfaces';
-import { ResponseRow, ServiceInfo, Task, TaskType } from '../interfaces/api.interfaces';
+import {ResponseRow, ServiceInfo, Task, TaskSeed, TaskType} from '../interfaces/api.interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
 import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
@@ -77,9 +77,9 @@ export class DataService {
       });
   }
 
-  addTask(type: TaskType): Promise<boolean> | boolean {
+  addTask(seed: TaskSeed): Promise<boolean> | boolean {
     return lastValueFrom(
-      this.bs.putTask(type)
+      this.bs.putTask(seed)
         .pipe(map(task => {
           this.task = task;
           return true;
