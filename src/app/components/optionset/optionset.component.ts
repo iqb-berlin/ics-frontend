@@ -35,7 +35,7 @@ export class OptionsetComponent {
     this.controls = [];
     this.instructions = null;
     try {
-      this.instructions = this.ds.serviceInfo?.taskTypes[this.ds.task?.type || 'undefined'] || null;
+      this.instructions = this.ds.serviceInfo?.taskTypes[this.ds.task?.type || 'unknown'] || null;
       if (!this.instructions) throw `No schema given for: ${this.ds.task?.type}`;
       this.controls = JSONSchemaToJSONForms(this.instructions.instructionsSchema, this.ds.task?.instructions || {});
     } catch (e) {
