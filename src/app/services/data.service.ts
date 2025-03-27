@@ -69,7 +69,7 @@ export class DataService {
       });
   }
 
-  startEncoding() {
+  startEncoding(): void {
     if (!this.task) return;
     this.bs.patchTask(this.task.id)
       .subscribe(task => {
@@ -95,5 +95,10 @@ export class DataService {
       .subscribe(task => {
         this.task = task;
       });
+  }
+
+  async deleteTask(): Promise<void> {
+    if (!this.task) return;
+    return lastValueFrom(this.bs.deleteTask(this.task.id));
   }
 }

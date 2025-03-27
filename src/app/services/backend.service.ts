@@ -80,4 +80,8 @@ export class BackendService {
     return this.http.patch<void>(`${this.url}/tasks/${taskId}/instructions`, instructions)
       .pipe(checkCondition(isTask));
   }
+
+  deleteTask(taskId: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/tasks/${taskId}`);
+  }
 }

@@ -4,6 +4,7 @@ import { KeyValuePipe } from '@angular/common';
 import { MatFormField, MatOption, MatSelect, MatLabel, MatSelectChange } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import {MatAnchor} from '@angular/material/button';
 
 @Component({
   selector: 'app-service-selector',
@@ -13,7 +14,8 @@ import { Router } from '@angular/router';
     MatOption,
     MatFormField,
     MatLabel,
-    FormsModule
+    FormsModule,
+    MatAnchor
   ],
   templateUrl: './service-selector.component.html',
   styleUrl: './service-selector.component.css'

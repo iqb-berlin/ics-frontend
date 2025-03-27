@@ -1,19 +1,29 @@
-<a mat-raised-button href="/start">
-  <b>Coding Service:</b>
+<span class="section">
+  <a mat-button href="/start">
+    Coding Service:
+  </a>
   @if (ds.selectedService) {
-    {{ds.serviceInfo?.id}} ({{ds.serviceInfo?.type}} version {{ds.serviceInfo?.version}})
+    <span class="mdc-button mat-mdc-button-base">{{ds.serviceInfo?.id}} ({{ds.serviceInfo?.type}} version {{ds.serviceInfo?.version}})</span>
   }
-</a>
+</span>
+
 @if (ds.selectedService) {
-  @if (!ds.task) {
-    <a mat-raised-button href="/tasks">Tasks</a>
-    @for (taskType of (ds.serviceInfo?.taskTypes || {}) | keyvalue; track $index) {
-      <button mat-raised-button (click)="addTask(taskType.key)">New Task: {{taskType.key}}</button>
-    }
-  } @else {
-    <a mat-raised-button href="/tasks"><b>Task: </b>{{ds.task.type}} {{ds.task.id}} <b>{{ds.task | status}}d</b></a>
-    <button mat-raised-button (click)="commit()">Commit</button>
+
+  @if (ds.task) {
+    <span class="section">
+      <a mat-button href="/tasks">Task:</a>
+      <span class="mdc-button mat-mdc-button-base">{{ds.task.label || ds.task.id}} - {{ds.task | status}}d</span>
+      <button mat-button (click)="commit()">Commit</button>
+      <button mat-button (click)="delete()">Delete</button>
+    </span>
   }
+
+  <span class="section">
+    <span class="mdc-button mat-mdc-button-base">New Task:</span>
+    @for (taskType of (ds.serviceInfo?.taskTypes || {}) | keyvalue; track $index) {
+      <button mat-button (click)="addTask(taskType.key)">{{taskType.key}}</button>
+    }
+  </span>
 }
 
 

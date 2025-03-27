@@ -26,11 +26,11 @@ export class HeaderComponent {
   ) {
   }
 
-  commit() {
+  commit(): void {
     this.ds.startEncoding();
   }
 
-  async addTask(type: string) {
+  async addTask(type: string): Promise<void> {
     if (!isA<TaskType>(TaskTypes, type)) return;
     await this.ds.addTask({
       type,
@@ -38,5 +38,10 @@ export class HeaderComponent {
     });
     if (!this.ds.task) return;
     await this.router.navigate(['task', this.ds.task.id]);
+  }
+
+  async delete(): Promise<void> {
+    await this.ds.deleteTask();
+    await this.router.navigate(['tasks/']);
   }
 }

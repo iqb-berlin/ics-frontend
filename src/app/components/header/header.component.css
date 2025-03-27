@@ -1,4 +1,14 @@
-b {
-  color: black;
+
+.section:first-of-type {
+  border-left: none;
+  padding-left: 0px;
 }
 
+.section {
+  color: black;
+  font-weight: bold;
+  border-left: 2px solid silver;
+  margin-right: 1em;
+  margin-left: 1em;
+  padding-left: 1em;
+}
