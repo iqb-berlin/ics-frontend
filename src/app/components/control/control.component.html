@@ -31,8 +31,8 @@
     <mat-form-field>
       <mat-slider
         [(ngModel)]="control.value"
-        [min]="control.options?.min || 0"
-        [max]="control.options?.max || 100"
+        [min]="control.options.min || 0"
+        [max]="control.options.max || 100"
       >
       </mat-slider>
     </mat-form-field>
@@ -40,7 +40,7 @@
     <mat-form-field>
       <mat-label>{{ control.label }}</mat-label>
       <mat-select [(ngModel)]="control.value" [required]="control.validators.required || false">
-        @for (opt of control.options?.options || []; track $index) {
+        @for (opt of control.options.options || []; track $index) {
           <mat-option [value]="opt">{{opt}}</mat-option>
         }
       </mat-select>

@@ -1,5 +1,5 @@
 @if (ds.serviceInfo && ds.task && instructions) {
-  <h3>{{instructions.instructionsSchema?.$id}}</h3>
+  <h3>{{instructions.instructionsSchema.$id}}</h3>
   <p>{{instructions.instructionsText}}</p>
   @for (control of controls; track $index) {
     <app-control [control]="control" />

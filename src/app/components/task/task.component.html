@@ -3,7 +3,7 @@
     @for (tab of tabs; track tab; let index = $index) {
       <mat-tab [label]="tab.label" [bodyClass]="[tab.type, 'tab-body']" [labelClass]="[tab.type, 'tab-label']">
         @if (tab.id === 'overview') {
-          <h3>{{ds.task?.label || 'Task #' + ds.task.id}}</h3>
+          <h3>{{ds.task.label || 'Task #' + ds.task.id}}</h3>
 
           <table>
             <tr>
