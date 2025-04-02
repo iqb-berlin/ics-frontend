@@ -20,9 +20,8 @@
 
   <span class="section">
     <span class="mdc-button mat-mdc-button-base">New Task:</span>
-    @for (taskType of (ds.serviceInfo?.taskTypes || {}) | keyvalue; track $index) {
-      <button mat-button (click)="addTask(taskType.key)">{{taskType.key}}</button>
-    }
+    <button mat-button (click)="addTask('train')">Train</button>
+    <button mat-button (click)="addTask('code')">Code</button>
   </span>
 }
 

@@ -13,6 +13,8 @@ import { StatusPipe } from '../../pipe/status.pipe';
 import { DatePipe } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
 import { UploadComponent } from '../upload/upload.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatMiniFabButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-task',
@@ -24,13 +26,16 @@ import { UploadComponent } from '../upload/upload.component';
     MatTab,
     StatusPipe,
     DatePipe,
-    UploadComponent
+    UploadComponent,
+    MatIcon,
+    MatMiniFabButton
   ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
 })
 export class TaskComponent implements OnInit, OnDestroy {
   @ViewChild(UploadComponent) uploadTab: UploadComponent | undefined;
+  protected editLabel: boolean = false;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -79,7 +84,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   collectTabs(task: Task): void {
     this.tabs = [
       { id: 'overview', label: 'Task', type: 'overview' },
-      { id: 'config', label: 'Config', type: 'config' },
+      { id: 'config', label: 'Config', type: task.type },
       ...task.data.map((chunk: DataChunk): TaskTab => {
         return {
           type: chunk.type,
@@ -117,5 +122,13 @@ export class TaskComponent implements OnInit, OnDestroy {
       .findIndex((tab: TaskTab) => tab.type === tabType && (id && tab.id === id));
 
     console.log(tabType, id, this.tabIndex, this.tabs[this.tabIndex]);
+  }
+
+  toggleEditLabel(): void {
+    this.editLabel = true;
+  }
+
+  saveLabel() {
+    // TODO
   }
 }

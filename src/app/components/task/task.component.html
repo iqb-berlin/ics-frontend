@@ -2,9 +2,16 @@
   <mat-tab-group (selectedTabChange)="onTabChange($event)" [(selectedIndex)]="tabIndex">
     @for (tab of tabs; track tab; let index = $index) {
       <mat-tab [label]="tab.label" [bodyClass]="[tab.type, 'tab-body']" [labelClass]="[tab.type, 'tab-label']">
-        @if (tab.id === 'overview') {
-          <h3>{{ds.task.label || 'Task #' + ds.task.id}}</h3>
+        @if (tab.type === 'overview') {
+          <h3>
 
+            @if (editLabel) {
+              <button mat-mini-fab (click)="saveLabel()"><mat-icon>save</mat-icon></button>
+            } @else {
+              <button mat-mini-fab (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button>
+            }
+
+          </h3>
           <table>
             <tr>
               <td>Id</td>
@@ -40,9 +47,11 @@
               }
             </tbody>
           </table>
-        } @else if (tab.id === 'config') {
+        } @else if (tab.type === 'train') {
           <app-optionset />
-        } @else if (tab.id === 'add') {
+        } @else if (tab.type === 'code') {
+          SELECT MODEL
+        } @else if (tab.type === 'add') {
           <app-upload (added)="changeTab($event.type, $event.id)" />
         } @else {
           <app-datatable />

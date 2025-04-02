@@ -2,19 +2,16 @@ import { Component } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { MatAnchor, MatButton } from '@angular/material/button';
 import { StatusPipe } from '../../pipe/status.pipe';
-import {TaskType, TaskTypes} from '../../interfaces/api.interfaces';
+import { TaskType, TaskTypes } from '../../interfaces/api.interfaces';
 import { Router } from '@angular/router';
-import {KeyValuePipe} from '@angular/common';
-import {isA} from '../../interfaces/iqb.interfaces';
+import { isA } from '../../interfaces/iqb.interfaces';
 
 @Component({
   selector: 'app-header',
   imports: [
     MatAnchor,
     MatButton,
-    StatusPipe,
-    KeyValuePipe
-
+    StatusPipe
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'

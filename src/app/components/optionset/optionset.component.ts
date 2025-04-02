@@ -6,7 +6,7 @@ import { JsonFormControl } from '../../interfaces/optionset.interfaces';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { ControlComponent } from '../control/control.component';
 import { getValues, JSONSchemaToJSONForms } from '../../functions/optionset';
-import {JSONSchema, TaskTypeInfo} from '../../interfaces/api.interfaces';
+import { isTaskInstructions, JSONSchema } from '../../interfaces/api.interfaces';
 
 @Component({
   selector: 'app-optionset',
@@ -22,7 +22,7 @@ import {JSONSchema, TaskTypeInfo} from '../../interfaces/api.interfaces';
 export class OptionsetComponent {
   errors: any[] = [];
   controls: JsonFormControl[] = [];
-  instructions: TaskTypeInfo | null = null
+  instructionsSchema: JSONSchema | null = null
 
   constructor(
     public ds: DataService
@@ -33,11 +33,22 @@ export class OptionsetComponent {
   loadSchema(): void {
     this.errors = [];
     this.controls = [];
-    this.instructions = null;
+    this.instructionsSchema = null;
+    if (!this.ds.task) return;
     try {
-      this.instructions = this.ds.serviceInfo?.taskTypes[this.ds.task?.type || 'unknown'] || null;
-      if (!this.instructions) throw `No schema given for: ${this.ds.task?.type}`;
-      this.controls = JSONSchemaToJSONForms(this.instructions.instructionsSchema, this.ds.task?.instructions || {});
+      this.instructionsSchema = this.ds.serviceInfo?.instructionsSchema || null;
+      if (this.ds.task.type === 'train') {
+        if (!this.instructionsSchema) throw `No schema given for: ${this.ds.task?.type}`;
+        const instructions  = isTaskInstructions(this.ds.task.instructions) ? this.ds.task.instructions : {};
+        this.controls = JSONSchemaToJSONForms(this.instructionsSchema, instructions);
+      }
+      if (this.ds.task.type === 'code') {
+        if (typeof this.ds.task.instructions !== 'string') throw `Instructions of a Code-Task must contain an coderId`;
+
+      }
+
+
+
     } catch (e) {
       this.errors.push(e);
     }

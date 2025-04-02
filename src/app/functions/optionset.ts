@@ -5,6 +5,7 @@ import {
   JSONSchemaWithProperties
 } from '../interfaces/optionset.interfaces';
 import { isMapOf } from '../interfaces/iqb.interfaces';
+import { TaskInstructions } from '../interfaces/api.interfaces';
 
 export const chooseControl = (prop: JsonSchemaProperty): string => {
   if (prop.enum) {
@@ -74,7 +75,7 @@ export const setValue = (control: JsonFormControl, value: unknown): JsonFormCont
   }
 }
 
-export const JSONSchemaToJSONForms = (schema: unknown, values: {[key: string]: unknown}): JsonFormControl[] =>
+export const JSONSchemaToJSONForms = (schema: unknown, values: TaskInstructions): JsonFormControl[] =>
   isSchemaWithProperties(schema) ?
     Object.entries(schema.properties)
       .map(([id, prop]: [string, JsonSchemaProperty]): [string, JsonSchemaProperty] =>
