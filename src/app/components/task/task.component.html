@@ -3,15 +3,15 @@
     @for (tab of tabs; track tab; let index = $index) {
       <mat-tab [label]="tab.label" [bodyClass]="[tab.type, 'tab-body']" [labelClass]="[tab.type, 'tab-label']">
         @if (tab.type === 'overview') {
-          <h3>
-
-            @if (editLabel) {
-              <button mat-mini-fab (click)="saveLabel()"><mat-icon>save</mat-icon></button>
-            } @else {
-              <button mat-mini-fab (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button>
-            }
-
-          </h3>
+          @if (editLabel || !ds.task.label) {
+            <mat-form-field>
+              <mat-label>Label</mat-label>
+              <input matInput [(ngModel)]="newLabel">
+            </mat-form-field>
+            <button mat-mini-fab (click)="saveLabel()"><mat-icon>save</mat-icon></button>
+          } @else {
+            <h3>{{ds.task.label}} <button mat-mini-fab (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button></h3>
+          }
           <table>
             <tr>
               <td>Id</td>
@@ -38,7 +38,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (event of ds.task.events; track $index) {
+              @for (event of ds.task.events | sortEvents; track $index ) {
                 <tr>
                   <td>{{event.timestamp * 1000 | date : 'short'}}</td>
                   <td>{{event.status}}</td>
@@ -50,7 +50,7 @@
         } @else if (tab.type === 'train') {
           <app-optionset />
         } @else if (tab.type === 'code') {
-          SELECT MODEL
+          <app-coder-select />
         } @else if (tab.type === 'add') {
           <app-upload (added)="changeTab($event.type, $event.id)" />
         } @else {

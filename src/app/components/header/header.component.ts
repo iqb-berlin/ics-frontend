@@ -39,6 +39,7 @@ export class HeaderComponent {
 
   async delete(): Promise<void> {
     await this.ds.deleteTask();
+    console.log('deleteh');
     await this.router.navigate(['tasks/']);
   }
 }

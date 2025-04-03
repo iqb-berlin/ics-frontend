@@ -2,7 +2,16 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DatatableComponent } from '../datatable/datatable/datatable.component';
 import { OptionsetComponent } from '../optionset/optionset.component';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap, distinctUntilChanged, filter, interval, map, of, Subscription, switchMap } from 'rxjs';
+import {
+  concatMap,
+  distinctUntilChanged,
+  filter,
+  interval,
+  map,
+  of, startWith,
+  Subscription,
+  switchMap
+} from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { FormsModule } from '@angular/forms';
 import { contains, isA } from '../../interfaces/iqb.interfaces';
@@ -15,6 +24,11 @@ import { BackendService } from '../../services/backend.service';
 import { UploadComponent } from '../upload/upload.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatMiniFabButton } from '@angular/material/button';
+import { MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatLabel } from '@angular/material/select';
+import { CoderSelectComponent } from '../coder-select/coder-select.component';
+import { SortEventsPipe } from '../../pipe/sort-events.pipe';
 
 @Component({
   selector: 'app-task',
@@ -28,7 +42,12 @@ import { MatMiniFabButton } from '@angular/material/button';
     DatePipe,
     UploadComponent,
     MatIcon,
-    MatMiniFabButton
+    MatMiniFabButton,
+    MatFormField,
+    MatInput,
+    MatLabel,
+    CoderSelectComponent,
+    SortEventsPipe
   ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
@@ -47,6 +66,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   protected tabs: TaskTab[] = [];
   protected tabIndex: number = 0;
   private readonly subscriptions: { [key: string]: Subscription } = { };
+  protected newLabel: string = '';
 
   ngOnInit(): void {
     this.subscriptions['route'] = this.route.params
@@ -62,8 +82,9 @@ export class TaskComponent implements OnInit, OnDestroy {
         ),
         concatMap(taskId => this.ds.getTask(taskId))
       ).subscribe(task => {
-        this.subscriptions['polling'] = interval(1000)
+        this.subscriptions['polling'] = interval(5000)
           .pipe(
+            startWith(0),
             filter(() => !this.tabIndex),
             switchMap(() => this.ds.task ? this.ds.getTask(this.ds.task.id) : of(null)),
             filter(t => !!t),
@@ -125,10 +146,13 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   toggleEditLabel(): void {
-    this.editLabel = true;
+    this.editLabel = !this.editLabel;
+    this.newLabel = this.ds.task?.label || this.ds.task?.type || '';
   }
 
-  saveLabel() {
-    // TODO
+  async saveLabel() {
+    this.editLabel = false;
+    if (this.ds.task?.label === this.newLabel) return;
+    await this.ds.updateTask({ label: this.newLabel });
   }
 }

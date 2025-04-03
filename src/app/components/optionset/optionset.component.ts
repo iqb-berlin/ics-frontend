@@ -6,7 +6,7 @@ import { JsonFormControl } from '../../interfaces/optionset.interfaces';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { ControlComponent } from '../control/control.component';
 import { getValues, JSONSchemaToJSONForms } from '../../functions/optionset';
-import { isTaskInstructions, JSONSchema } from '../../interfaces/api.interfaces';
+import { isServiceInfo, isTaskInstructions, JSONSchema } from '../../interfaces/api.interfaces';
 
 @Component({
   selector: 'app-optionset',
@@ -25,7 +25,7 @@ export class OptionsetComponent {
   instructionsSchema: JSONSchema | null = null
 
   constructor(
-    public ds: DataService
+    protected ds: DataService
   ) {
     this.loadSchema();
   }
@@ -56,8 +56,9 @@ export class OptionsetComponent {
 
   submit() {
     const values = getValues(this.controls);
-    this.ds.patchTaskInstructions(values);
+    this.ds.updateTask({ instructions: values });
   }
 
   protected readonly Object = Object;
+  protected readonly isServiceInfo = isServiceInfo;
 }

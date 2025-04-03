@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Service } from '../interfaces/interfaces';
-import {ResponseRow, ServiceInfo, Task, TaskSeed, TaskType} from '../interfaces/api.interfaces';
+import { Coder, ResponseRow, ServiceInfo, Task, TaskSeed, TaskUpdate } from '../interfaces/api.interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
 import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
@@ -17,6 +17,7 @@ export class DataService {
   serviceInfo: ServiceInfo | null = null;
   task: Task | null = null;
   data: ResponseRow[] = [];
+  coders: Coder[] = [];
 
   constructor(
     private readonly bs: BackendService
@@ -71,34 +72,27 @@ export class DataService {
 
   startEncoding(): void {
     if (!this.task) return;
-    this.bs.patchTask(this.task.id)
+    this.bs.postTask(this.task.id, 'commit')
       .subscribe(task => {
         this.task = task;
       });
   }
 
-  addTask(seed: TaskSeed): Promise<boolean> | boolean {
-    return lastValueFrom(
-      this.bs.putTask(seed)
-        .pipe(map(task => {
-          this.task = task;
-          return true;
-        }))
-    );
-  }
-
-  patchTaskInstructions(instructions: unknown): void {
-    if (!this.task) {
-      return;
-    }
-    this.bs.patchTaskInstructions(this.task.id, instructions)
-      .subscribe(task => {
-        this.task = task;
-      });
+  async addTask(seed: TaskSeed): Promise<void> {
+    this.task = await lastValueFrom(this.bs.putTask(seed));
   }
 
   async deleteTask(): Promise<void> {
     if (!this.task) return;
     return lastValueFrom(this.bs.deleteTask(this.task.id));
+  }
+
+  async updateTask(update: TaskUpdate): Promise<void> {
+    if (!this.task) return;
+    this.task = await lastValueFrom(this.bs.patchTask(this.task.id, update));
+  }
+
+  async updateCoders() {
+    this.coders = await lastValueFrom(this.bs.getCoders());
   }
 }

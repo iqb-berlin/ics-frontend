@@ -8,6 +8,6 @@ body, html {
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-.tab-body.config, .tab-body.overview {
+.tab-body.code, .tab-body.overview, .tab-body.train {
   margin: 1em;
 }

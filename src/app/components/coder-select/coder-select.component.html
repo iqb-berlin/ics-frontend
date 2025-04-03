@@ -1,0 +1,8 @@
+<mat-form-field>
+  <mat-label>Select Coder</mat-label>
+  <mat-select>
+    @for (coder of ds.coders; track $index) {
+      <option [value]="coder.id">{{coder.label}}</option>
+    }
+  </mat-select>
+</mat-form-field>

@@ -1,2 +1,4 @@
-<button type="button" mat-raised-button (click)="fileInput.click()">Choose File</button>
-<input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept="application/json">
+<div style="margin: 1em;">
+  <button type="button" mat-raised-button (click)="fileInput.click()">Choose File</button>
+  <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept="application/json">
+</div>

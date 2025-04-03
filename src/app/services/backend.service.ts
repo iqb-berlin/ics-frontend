@@ -6,8 +6,7 @@ import {
   isServiceInfo,
   ResponseRow,
   isResponseRowList,
-  TaskType,
-  DataChunk, isDataChunk, TaskSeed
+  DataChunk, isDataChunk, TaskSeed, TaskUpdate, isCoder, Coder, TaskAction
 } from '../interfaces/api.interfaces';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, Observable, tap } from 'rxjs';
@@ -66,8 +65,8 @@ export class BackendService {
       .pipe(checkCondition(isDataChunk));
   }
 
-  patchTask(taskId: string): Observable<Task> {
-    return this.http.patch<Task>(`${this.url}/tasks/${taskId}`, { action: 'commit' })
+  postTask(taskId: string, action: TaskAction): Observable<Task> {
+    return this.http.post<Task>(`${this.url}/tasks/${taskId}/${action}`, {})
       .pipe(checkCondition(isTask));
   }
 
@@ -76,12 +75,21 @@ export class BackendService {
       .pipe(checkCondition(isTask));
   }
 
-  patchTaskInstructions(taskId: string, instructions: unknown): Observable<Task> {
-    return this.http.patch<void>(`${this.url}/tasks/${taskId}/instructions`, instructions)
+  deleteTask(taskId: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/tasks/${taskId}`);
+  }
+
+  patchTask(taskId: string, update: TaskUpdate): Observable<Task> {
+    return this.http.patch<Task>(`${this.url}/tasks/${taskId}`, update)
       .pipe(checkCondition(isTask));
   }
 
-  deleteTask(taskId: string): Observable<void> {
-    return this.http.delete<void>(`${this.url}/tasks/${taskId}`);
+  getCoders(): Observable<Coder[]> {
+    return this.http.get<Task>(`${this.url}/coders/`)
+      .pipe(checkCondition(r => isArrayOf<Coder>(r, isCoder)));
+  }
+
+  deleteCoder(coderId: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/coders/${coderId}`);
   }
 }
