@@ -28,7 +28,6 @@ import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatLabel } from '@angular/material/select';
 import { CoderSelectComponent } from '../coder-select/coder-select.component';
-import { SortEventsPipe } from '../../pipe/sort-events.pipe';
 
 @Component({
   selector: 'app-task',
@@ -46,8 +45,7 @@ import { SortEventsPipe } from '../../pipe/sort-events.pipe';
     MatFormField,
     MatInput,
     MatLabel,
-    CoderSelectComponent,
-    SortEventsPipe
+    CoderSelectComponent
   ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
@@ -82,7 +80,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         ),
         concatMap(taskId => this.ds.getTask(taskId))
       ).subscribe(task => {
-        this.subscriptions['polling'] = interval(5000)
+        this.subscriptions['polling'] = interval(2000)
           .pipe(
             startWith(0),
             filter(() => !this.tabIndex),
@@ -91,12 +89,7 @@ export class TaskComponent implements OnInit, OnDestroy {
             distinctUntilChanged((t1: Task, t2: Task) => (StatusPipe.getStatus(t1) === StatusPipe.getStatus(t2)) && (t1.data.length === t2.data.length))
           )
           .subscribe(task => {
-            const status = StatusPipe.getStatus(task);
             this.collectTabs(task);
-            if (['finish', 'fail', 'abort'].includes(status)) {
-              this.subscriptions['polling'].unsubscribe();
-              delete this.subscriptions['polling'];
-            }
           });
       });
 

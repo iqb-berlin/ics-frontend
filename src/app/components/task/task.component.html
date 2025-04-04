@@ -38,7 +38,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (event of ds.task.events | sortEvents; track $index ) {
+              @for (event of ds.task.events; track $index ) {
                 <tr>
                   <td>{{event.timestamp * 1000 | date : 'short'}}</td>
                   <td>{{event.status}}</td>

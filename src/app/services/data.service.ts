@@ -1,11 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Service } from '../interfaces/interfaces';
-import { Coder, ResponseRow, ServiceInfo, Task, TaskSeed, TaskUpdate } from '../interfaces/api.interfaces';
+import {
+  Coder,
+  ResponseRow,
+  ServiceInfo,
+  Task,
+  TaskEventTypes,
+  TaskSeed,
+  TaskUpdate
+} from '../interfaces/api.interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
 import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { isA } from '../interfaces/iqb.interfaces';
+import { compareEvents, sortEvents } from '../functions/api-helper.functions';
 
 
 @Injectable({
@@ -15,9 +24,19 @@ export class DataService {
   readonly services: { [key: string]: Service } = Services;
   selectedService: keyof typeof Services | null | undefined = null; // undefined as starting value breaks the binding
   serviceInfo: ServiceInfo | null = null;
-  task: Task | null = null;
   data: ResponseRow[] = [];
   coders: Coder[] = [];
+
+  private _task: Task | null = null;
+
+  set task(task: Task | null) {
+    this._task = task;
+    this._task?.events.sort(compareEvents('asc'))
+  }
+
+  get task(): Task | null {
+    return this._task;
+  }
 
   constructor(
     private readonly bs: BackendService
@@ -58,38 +77,38 @@ export class DataService {
   getTask(taskId: string): Observable<Task> {
     return this.bs.getTask(taskId)
       .pipe(
-        tap(task => { this.task = task; })
+        tap(task => { this._task = task; })
       );
   }
 
   getTaskData(chunkId: string): void {
-    if (!this.task) return;
-    this.bs.getTaskData(this.task.id, chunkId)
+    if (!this._task) return;
+    this.bs.getTaskData(this._task.id, chunkId)
       .subscribe(data => {
         this.data = data;
       });
   }
 
   startEncoding(): void {
-    if (!this.task) return;
-    this.bs.postTask(this.task.id, 'commit')
+    if (!this._task) return;
+    this.bs.postTask(this._task.id, 'commit')
       .subscribe(task => {
-        this.task = task;
+        this._task = task;
       });
   }
 
   async addTask(seed: TaskSeed): Promise<void> {
-    this.task = await lastValueFrom(this.bs.putTask(seed));
+    this._task = await lastValueFrom(this.bs.putTask(seed));
   }
 
   async deleteTask(): Promise<void> {
-    if (!this.task) return;
-    return lastValueFrom(this.bs.deleteTask(this.task.id));
+    if (!this._task) return;
+    return lastValueFrom(this.bs.deleteTask(this._task.id));
   }
 
   async updateTask(update: TaskUpdate): Promise<void> {
-    if (!this.task) return;
-    this.task = await lastValueFrom(this.bs.patchTask(this.task.id, update));
+    if (!this._task) return;
+    this._task = await lastValueFrom(this.bs.patchTask(this._task.id, update));
   }
 
   async updateCoders() {
