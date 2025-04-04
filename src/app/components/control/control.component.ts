@@ -1,13 +1,14 @@
 import { Component, Input } from '@angular/core';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatSlider } from '@angular/material/slider';
 import { JsonFormControl } from '../../interfaces/optionset.interfaces';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatMiniFabButton } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { MatCard, MatCardContent, MatCardFooter, MatCardHeader } from '@angular/material/card';
 
 @Component({
   selector: 'app-control',
@@ -21,7 +22,13 @@ import { FormsModule } from '@angular/forms';
     MatSelect,
     MatSlider,
     MatButton,
-    FormsModule
+    MatHint,
+    FormsModule,
+    MatCard,
+    MatCardHeader,
+    MatCardContent,
+    MatCardFooter,
+    MatMiniFabButton
   ],
   templateUrl: './control.component.html',
   styleUrl: './control.component.css'

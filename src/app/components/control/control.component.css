@@ -10,3 +10,8 @@ form, mat-form-field {
   position: absolute;
   right: 0;
 }
+
+mat-card {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}

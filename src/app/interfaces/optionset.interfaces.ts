@@ -33,6 +33,7 @@ export interface JsonFormControl {
   readonly options: JsonFormControlOptions;
   readonly validators: JsonFormValidators;
   readonly fieldType: string | undefined;
+  readonly description: string | undefined;
 }
 
 export interface JsonSchemaProperty {
@@ -40,11 +41,13 @@ export interface JsonSchemaProperty {
   required: string[];
   properties: { [key: string]: JsonSchemaProperty };
   title?: string;
+  description?: string;
   items?: {
     type: string;
   },
   enum: string[];
   pattern?: string;
+  anyOf?: unknown[];
 }
 
 export interface JSONSchemaWithProperties {
