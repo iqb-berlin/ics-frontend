@@ -1,10 +1,9 @@
 import {
   JsonFormControl,
-  JsonFormControlValueType,
   JsonSchemaProperty,
   JSONSchemaWithProperties
 } from '../interfaces/optionset.interfaces';
-import { contains, isCarrier, isMapOf } from '../interfaces/iqb.interfaces';
+import { contains, isMapOf } from '../interfaces/iqb.interfaces';
 import { TaskInstructions } from '../interfaces/api.interfaces';
 
 const getJsonSchemaType = (prop: JsonSchemaProperty): { type: string, optional?: true } => {
@@ -80,10 +79,17 @@ export const resolveReferences = (prop: JsonSchemaProperty, schema: JSONSchemaWi
 export const setValue = (control: JsonFormControl, value: unknown): JsonFormControl => {
   switch (control.fieldType) {
     case 'string':
-      return {...control, value: value ? String(value) : '' };
+      return {
+        ...control,
+        value: (control.validators.required) ? String(value) : (control.value == null ? null : String(control.value))
+      };
     case 'integer':
     case 'number':
-      return {...control, value: value ? Number(value) : 0 };
+      console.log(control.validators.required, value);
+      return {
+        ...control,
+        value: (control.validators.required) ? Number(value) : (control.value == null ? null : Number(control.value))
+      };
     case 'boolean':
       return {...control, value: Boolean(value) };
     case 'array':
@@ -116,6 +122,7 @@ export const JSONSchemaToJSONForms = (schema: unknown, values: TaskInstructions)
     : [];
 
 const getValue = (control: JsonFormControl): unknown => {
+  if (!control.validators.required && control.value == null) return null;
   switch (control.fieldType) {
     case 'string':
       return String(control.value);
