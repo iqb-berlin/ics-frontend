@@ -111,7 +111,7 @@ export class DataService {
     this._task = await lastValueFrom(this.bs.patchTask(this._task.id, update));
   }
 
-  async updateCoders() {
+  async updateCoders(): Promise<void> {
     this.coders = await lastValueFrom(this.bs.getCoders());
   }
 }
