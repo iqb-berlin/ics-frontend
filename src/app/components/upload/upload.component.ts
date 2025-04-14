@@ -1,9 +1,11 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { isResponseList } from '../../interfaces/iqb.interfaces';
-import { DataChunk, isResponseRowList, ResponseRow } from '../../interfaces/api.interfaces';
+import {isA, isResponseList, isResponseValueType, ResponseStatusList} from '../../interfaces/iqb.interfaces';
+import { DataChunk, isResponseRowList, ResponseRow, TaskType } from '../../interfaces/api.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { DataService } from '../../services/data.service';
+import {inferSchema, initParser} from 'udsv';
+import {ResponseStatusType} from '@iqb/responses/coding-interfaces';
 
 @Component({
   selector: 'app-upload',
@@ -28,6 +30,7 @@ export class UploadComponent {
   }
 
   onFileSelected($event: Event): void {
+
     if (
       !('target' in $event) ||
       ($event.target == null) ||
@@ -41,11 +44,11 @@ export class UploadComponent {
     const file: File = $event.target.files[0];
 
     const reader = new FileReader();
-    reader.onload = e => this.onFileLoad(e);
+    reader.onload = e => this.onFileLoad(e, file, this.ds.task?.type || 'unknown');
     reader.readAsArrayBuffer(file);
   }
 
-  onFileLoad($event: ProgressEvent<FileReader>) {
+  onFileLoad($event: ProgressEvent<FileReader>, file: File, taskType: TaskType) {
     if (!this.ds.task) throw new Error('No task found.');
     if (
       !('target' in $event) ||
@@ -53,11 +56,12 @@ export class UploadComponent {
       !('result' in $event.target) ||
       !($event.target.result instanceof ArrayBuffer)
     ) {
-      throw new Error('Upload error (1)');
+      throw new Error(`Upload error (1): ${file.name}`);
     }
 
     const text = new TextDecoder().decode($event.target.result);
-    const fileContent = this.parseFile(text);
+    const fileContent = this.parseFile(file.name, text, taskType);
+    console.log(fileContent);
     const taskId = this.ds.task.id;
     this.bs.putTaskData(taskId, fileContent)
       .subscribe(chunk => {
@@ -70,7 +74,13 @@ export class UploadComponent {
       });
   }
 
-  parseFile(content: string): ResponseRow[] {
+  parseFile(fileName: string, content: string, taskType: TaskType): ResponseRow[] {
+    if (fileName.toLowerCase().endsWith('.json')) return this.parseJsonFile(content);
+    if (fileName.toLowerCase().endsWith('.tsv') || fileName.toLowerCase().endsWith('.csv')) return this.parseCSVFile(content, taskType);
+    throw new Error(`Unknown File extension: ${fileName}`);
+  }
+
+  parseJsonFile(content: string): ResponseRow[] {
     const contentJson: unknown = JSON.parse(content);
     if (isResponseList(contentJson)) {
       return contentJson.map(row => ({...row, setId: 'auto'}));
@@ -79,5 +89,23 @@ export class UploadComponent {
       return contentJson;
     }
     throw new Error('File does not contain responses');
+  }
+
+  private parseCSVFile(content: string, taskType: TaskType): ResponseRow[] {
+    const schema = inferSchema(content, { trim : true });
+    if (!schema.cols.find(col => col.name === 'value')) throw new Error("no value column given");
+    if (!schema.cols.find(col => col.name === 'code') && (taskType === 'train')) throw new Error("no code column given");  // TODO only for training
+    const parser = initParser(schema);
+    const typedObjs  = parser.typedObjs(content);
+    return typedObjs
+      .map((t: object): ResponseRow => ({
+        setId: (('setId' in t) && (typeof t.setId === 'string')) ? t.setId : 'auto',
+        id: (('id' in t) && (typeof t.id === 'string')) ? t.id : 'auto',
+        status: (('status' in t) && (isA<ResponseStatusType>(ResponseStatusList, t.status)))   ? t.status : 'VALUE_CHANGED',
+        value: (('value' in t) && isResponseValueType(t.value)) ? t.value : '',
+        subform: (('subform' in t) && (typeof t.subform === 'string')) ? t.subform : undefined,
+        score: (('score' in t) && (typeof t.score === 'number')) ? t.score : undefined,
+        code: (('code' in t) && (typeof t.code === 'number')) ? t.code : -Infinity
+      }));
   }
 }

@@ -134,8 +134,6 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.collectTabs(this.ds.task);
     this.tabIndex = this.tabs
       .findIndex((tab: TaskTab) => tab.type === tabType && (id && tab.id === id));
-
-    console.log(tabType, id, this.tabIndex, this.tabs[this.tabIndex]);
   }
 
   toggleEditLabel(): void {

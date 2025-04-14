@@ -5,7 +5,6 @@ import {
   ResponseRow,
   ServiceInfo,
   Task,
-  TaskEventTypes,
   TaskSeed,
   TaskUpdate
 } from '../interfaces/api.interfaces';
@@ -14,7 +13,7 @@ import { Services } from '../services';
 import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { isA } from '../interfaces/iqb.interfaces';
-import { compareEvents, sortEvents } from '../functions/api-helper.functions';
+import { compareEvents } from '../functions/api-helper.functions';
 
 
 @Injectable({
@@ -89,12 +88,12 @@ export class DataService {
       });
   }
 
-  startEncoding(): void {
+  async commitTask(): Promise<void> {
     if (!this._task) return;
-    this.bs.postTask(this._task.id, 'commit')
-      .subscribe(task => {
+    return lastValueFrom(this.bs.postTask(this._task.id, 'commit')
+      .pipe(map(task => {
         this._task = task;
-      });
+      })));
   }
 
   async addTask(seed: TaskSeed): Promise<void> {

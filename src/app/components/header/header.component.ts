@@ -23,8 +23,10 @@ export class HeaderComponent {
   ) {
   }
 
-  commit(): void {
-    this.ds.startEncoding();
+  async commit(): Promise<void> {
+    await this.ds.commitTask();
+    if (!this.ds.task) return;
+    await this.router.navigate(['task', this.ds.task.id, 'overview']);
   }
 
   async addTask(type: string): Promise<void> {
