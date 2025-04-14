@@ -9,20 +9,24 @@
 
 @if (ds.selectedService) {
 
+
   @if (ds.task) {
     <span class="section">
-      <a mat-button href="/tasks">Task:</a>
-      <span class="mdc-button mat-mdc-button-base">{{ds.task.label || ds.task.id}} - {{ds.task | status}}d</span>
+      <a mat-button href="/tasks">Select other Task</a>
+    </span>
+    <span class="section">
+      <span class="mdc-button mat-mdc-button-base">Task: {{ds.task.label || ds.task.id}} - {{ds.task | status}}d</span>
       <button mat-button (click)="commit()">Commit</button>
       <button mat-button (click)="delete()">Delete</button>
     </span>
-  }
+  } @else {
 
-  <span class="section">
-    <span class="mdc-button mat-mdc-button-base">New Task:</span>
-    <button mat-button (click)="addTask('train')">Train</button>
-    <button mat-button (click)="addTask('code')">Code</button>
-  </span>
+    <span class="section">
+      <span class="mdc-button mat-mdc-button-base">New Task:</span>
+      <button mat-button (click)="addTask('train')">Train</button>
+      <button mat-button (click)="addTask('code')">Code</button>
+    </span>
+  }
 }
 
 
