@@ -1,0 +1,14 @@
+.text,
+.wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.text {
+  padding-left: 2px
+}
+
+
+.bar {
+  position: absolute
+}

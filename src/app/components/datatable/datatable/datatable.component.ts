@@ -11,6 +11,7 @@ import {
 import { DataService } from '../../../services/data.service';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { ResponseRow } from '../../../interfaces/api.interfaces';
+import {ResponseCodeComponent} from '../../response-code/response-code.component';
 
 @Component({
   selector: 'app-datatable',
@@ -26,7 +27,8 @@ import { ResponseRow } from '../../../interfaces/api.interfaces';
     MatHeaderRowDef,
     MatRowDef,
     MatSortHeader,
-    MatSort
+    MatSort,
+    ResponseCodeComponent
   ],
   templateUrl: './datatable.component.html',
   styleUrl: './datatable.component.css'
