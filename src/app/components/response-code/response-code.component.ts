@@ -17,7 +17,8 @@ export class ResponseCodeComponent {
     return isResponseRow(value) ? value : undefined;
   }}) response: ResponseRow | undefined;
 
-  color(i: number): string {
+  color(code: number | string | undefined): string {
+    const i = Number(code);
     const q = i % 3;
     const r = i % 6;
     const p = (r + 1) % 3
