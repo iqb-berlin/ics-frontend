@@ -30,7 +30,7 @@ export class DataService {
 
   set task(task: Task | null) {
     this._task = task;
-    this._task?.events.sort(compareEvents('asc'))
+    this._task?.events.sort(compareEvents('asc'));
   }
 
   get task(): Task | null {
@@ -76,38 +76,38 @@ export class DataService {
   getTask(taskId: string): Observable<Task> {
     return this.bs.getTask(taskId)
       .pipe(
-        tap(task => { this._task = task; })
+        tap(task => { this.task = task; })
       );
   }
 
   getTaskData(chunkId: string): void {
-    if (!this._task) return;
-    this.bs.getTaskData(this._task.id, chunkId)
+    if (!this.task) return;
+    this.bs.getTaskData(this.task.id, chunkId)
       .subscribe(data => {
         this.data = data;
       });
   }
 
   async commitTask(): Promise<void> {
-    if (!this._task) return;
-    return lastValueFrom(this.bs.postTask(this._task.id, 'commit')
+    if (!this.task) return;
+    return lastValueFrom(this.bs.postTask(this.task.id, 'commit')
       .pipe(map(task => {
-        this._task = task;
+        this.task = task;
       })));
   }
 
   async addTask(seed: TaskSeed): Promise<void> {
-    this._task = await lastValueFrom(this.bs.putTask(seed));
+    this.task = await lastValueFrom(this.bs.putTask(seed));
   }
 
   async deleteTask(): Promise<void> {
-    if (!this._task) return;
-    return lastValueFrom(this.bs.deleteTask(this._task.id));
+    if (!this.task) return;
+    return lastValueFrom(this.bs.deleteTask(this.task.id));
   }
 
   async updateTask(update: TaskUpdate): Promise<void> {
-    if (!this._task) return;
-    this._task = await lastValueFrom(this.bs.patchTask(this._task.id, update));
+    if (!this.task) return;
+    this.task = await lastValueFrom(this.bs.patchTask(this.task.id, update));
   }
 
   async updateCoders(): Promise<void> {

@@ -42,7 +42,7 @@
                 <tr>
                   <td>{{event.timestamp * 1000 | date : 'short'}}</td>
                   <td>{{event.status}}</td>
-                  <td><pre>{{event.message}}</pre></td>
+                  <td><pre style="max-height: 7em; overflow-y: scroll">{{event.message}}</pre></td>
                 </tr>
               }
             </tbody>

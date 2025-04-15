@@ -85,7 +85,6 @@ export const setValue = (control: JsonFormControl, value: unknown): JsonFormCont
       };
     case 'integer':
     case 'number':
-      console.log(control.validators.required, value);
       return {
         ...control,
         value: (control.validators.required) ? Number(value) : (control.value == null ? null : Number(control.value))
