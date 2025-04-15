@@ -113,4 +113,8 @@ export class DataService {
   async updateCoders(): Promise<void> {
     this.coders = await lastValueFrom(this.bs.getCoders());
   }
+
+  async deleteCoder(coderId: string): Promise<void> {
+    await lastValueFrom(this.bs.deleteCoder(coderId));
+  }
 }

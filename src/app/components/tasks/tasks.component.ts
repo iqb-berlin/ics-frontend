@@ -41,7 +41,7 @@ export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
   protected readonly displayedColumns = ['id', 'type', 'status'];
   dataSource: MatTableDataSource<TaskOverview> = new MatTableDataSource();
-  subscriptions: { [key: string]: Subscription } = {};
+  private subscriptions: { [key: string]: Subscription } = {};
 
   constructor(
     protected readonly ds: DataService,

@@ -33,7 +33,7 @@ export class HeaderComponent {
     if (!isA<TaskType>(TaskTypes, type)) return;
     await this.ds.addTask({
       type,
-      label: '' // TODO
+      label: `new ${type} task`
     });
     if (!this.ds.task) return;
     await this.router.navigate(['task', this.ds.task.id]);
@@ -41,7 +41,6 @@ export class HeaderComponent {
 
   async delete(): Promise<void> {
     await this.ds.deleteTask();
-    console.log('deleteh');
     await this.router.navigate(['tasks/']);
   }
 }
