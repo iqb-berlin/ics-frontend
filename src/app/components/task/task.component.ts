@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DatatableComponent } from '../datatable/datatable/datatable.component';
+import { DatatableComponent } from '../datatable/datatable.component';
 import { OptionsetComponent } from '../optionset/optionset.component';
 import { ActivatedRoute } from '@angular/router';
 import {

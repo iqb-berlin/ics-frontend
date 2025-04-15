@@ -8,10 +8,10 @@ import {
   MatRow, MatRowDef,
   MatTable, MatTableDataSource
 } from '@angular/material/table';
-import { DataService } from '../../../services/data.service';
+import { DataService } from '../../services/data.service';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
-import { ResponseRow } from '../../../interfaces/api.interfaces';
-import {ResponseCodeComponent} from '../../response-code/response-code.component';
+import { ResponseRow } from '../../interfaces/api.interfaces';
+import {ResponseCodeComponent} from '../response-code/response-code.component';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatCard} from '@angular/material/card';
 import {FormsModule} from '@angular/forms';
