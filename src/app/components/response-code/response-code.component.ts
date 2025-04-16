@@ -1,6 +1,7 @@
 import {Component, Input} from '@angular/core';
-import {isResponseRow, ResponseRow} from '../../interfaces/api.interfaces';
 import {KeyValuePipe, PercentPipe} from '@angular/common';
+import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { isResponseRow } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
 
 @Component({
   selector: 'app-response-code',

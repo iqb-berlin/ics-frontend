@@ -1,18 +1,25 @@
 import { Injectable } from '@angular/core';
-import {
-  isTask,
-  ServiceInfo,
-  Task,
-  isServiceInfo,
-  ResponseRow,
-  isResponseRowList,
-  DataChunk, isDataChunk, TaskSeed, TaskUpdate, isCoder, Coder, TaskAction
-} from '../interfaces/api.interfaces';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, Observable, tap } from 'rxjs';
 import { checkCondition } from '../functions/checkCondition';
-import { isArrayOf } from '../interfaces/iqb.interfaces';
 import { ServiceConnection } from '../interfaces/interfaces';
+import {
+  Coder,
+  DataChunk,
+  ResponseRow,
+  ServiceInfo,
+  Task,
+  TaskAction,
+  TaskSeed, TaskUpdate
+} from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import {
+  isCoder,
+  isDataChunk,
+  isResponseRowList,
+  isServiceInfo,
+  isTask
+} from 'iqbspecs-coding-service/functions/ics-api.typeguards';
+import { isArrayOf } from 'iqbspecs-coding-service/functions/common.typeguards';
 
 @Injectable({
   providedIn: 'root'

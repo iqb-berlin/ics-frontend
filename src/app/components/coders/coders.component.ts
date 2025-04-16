@@ -8,10 +8,10 @@ import {
   MatTable,
   MatTableDataSource
 } from '@angular/material/table';
-import { Coder } from '../../interfaces/api.interfaces';
 import { DataService } from '../../services/data.service';
 import { MatButton } from '@angular/material/button';
-import { interval, Subscription, switchMap } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
+import { Coder } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 
 
 @Component({

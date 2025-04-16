@@ -1,19 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Service } from '../interfaces/interfaces';
-import {
-  Coder,
-  ResponseRow,
-  ServiceInfo,
-  Task,
-  TaskSeed,
-  TaskUpdate
-} from '../interfaces/api.interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
 import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { isA } from '../interfaces/iqb.interfaces';
 import { compareEvents } from '../functions/api-helper.functions';
+import {
+  Coder,
+  ResponseRow,
+  ServiceInfo,
+  Task, TaskSeed,
+  TaskUpdate
+} from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 
 
 @Injectable({

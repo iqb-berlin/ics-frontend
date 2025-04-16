@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Task, TaskEvent, TaskEventType, TaskEventTypes } from '../interfaces/api.interfaces';
-import { isA } from '../interfaces/iqb.interfaces';
 import { TaskStatus } from '../interfaces/interfaces';
+import { TaskEvent, TaskEventType, TaskEventTypes, Task } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 
 @Pipe({
   name: 'status'

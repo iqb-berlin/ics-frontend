@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { MatAnchor, MatButton } from '@angular/material/button';
 import { StatusPipe } from '../../pipe/status.pipe';
-import { TaskType, TaskTypes } from '../../interfaces/api.interfaces';
 import { Router } from '@angular/router';
-import { isA } from '../../interfaces/iqb.interfaces';
+import { TaskTypes, TaskType } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 
 @Component({
   selector: 'app-header',

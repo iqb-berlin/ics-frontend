@@ -1,11 +1,14 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import {isA, isResponseList, isResponseValueType, ResponseStatusList} from '../../interfaces/iqb.interfaces';
-import { DataChunk, isResponseRowList, ResponseRow, TaskType } from '../../interfaces/api.interfaces';
 import { BackendService } from '../../services/backend.service';
 import { DataService } from '../../services/data.service';
-import {inferSchema, initParser} from 'udsv';
-import {ResponseStatusType} from '@iqb/responses/coding-interfaces';
+import { inferSchema, initParser } from 'udsv';
+import { ResponseStatusType } from '@iqb/responses/coding-interfaces';
+import { ResponseRow, TaskType, DataChunk } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { isResponseList, isResponseValueType } from 'iqbspecs-coding-service/functions/iqb.typeguards';
+import { isResponseRowList } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
+import { ResponseStatusList, Response } from 'iqbspecs-coding-service/interfaces/iqb.interfaces';
+import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 
 @Component({
   selector: 'app-upload',
@@ -83,7 +86,7 @@ export class UploadComponent {
   parseJsonFile(content: string): ResponseRow[] {
     const contentJson: unknown = JSON.parse(content);
     if (isResponseList(contentJson)) {
-      return contentJson.map(row => ({...row, setId: 'auto'}));
+      return contentJson.map((row: Response): ResponseRow => ({...row, setId: 'auto'}));
     }
     if (isResponseRowList(contentJson)) {
       return contentJson;

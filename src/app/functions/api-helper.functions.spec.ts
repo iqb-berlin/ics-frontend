@@ -1,5 +1,5 @@
-import { TaskEvent, TaskEventTypes } from '../interfaces/api.interfaces';
 import { sortEvents } from './api-helper.functions';
+import { TaskEvent } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 
 describe('Api Helper', () => {
 

@@ -1,5 +1,4 @@
-import { TaskEventType, TaskType } from '../../../../autocoder-service/src/interfaces/api.interfaces';
-import { ChunkTypes, ServiceInfo, TaskTypes } from './api.interfaces';
+import { TaskEventType, TaskType, ChunkTypes, TaskTypes, ServiceInfo } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 
 export interface Service {
   readonly name: string;

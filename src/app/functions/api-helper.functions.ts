@@ -1,4 +1,4 @@
-import { TaskEvent, TaskEventTypes } from '../interfaces/api.interfaces';
+import { TaskEvent, TaskEventTypes } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 
 export const compareEvents = (direction: 'asc' | 'desc' = 'asc'): ((e1: TaskEvent, e2:TaskEvent) => -1 | 1)  => {
   const r: [(1 | -1), (1 | -1)] = direction === 'asc' ? [1, -1] : [-1, 1];

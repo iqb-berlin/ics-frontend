@@ -3,8 +3,8 @@ import {
   JsonSchemaProperty,
   JSONSchemaWithProperties
 } from '../interfaces/optionset.interfaces';
-import { contains, isMapOf } from '../interfaces/iqb.interfaces';
-import { TaskInstructions } from '../interfaces/api.interfaces';
+import { contains, isMapOf } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { TaskInstructions } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 
 const getJsonSchemaType = (prop: JsonSchemaProperty): { type: string, optional?: true } => {
   if (prop.type) return { type : prop.type };

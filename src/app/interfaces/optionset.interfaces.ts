@@ -1,5 +1,3 @@
-import { isArrayOf } from './iqb.interfaces';
-
 export interface JsonFormValidators {
   min?: number;
   max?: number;

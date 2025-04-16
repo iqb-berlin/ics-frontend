@@ -6,7 +6,8 @@ import { JsonFormControl } from '../../interfaces/optionset.interfaces';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { ControlComponent } from '../control/control.component';
 import { getValues, JSONSchemaToJSONForms } from '../../functions/optionset';
-import { isServiceInfo, isTaskInstructions, JSONSchema } from '../../interfaces/api.interfaces';
+import { JSONSchema } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { isTaskInstructions, isServiceInfo } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
 
 @Component({
   selector: 'app-optionset',

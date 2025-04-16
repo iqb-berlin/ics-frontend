@@ -14,10 +14,8 @@ import {
 } from 'rxjs';
 import { DataService } from '../../services/data.service';
 import { FormsModule } from '@angular/forms';
-import { contains, isA } from '../../interfaces/iqb.interfaces';
 import { MatTab, MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
 import { TabType, TaskTab } from '../../interfaces/interfaces';
-import { ChunkType, ChunkTypes, DataChunk, Task } from '../../interfaces/api.interfaces';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { DatePipe } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
@@ -28,6 +26,8 @@ import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatLabel } from '@angular/material/select';
 import { CoderSelectComponent } from '../coder-select/coder-select.component';
+import { ChunkType, ChunkTypes, DataChunk, Task } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 
 @Component({
   selector: 'app-task',
