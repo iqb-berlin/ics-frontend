@@ -12,6 +12,7 @@ import { DataService } from '../../services/data.service';
 import { MatButton } from '@angular/material/button';
 import { interval, Subscription } from 'rxjs';
 import { Coder } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import {MatTooltip} from '@angular/material/tooltip';
 
 
 @Component({
@@ -28,7 +29,8 @@ import { Coder } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
     MatHeaderRow,
     MatHeaderRowDef,
     MatRow,
-    MatRowDef
+    MatRowDef,
+    MatTooltip
   ],
   templateUrl: './coders.component.html',
   styleUrl: './coders.component.css'
@@ -44,7 +46,7 @@ export class CodersComponent implements OnInit, OnDestroy {
   ) {
     this.dataSource.sort = this.sort;
     this.dataSource.data = this.ds.coders;
-    this.displayedColumns = ['id', 'label', 'actions'];
+    this.displayedColumns = ['label', 'actions'];
   }
 
   ngOnInit(): void {
