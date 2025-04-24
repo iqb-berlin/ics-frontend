@@ -12,6 +12,7 @@
           } @else {
             <h3>{{ds.task.label}} <button mat-mini-fab (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button></h3>
           }
+
           <table>
             <tr>
               <td>Id</td>
@@ -23,9 +24,16 @@
             </tr>
             <tr>
               <td>Status</td>
-              <td>{{ds.task | status}}d</td>
+              <td>{{ds.status}}</td>
             </tr>
           </table>
+
+          <div>
+            @if (ds.status === 'finish') {
+              <button mat-button (click)="startCodingJob(ds.task?.coder || '')">Code with this model</button>
+            }
+          </div>
+
 
           <h3>Events:</h3>
 

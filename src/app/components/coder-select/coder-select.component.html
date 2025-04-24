@@ -1,6 +1,6 @@
 <mat-form-field style="width: 100%">
   <mat-label>Select Coder</mat-label>
-  <mat-select (selectionChange)="selectCoder($event)" >
+  <mat-select (selectionChange)="selectCoder($event)" [value]="ds.task?.coder">
     @for (coder of ds.coders; track $index) {
       <mat-option [value]="coder.id">{{coder.label}}</mat-option>
     }

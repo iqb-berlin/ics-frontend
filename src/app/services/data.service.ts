@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Service } from '../interfaces/interfaces';
+import {Service, TaskStatus} from '../interfaces/interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
 import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
@@ -12,6 +12,7 @@ import {
   Task, TaskUpdate,
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
+import {StatusPipe} from '../pipe/status.pipe';
 
 
 @Injectable({
@@ -25,14 +26,21 @@ export class DataService {
   coders: Coder[] = [];
 
   private _task: Task | null = null;
+  private _taskStatus: TaskStatus | null = null;
 
   set task(task: Task | null) {
     this._task = task;
-    this._task?.events.sort(compareEvents('asc'));
+    if (!this._task) return;
+    this._task.events.sort(compareEvents('asc'));
+    this._taskStatus = StatusPipe.getStatus(this._task);
   }
 
   get task(): Task | null {
     return this._task;
+  }
+
+  get status(): TaskStatus | null {
+    return this._taskStatus;
   }
 
   constructor(

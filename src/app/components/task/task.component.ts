@@ -21,7 +21,7 @@ import { DatePipe } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
 import { UploadComponent } from '../upload/upload.component';
 import { MatIcon } from '@angular/material/icon';
-import { MatMiniFabButton } from '@angular/material/button';
+import {MatButton, MatMiniFabButton} from '@angular/material/button';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatLabel } from '@angular/material/select';
@@ -37,7 +37,6 @@ import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguar
     FormsModule,
     MatTabGroup,
     MatTab,
-    StatusPipe,
     DatePipe,
     UploadComponent,
     MatIcon,
@@ -45,7 +44,8 @@ import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguar
     MatFormField,
     MatInput,
     MatLabel,
-    CoderSelectComponent
+    CoderSelectComponent,
+    MatButton
   ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
@@ -145,5 +145,13 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.editLabel = false;
     if (this.ds.task?.label === this.newLabel) return;
     await this.ds.updateTask({ label: this.newLabel });
+  }
+
+  async startCodingJob(coderId: string): Promise<void> {
+    await this.ds.addTask({
+      label: `Coding task with ${coderId}`,
+      type: 'code',
+      coder: coderId
+    });
   }
 }

@@ -8,7 +8,7 @@ import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 })
 export class StatusPipe implements PipeTransform {
   static getLastEvent(task: Task): TaskEvent | undefined {
-    return task.events[0];
+    return task.events[task.events.length - 1];
   }
 
   static getStatus(task: Task): TaskStatus {
