@@ -10,7 +10,7 @@ import {
   ServiceInfo,
   Task,
   TaskAction,
-  TaskSeed, TaskUpdate
+  TaskUpdate
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import {
   isCoder,
@@ -77,7 +77,7 @@ export class BackendService {
       .pipe(checkCondition(isTask));
   }
 
-  putTask(seed: TaskSeed): Observable<Task> {
+  putTask(seed: TaskUpdate): Observable<Task> {
     return this.http.put<Task>(`${this.url}/tasks`, seed)
       .pipe(checkCondition(isTask));
   }

@@ -9,8 +9,7 @@ import {
   Coder,
   ResponseRow,
   ServiceInfo,
-  Task, TaskSeed,
-  TaskUpdate
+  Task, TaskUpdate,
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 
@@ -95,7 +94,7 @@ export class DataService {
       })));
   }
 
-  async addTask(seed: TaskSeed): Promise<void> {
+  async addTask(seed: TaskUpdate): Promise<void> {
     this.task = await lastValueFrom(this.bs.putTask(seed));
   }
 

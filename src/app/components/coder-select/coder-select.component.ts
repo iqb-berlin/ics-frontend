@@ -24,6 +24,6 @@ export class CoderSelectComponent implements OnInit {
   }
 
   selectCoder($event: MatSelectChange): void {
-    this.ds.updateTask({ instructions: $event.value });
+    this.ds.updateTask({ coder: $event.value });
   }
 }

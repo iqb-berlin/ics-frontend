@@ -71,10 +71,8 @@ export class CodersComponent implements OnInit, OnDestroy {
   async startCodingJob(coderId: string): Promise<void> {
     await this.ds.addTask({
       label: `Coding task with ${coderId}`,
-      type: 'code'
-    });
-    await this.ds.updateTask({
-      instructions: coderId
+      type: 'code',
+      coder: coderId
     });
   }
 }
