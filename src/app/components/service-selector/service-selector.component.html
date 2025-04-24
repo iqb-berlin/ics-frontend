@@ -7,5 +7,5 @@
       }
     </mat-select>
   </mat-form-field>
-  <a mat-button href="/tasks">OK</a>
+  <a mat-button href="/tasks" [disabled]="!ds.serviceInfo">OK</a>
 </div>
