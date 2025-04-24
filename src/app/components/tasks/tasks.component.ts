@@ -16,6 +16,7 @@ import { RouterLink } from '@angular/router';
 import { MatTooltip } from '@angular/material/tooltip';
 import { interval, Subscription, switchMap } from 'rxjs';
 import { StatusPipe } from '../../pipe/status.pipe';
+import {MatButton} from '@angular/material/button';
 
 @Component({
   imports: [
@@ -32,14 +33,15 @@ import { StatusPipe } from '../../pipe/status.pipe';
     MatTable,
     MatHeaderCellDef,
     RouterLink,
-    MatTooltip
+    MatTooltip,
+    MatButton
   ],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css'
 })
 export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
-  protected readonly displayedColumns = ['id', 'type', 'status'];
+  protected readonly displayedColumns = ['id', 'type', 'status', 'actions'];
   dataSource: MatTableDataSource<TaskOverview> = new MatTableDataSource();
   private subscriptions: { [key: string]: Subscription } = {};
 
@@ -69,7 +71,7 @@ export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     Object.keys(this.subscriptions)
       .forEach(key => {
         this.subscriptions[key].unsubscribe();
@@ -77,7 +79,11 @@ export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
+  }
+
+  delete(id: string): void {
+    this.ds.deleteTask(id);
   }
 }

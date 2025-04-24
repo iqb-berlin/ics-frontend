@@ -99,9 +99,9 @@ export class DataService {
     this.task = await lastValueFrom(this.bs.putTask(seed));
   }
 
-  async deleteTask(): Promise<void> {
-    if (!this.task) return;
-    return lastValueFrom(this.bs.deleteTask(this.task.id));
+  async deleteTask(id: string | undefined = this.task?.id): Promise<void> {
+    if (!id) return;
+    return lastValueFrom(this.bs.deleteTask(id));
   }
 
   async updateTask(update: TaskUpdate): Promise<void> {
