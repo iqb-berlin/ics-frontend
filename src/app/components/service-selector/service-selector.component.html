@@ -9,3 +9,24 @@
   </mat-form-field>
   <a mat-flat-button href="/tasks" [disabled]="!ds.serviceInfo">OK</a>
 </div>
+
+@if (ds.serviceInfo) {
+  <table>
+    <tr>
+      <td>Service</td>
+      <td>{{ds.serviceInfo.id}}</td>
+    </tr>
+    <tr>
+      <td>Service type</td>
+      <td>{{ds.serviceInfo.type}}</td>
+    </tr>
+    <tr>
+      <td>Version</td>
+      <td>{{ds.serviceInfo.version}}</td>
+    </tr>
+    <tr>
+      <td>ICS API Version</td>
+      <td>{{ds.serviceInfo.apiVersion}}</td>
+    </tr>
+  </table>
+}
