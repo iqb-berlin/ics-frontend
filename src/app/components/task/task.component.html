@@ -29,7 +29,7 @@
 
           <div>
             @if (ds.task | taskIsReady) {
-              <button mat-flat-button (click)="commit()">Commit{{ds.status !== 'start' ? ' again' : ''}}</button>
+              <button mat-flat-button (click)="commit()">Commit{{ds.status !== 'create' ? ' again' : ''}}</button>
             }
             @if ((ds.status !== 'start')) {
               <button mat-flat-button (click)="delete()">Delete</button>
