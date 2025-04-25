@@ -37,7 +37,10 @@ import {MatButton} from '@angular/material/button';
     MatButton
   ],
   templateUrl: './tasks.component.html',
-  styleUrl: './tasks.component.css'
+  styleUrls: [
+    './tasks.component.css',
+    '../../task-status.css'
+    ]
 })
 export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;

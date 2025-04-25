@@ -50,7 +50,10 @@ import {TaskIsReadyPipe} from '../../pipe/task-is-ready.pipe';
     TaskIsReadyPipe
   ],
   templateUrl: './task.component.html',
-  styleUrl: './task.component.css'
+  styleUrls: [
+    './task.component.css',
+    '../../task-status.css'
+  ]
 })
 export class TaskComponent implements OnInit, OnDestroy {
   @ViewChild(UploadComponent) uploadTab: UploadComponent | undefined;
