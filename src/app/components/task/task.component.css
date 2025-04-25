@@ -14,3 +14,7 @@ td {
   word-wrap: break-word;
   border-bottom: 1px solid silver;
 }
+
+button {
+  margin-right: 1em;
+}

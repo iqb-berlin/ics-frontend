@@ -5,14 +5,16 @@ import { StatusPipe } from '../../pipe/status.pipe';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import { TaskTypes, TaskType } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
-import {filter, map, switchMap} from 'rxjs';
+import {filter, map} from 'rxjs';
+import {TaskIsReadyPipe} from '../../pipe/task-is-ready.pipe';
 
 @Component({
   selector: 'app-header',
   imports: [
     MatAnchor,
     MatButton,
-    StatusPipe
+    StatusPipe,
+    TaskIsReadyPipe
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
@@ -36,12 +38,6 @@ export class HeaderComponent {
       });
   }
 
-  async commit(): Promise<void> {
-    await this.ds.commitTask();
-    if (!this.ds.task) return;
-    await this.router.navigate(['task', this.ds.task.id, 'overview']);
-  }
-
   async addTask(type: string): Promise<void> {
     if (!isA<TaskType>(TaskTypes, type)) return;
     await this.ds.addTask({
@@ -50,6 +46,12 @@ export class HeaderComponent {
     });
     if (!this.ds.task) return;
     await this.router.navigate(['task', this.ds.task.id]);
+  }
+
+  async commit(): Promise<void> {
+    await this.ds.commitTask();
+    if (!this.ds.task) return;
+    await this.router.navigate(['task', this.ds.task.id, 'overview']);
   }
 
   async delete(): Promise<void> {

@@ -4,7 +4,7 @@ a[disabled] {
 
 .section:first-of-type {
   border-left: none;
-  padding-left: 0px;
+  padding-left: 0;
 }
 
 .section {

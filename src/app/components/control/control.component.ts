@@ -6,9 +6,10 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatSlider } from '@angular/material/slider';
 import { JsonFormControl } from '../../interfaces/optionset.interfaces';
-import { MatMiniFabButton } from '@angular/material/button';
+import {MatIconButton} from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-control',
@@ -26,7 +27,8 @@ import { MatCard, MatCardContent, MatCardHeader } from '@angular/material/card';
     MatCard,
     MatCardHeader,
     MatCardContent,
-    MatMiniFabButton
+    MatIcon,
+    MatIconButton
   ],
   templateUrl: './control.component.html',
   styleUrl: './control.component.css'

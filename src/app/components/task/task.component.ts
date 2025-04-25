@@ -21,13 +21,14 @@ import { DatePipe } from '@angular/common';
 import { BackendService } from '../../services/backend.service';
 import { UploadComponent } from '../upload/upload.component';
 import { MatIcon } from '@angular/material/icon';
-import {MatButton, MatMiniFabButton} from '@angular/material/button';
+import {MatButton, MatIconButton} from '@angular/material/button';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatLabel } from '@angular/material/select';
 import { CoderSelectComponent } from '../coder-select/coder-select.component';
 import { ChunkType, ChunkTypes, DataChunk, Task } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguards';
+import {TaskIsReadyPipe} from '../../pipe/task-is-ready.pipe';
 
 @Component({
   selector: 'app-task',
@@ -40,12 +41,13 @@ import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguar
     DatePipe,
     UploadComponent,
     MatIcon,
-    MatMiniFabButton,
     MatFormField,
     MatInput,
     MatLabel,
     CoderSelectComponent,
-    MatButton
+    MatButton,
+    MatIconButton,
+    TaskIsReadyPipe
   ],
   templateUrl: './task.component.html',
   styleUrl: './task.component.css'
@@ -147,11 +149,23 @@ export class TaskComponent implements OnInit, OnDestroy {
     await this.ds.updateTask({ label: this.newLabel });
   }
 
-  async startCodingJob(coderId: string): Promise<void> {
+  async startCodingJob(): Promise<void> {
+    const coderId = this.ds.task?.coder;
+    if (!coderId) {
+      throw new Error("Not coder selected"!);
+    }
     await this.ds.addTask({
       label: `Coding task with ${coderId}`,
       type: 'code',
       coder: coderId
     });
+  }
+
+  async commit(): Promise<void> {
+    await this.ds.commitTask();
+  }
+
+  async delete(): Promise<void> {
+    await this.ds.deleteTask();
   }
 }

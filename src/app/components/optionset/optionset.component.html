@@ -11,5 +11,5 @@
       <mat-error>{{ e }}</mat-error>
     }
   }
-  <button mat-raised-button type="submit" [disabled]="(ds.task | status) !== 'create'" (click)="submit()">Save</button>
+  <button mat-flat-button type="submit" [disabled]="(ds.task | status) !== 'create'" (click)="submit()">Save</button>
 }

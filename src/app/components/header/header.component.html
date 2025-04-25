@@ -14,9 +14,13 @@
 
 @if (ds.selectedService && (currentRoute === 'task') && ds.task) {
   <span class="section">
-    <span class="mdc-button mat-mdc-button-base">Task: {{ds.task.label || ds.task.id}} - {{ds.task | status}}d</span>
-    <button mat-button (click)="commit()">Commit</button>
-    <button mat-button (click)="delete()">Delete</button>
+    <span class="mdc-button mat-mdc-button-base">Task: {{ds.task.label || ds.task.id}} - {{ds.task | status}}</span>
+    @if (ds.task | taskIsReady) {
+      <button mat-button (click)="commit()">Commit{{ds.status !== 'start' ? ' again' : ''}}</button>
+    }
+    @if ((ds.status !== 'start')) {
+      <button mat-button (click)="delete()">Delete</button>
+    }
   </span>
 }
 

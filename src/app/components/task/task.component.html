@@ -1,6 +1,6 @@
 @if (ds.task) {
   <mat-tab-group (selectedTabChange)="onTabChange($event)" [(selectedIndex)]="tabIndex">
-    @for (tab of tabs; track tab; let index = $index) {
+    @for (tab of tabs; track tab) {
       <mat-tab [label]="tab.label" [bodyClass]="[tab.type, 'tab-body']" [labelClass]="[tab.type, 'tab-label']">
         @if (tab.type === 'overview') {
           @if (editLabel || !ds.task.label) {
@@ -8,11 +8,10 @@
               <mat-label>Label</mat-label>
               <input matInput [(ngModel)]="newLabel">
             </mat-form-field>
-            <button mat-mini-fab (click)="saveLabel()"><mat-icon>save</mat-icon></button>
+            <button mat-icon-button (click)="saveLabel()"><mat-icon>save</mat-icon></button>
           } @else {
-            <h3>{{ds.task.label}} <button mat-mini-fab (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button></h3>
+            <h3>{{ds.task.label}} <button mat-icon-button (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button></h3>
           }
-
           <table>
             <tr>
               <td>Id</td>
@@ -29,8 +28,14 @@
           </table>
 
           <div>
+            @if (ds.task | taskIsReady) {
+              <button mat-flat-button (click)="commit()">Commit{{ds.status !== 'start' ? ' again' : ''}}</button>
+            }
+            @if ((ds.status !== 'start')) {
+              <button mat-flat-button (click)="delete()">Delete</button>
+            }
             @if (ds.status === 'finish') {
-              <button mat-button (click)="startCodingJob(ds.task?.coder || '')">Code with this model</button>
+              <button mat-flat-button (click)="startCodingJob()">Code with this model</button>
             }
           </div>
 

@@ -61,11 +61,15 @@
           <p>{{control.description}}</p>
           @for (subControl of control.children; track $index) {
             <div class="sub-control">
-              <button mat-mini-fab class='delete' (click)="delete($index)">-</button>
+              <button mat-icon-button class='delete' (click)="delete($index)">
+                <mat-icon>remove</mat-icon>
+              </button>
               <div style="width: 90%"><app-control [control]="subControl" /></div>
             </div>
           }
-          <button mat-mini-fab (click)="add()">+</button>
+          <button mat-icon-button (click)="add()">
+            <mat-icon>add</mat-icon>
+          </button>
         </mat-card-content>
       </mat-card>
     }
