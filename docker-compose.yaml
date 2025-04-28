@@ -1,0 +1,7 @@
+services:
+  ics-frontend:
+    build:
+      context: .
+      target: development
+    ports:
+      - "4200:4200"

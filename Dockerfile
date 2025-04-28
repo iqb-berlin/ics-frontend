@@ -1,8 +1,10 @@
 FROM node:20.18-bookworm-slim AS builder
 WORKDIR /app
-COPY package*.json ./
+COPY package*.json .
+COPY tsconfig.* .
+COPY angular.json .
+COPY src .
 RUN npm install
-COPY . .
 RUN npm run build --prod
 
 FROM nginx:stable-alpine AS production
@@ -13,8 +15,9 @@ CMD ["nginx", "-g", "daemon off;"]
 
 FROM node:20.18-bookworm-slim AS development
 WORKDIR /app
-COPY package*.json ./
+COPY package*.json .
+COPY tsconfig.* .
+COPY angular.json .
+COPY src ./src
 RUN npm install
-COPY . .
-EXPOSE 4200
 CMD ["npm", "run", "start"]
