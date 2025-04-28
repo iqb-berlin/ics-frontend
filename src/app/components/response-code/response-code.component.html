@@ -1,10 +1,10 @@
 @if (response) {
-  @if (response.codingProbabilities) {
-    @for (code of response.codingProbabilities | keyvalue; track $index) {
+  @if (response.codes) {
+    @for (code of response.codes; track $index) {
       <div class="wrapper">
-        <div class="bar" [style.background]="color(code.key)" [style.width]="code.value * 100 + '%'">&nbsp;</div>
+        <div class="bar" [style.background]="color(code.id)" [style.width]="parseInt(code.parameter || 'NaN', 10) * 100 + '%'">&nbsp;</div>
         <div class="text">
-          <b>{{code.key}}</b>: {{code.value | percent}}
+          <b>{{code.id}}</b>: {{code.parameter | percent}}
         </div>
       </div>
     }

@@ -3,12 +3,12 @@ import { MatButton } from '@angular/material/button';
 import { BackendService } from '../../services/backend.service';
 import { DataService } from '../../services/data.service';
 import { inferSchema, initParser } from 'udsv';
-import { ResponseStatusType } from '@iqb/responses/coding-interfaces';
 import { ResponseRow, TaskType, DataChunk } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isResponseList, isResponseValueType } from 'iqbspecs-coding-service/functions/iqb.typeguards';
 import { isResponseRowList } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
-import { ResponseStatusList, Response } from 'iqbspecs-coding-service/interfaces/iqb.interfaces';
+import { ResponseStatusList } from 'iqbspecs-coding-service/interfaces/iqb.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { Response, ResponseStatusType } from '@iqbspecs/response/response.interface';
 
 @Component({
   selector: 'app-upload',

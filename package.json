@@ -1,6 +1,6 @@
 {
   "name": "coding-service-frontend",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --port 4200",
@@ -21,7 +21,9 @@
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
     "@iqb/responses": "^3.3.4",
-    "iqbspecs-coding-service": "0.0.7",
+    "@iqbspecs/response": "^1.5.0",
+
+    "iqbspecs-coding-service": "0.0.8",
     "component": "^1.1.0",
     "udsv": "0.7.2",
     "rxjs": "~7.8.0",

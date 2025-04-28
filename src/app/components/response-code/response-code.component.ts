@@ -1,12 +1,11 @@
 import {Component, Input} from '@angular/core';
-import {KeyValuePipe, PercentPipe} from '@angular/common';
+import { PercentPipe} from '@angular/common';
 import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isResponseRow } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
 
 @Component({
   selector: 'app-response-code',
   imports: [
-    KeyValuePipe,
     PercentPipe
   ],
   templateUrl: './response-code.component.html',
@@ -30,4 +29,6 @@ export class ResponseCodeComponent {
     }
     return `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.8)`
   }
+
+  protected readonly parseInt = parseInt;
 }
