@@ -12,10 +12,9 @@ import { isResponseRow } from 'iqbspecs-coding-service/functions/ics-api.typegua
   styleUrl: 'response-code.component.css'
 })
 export class ResponseCodeComponent {
-  @Input({transform: (value: unknown): ResponseRow | undefined => {
-    console.log(value);
-    return isResponseRow(value) ? value : undefined;
-  }}) response: ResponseRow | undefined;
+  @Input({
+    transform: (value: unknown): ResponseRow | undefined => isResponseRow(value) ? value : undefined
+  }) response: ResponseRow | undefined;
 
   color(code: number | string | undefined): string {
     const i = Number(code);

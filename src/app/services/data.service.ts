@@ -6,10 +6,10 @@ import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { compareEvents } from '../functions/api-helper.functions';
 import {
-  Coder,
+  Coder, DataChunk,
   ResponseRow,
   ServiceInfo,
-  Task, TaskUpdate,
+  Task, TaskUpdate
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 import {StatusPipe} from '../pipe/status.pipe';
@@ -24,12 +24,14 @@ export class DataService {
   serviceInfo: ServiceInfo | null = null;
   data: ResponseRow[] = [];
   coders: Coder[] = [];
+  currentChunk: DataChunk | null = null;
 
   private _task: Task | null = null;
   private _taskStatus: TaskStatus | null = null;
 
   set task(task: Task | null) {
     this._task = task;
+    this.currentChunk = null;
     if (!this._task) return;
     this._task.events.sort(compareEvents('asc'));
     this._taskStatus = StatusPipe.getStatus(this._task);
@@ -88,7 +90,9 @@ export class DataService {
 
   getTaskData(chunkId: string): void {
     if (!this.task) return;
-    this.bs.getTaskData(this.task.id, chunkId)
+    this.currentChunk = this.task.data.find(chunk => chunk.id === chunkId) || null;
+    if (!this.currentChunk) throw new Error('invalid chunk id');
+    this.bs.getTaskData(this.task.id, this.currentChunk.id)
       .subscribe(data => {
         this.data = data;
       });
