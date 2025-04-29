@@ -120,6 +120,8 @@ export class TaskComponent implements OnInit, OnDestroy {
   onTabChange($event: MatTabChangeEvent) {
     if (isA<ChunkType>(ChunkTypes, this.tabs[$event.index].type)) {
       this.ds.getTaskData(this.tabs[$event.index].id);
+    } else {
+      this.ds.getTaskData(null);
     }
     if (this.tabs[$event.index].type === 'add') {
       if (this.uploadTab) this.uploadTab.openFileDialog();

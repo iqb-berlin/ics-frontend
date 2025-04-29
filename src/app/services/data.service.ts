@@ -88,7 +88,12 @@ export class DataService {
       );
   }
 
-  getTaskData(chunkId: string): void {
+  getTaskData(chunkId: string | null): void {
+    if (!chunkId) {
+      this.currentChunk = null;
+      this.data = [];
+      return;
+    }
     if (!this.task) return;
     this.currentChunk = this.task.data.find(chunk => chunk.id === chunkId) || null;
     if (!this.currentChunk) throw new Error('invalid chunk id');
@@ -126,5 +131,11 @@ export class DataService {
 
   async deleteCoder(coderId: string): Promise<void> {
     await lastValueFrom(this.bs.deleteCoder(coderId));
+  }
+
+  async deleteChunk(chunkId: string): Promise<void> {
+    if (!this.task) return;
+    if (!this.task.data.find(chunk => chunk.id === chunkId)) throw new Error('invalid chunk id');
+    await lastValueFrom(this.bs.deleteDataChunk(this.task.id, chunkId));
   }
 }

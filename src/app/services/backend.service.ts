@@ -99,4 +99,8 @@ export class BackendService {
   deleteCoder(coderId: string): Observable<void> {
     return this.http.delete<void>(`${this.url}/coders/${coderId}`);
   }
+
+  deleteDataChunk(taskId: string, chunkId: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/tasks/${taskId}/data/${chunkId}`);
+  }
 }

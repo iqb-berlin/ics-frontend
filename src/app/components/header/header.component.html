@@ -24,11 +24,12 @@
   </span>
 }
 
-@if (ds.selectedService && (currentRoute === 'tasks')) {
+@if (ds.currentChunk) {
   <span class="section">
-    <span class="mdc-button mat-mdc-button-base">New Task:</span>
-    <button mat-button (click)="addTask('train')">Train</button>
-    <button mat-button (click)="addTask('code')">Code</button>
+     <span class="mdc-button mat-mdc-button-base">{{ds.currentChunk.type}} data: {{ds.currentChunk.id.substring(0, 4)}}…</span>
+      <button mat-button (click)="download('csv')">Download CSV</button>
+      <button mat-button (click)="download('json')">Download JSON</button>
+      <button mat-button (click)="deleteChunk()">Delete</button>
   </span>
 }
 
@@ -39,6 +40,3 @@
     <button mat-button (click)="addTask('code')">Code</button>
   </span>
 }
-
-
-

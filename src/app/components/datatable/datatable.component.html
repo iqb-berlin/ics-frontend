@@ -42,8 +42,4 @@
 
 <mat-card>
   <mat-checkbox [checked]="settings.allColumns" (change)="updateSetting('allColumns', $event.checked)">Show all columns</mat-checkbox>
-  <mat-card-actions>
-    <button mat-flat-button (click)="download('csv')">Download CSV</button>
-    <button mat-flat-button (click)="download('json')">Download JSON</button>
-  </mat-card-actions>
 </mat-card>
