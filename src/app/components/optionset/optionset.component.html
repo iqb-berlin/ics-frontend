@@ -12,4 +12,7 @@
     }
   }
   <button mat-flat-button type="submit" [disabled]="(ds.task | status) !== 'create'" (click)="submit()">Save</button>
+  <button type="button" mat-flat-button (click)="fileInput.click()">Upload</button>
+  <button mat-flat-button type="submit" (click)="download()">Download</button>
+  <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept="application/json">
 }

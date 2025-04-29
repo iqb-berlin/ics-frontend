@@ -33,7 +33,6 @@ export class UploadComponent {
   }
 
   onFileSelected($event: Event): void {
-
     if (
       !('target' in $event) ||
       ($event.target == null) ||
@@ -41,7 +40,6 @@ export class UploadComponent {
       !($event.target.files instanceof FileList) ||
       $event.target.files.length === 0
     ) {
-      console.log($event);
       throw new Error('Upload error (0)');
     }
     const file: File = $event.target.files[0];
@@ -64,7 +62,6 @@ export class UploadComponent {
 
     const text = new TextDecoder().decode($event.target.result);
     const fileContent = this.parseFile(file.name, text, taskType);
-    console.log(fileContent);
     const taskId = this.ds.task.id;
     this.bs.putTaskData(taskId, fileContent)
       .subscribe(chunk => {

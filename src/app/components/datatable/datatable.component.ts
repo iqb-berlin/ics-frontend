@@ -12,7 +12,7 @@ import { DataService } from '../../services/data.service';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { ResponseCodeComponent } from '../response-code/response-code.component';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatCard, MatCardActions } from '@angular/material/card';
+import { MatCard } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 

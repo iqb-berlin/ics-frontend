@@ -65,7 +65,7 @@
         } @else if (tab.type === 'code') {
           <app-coder-select />
         } @else if (tab.type === 'unknown') {
-          <div>TaskType is Unkown</div>
+          <div>TaskType is Unknown</div>
         } @else if (tab.type === 'add') {
           <app-upload (added)="changeTab($event.type, $event.id)" />
         } @else {

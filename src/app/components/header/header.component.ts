@@ -7,7 +7,7 @@ import { TaskTypes, TaskType } from 'iqbspecs-coding-service/interfaces/ics-api.
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 import {filter, map} from 'rxjs';
 import {TaskIsReadyPipe} from '../../pipe/task-is-ready.pipe';
-import { csv } from '../../functions/csv';
+import { download } from '../../functions/download';
 
 @Component({
   selector: 'app-header',
@@ -60,17 +60,9 @@ export class HeaderComponent {
     await this.router.navigate(['tasks/']);
   }
 
-  download(type: 'csv' | 'json'): void {
-    const blob = (type === 'json') ?
-      new Blob([JSON.stringify(this.ds.data, null, 2)], { type: 'application/json' }) :
-      csv(this.ds.data);
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = this.ds.currentChunk?.id + '.' + type;
-    a.click();
-    URL.revokeObjectURL(url);
+  download(type: 'asCSV' | 'asJSON'): void {
+    if (!this.ds.currentChunk) return;
+    download(this.ds.data)[type]([this.ds.currentChunk.type, this.ds.currentChunk.id, 'json'].join('.'));
   }
 
   async deleteChunk(): Promise<void> {
