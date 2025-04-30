@@ -15,6 +15,8 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatCard } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-datatable',
@@ -35,6 +37,8 @@ import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfac
     MatCheckbox,
     MatCard,
     FormsModule,
+    MatIconButton,
+    MatIcon
   ],
   templateUrl: './datatable.component.html',
   styleUrl: './datatable.component.css'
@@ -47,9 +51,10 @@ export class DatatableComponent {
     allColumns: false
   };
   static columnSets = {
-    'all': ['setId', 'id', 'subForm', 'status', 'value', 'code', 'score'],
-    'important': ['setId', 'status', 'value', 'code']
+    'all': ['setId', 'id', 'subForm', 'status', 'value', 'code', 'score', 'settings'],
+    'important': ['setId', 'status', 'value', 'code', 'settings']
   }
+  showSettings: boolean = false;
 
   constructor(
     public ds: DataService
@@ -65,5 +70,9 @@ export class DatatableComponent {
       case 'allColumns':
         this.displayedColumns = DatatableComponent.columnSets[checked ? 'all' : 'important'];
     }
+  }
+
+  toggleSettings(): void {
+    this.showSettings = !this.showSettings;
   }
 }

@@ -11,3 +11,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .tab-body.code, .tab-body.overview, .tab-body.train {
   margin: 1em;
 }
+
+.auto-width-column {
+  white-space: nowrap;
+  width: 1px;
+}
+
+mat-card {
+  margin: 1em;
+}
+
+button {
+  margin-right: 1em;
+}
