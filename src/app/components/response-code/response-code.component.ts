@@ -29,5 +29,5 @@ export class ResponseCodeComponent {
     return `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.8)`
   }
 
-  protected readonly parseInt = parseInt;
+  protected readonly parseFloat = parseFloat;
 }

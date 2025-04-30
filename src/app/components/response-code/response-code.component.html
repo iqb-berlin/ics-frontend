@@ -2,7 +2,7 @@
   @if (response.codes) {
     @for (code of response.codes; track $index) {
       <div class="wrapper">
-        <div class="bar" [style.background]="color(code.id)" [style.width]="parseInt(code.parameter || 'NaN', 10) * 100 + '%'">&nbsp;</div>
+        <div class="bar" [style.background]="color(code.id)" [style.width]="parseFloat(code.parameter || 'NaN') * 100 + '%'">&nbsp;</div>
         <div class="text">
           <b>{{code.id}}</b>: {{code.parameter | percent}}
         </div>
