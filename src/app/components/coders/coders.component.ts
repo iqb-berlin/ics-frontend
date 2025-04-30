@@ -13,6 +13,7 @@ import { MatButton } from '@angular/material/button';
 import { interval, Subscription } from 'rxjs';
 import { Coder } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import {MatTooltip} from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -43,7 +44,8 @@ export class CodersComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly subscriptions: { [key: string]: Subscription } = {};
 
   constructor(
-    public ds: DataService
+    public readonly ds: DataService,
+    private readonly router: Router,
   ) {
     this.displayedColumns = ['label', 'actions'];
   }
@@ -81,5 +83,7 @@ export class CodersComponent implements OnInit, OnDestroy, AfterViewInit {
       type: 'code',
       coder: coderId
     });
+    if (!this.ds.task) return;
+    await this.router.navigate(['task', this.ds.task.id]);
   }
 }
