@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import {
   MatCell, MatCellDef,
   MatColumnDef,
@@ -43,7 +43,7 @@ import { MatIcon } from '@angular/material/icon';
   templateUrl: './datatable.component.html',
   styleUrl: './datatable.component.css'
 })
-export class DatatableComponent {
+export class DatatableComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   displayedColumns: string[];
   readonly dataSource: MatTableDataSource<ResponseRow> = new MatTableDataSource();
@@ -59,9 +59,16 @@ export class DatatableComponent {
   constructor(
     public ds: DataService
   ) {
-    this.dataSource.sort = this.sort;
-    this.dataSource.data = this.ds.data;
     this.displayedColumns = DatatableComponent.columnSets.important;
+  }
+
+  ngAfterViewInit(): void {
+    console.log('ngAfterViewInit');
+    this.ds.data$
+      .subscribe(data => {
+        this.dataSource.sort = this.sort;
+        this.dataSource.data = data;
+      });
   }
 
   updateSetting(setting: keyof typeof this.settings, checked: boolean) {

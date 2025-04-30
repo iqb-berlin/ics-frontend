@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {Service, TaskStatus} from '../interfaces/interfaces';
 import { BackendService } from './backend.service';
 import { Services } from '../services';
-import { lastValueFrom, map, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, map, Observable, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { compareEvents } from '../functions/api-helper.functions';
 import {
@@ -22,7 +22,7 @@ export class DataService {
   readonly services: { [key: string]: Service } = Services;
   selectedService: keyof typeof Services | null | undefined = null; // undefined as starting value breaks the binding
   serviceInfo: ServiceInfo | null = null;
-  data: ResponseRow[] = [];
+  private _data: BehaviorSubject<ResponseRow[]> = new BehaviorSubject<ResponseRow[]>([]);
   coders: Coder[] = [];
   currentChunk: DataChunk | null = null;
 
@@ -43,6 +43,14 @@ export class DataService {
 
   get status(): TaskStatus | null {
     return this._taskStatus;
+  }
+
+  get data(): ResponseRow[] {
+    return this._data.getValue();
+  }
+
+  get data$(): Observable<ResponseRow[]> {
+    return this._data.asObservable();
   }
 
   constructor(
@@ -91,16 +99,14 @@ export class DataService {
   getTaskData(chunkId: string | null): void {
     if (!chunkId) {
       this.currentChunk = null;
-      this.data = [];
+      this._data.next([]);
       return;
     }
     if (!this.task) return;
     this.currentChunk = this.task.data.find(chunk => chunk.id === chunkId) || null;
     if (!this.currentChunk) throw new Error('invalid chunk id');
     this.bs.getTaskData(this.task.id, this.currentChunk.id)
-      .subscribe(data => {
-        this.data = data;
-      });
+      .subscribe(this._data);
   }
 
   async commitTask(): Promise<void> {

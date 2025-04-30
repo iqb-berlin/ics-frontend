@@ -5,9 +5,14 @@ import {
   MatCell,
   MatCellDef,
   MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
   MatHeaderRow,
-  MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource
 } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { TaskOverview } from '../../interfaces/interfaces';
@@ -16,7 +21,7 @@ import { RouterLink } from '@angular/router';
 import { MatTooltip } from '@angular/material/tooltip';
 import { interval, Subscription, switchMap } from 'rxjs';
 import { StatusPipe } from '../../pipe/status.pipe';
-import {MatButton} from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   imports: [
@@ -59,18 +64,17 @@ export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions['tasks'] = interval(1000)
       .pipe(switchMap(() => this.bs.getTasks()))
       .subscribe(data => {
-        const taskOverviews = data.map((task: Task) : TaskOverview => {
+        this.dataSource.data = data.map((task: Task): TaskOverview => {
           const lastEvent = StatusPipe.getLastEvent(task);
           return {
             id: task.id,
             label: task.label || task.id,
             type: task.type,
             status: StatusPipe.getStatus(task),
-            timestamp: lastEvent?.timestamp || Date.now (),
+            timestamp: lastEvent?.timestamp || Date.now(),
             message: lastEvent?.message || 'draft'
           };
         });
-        this.dataSource.connect().next(taskOverviews);
       });
   }
 

@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
 import {
   MatCell, MatCellDef,
   MatColumnDef,
@@ -30,12 +30,13 @@ import {MatTooltip} from '@angular/material/tooltip';
     MatHeaderRowDef,
     MatRow,
     MatRowDef,
-    MatTooltip
+    MatTooltip,
+    MatSortHeader
   ],
   templateUrl: './coders.component.html',
   styleUrl: './coders.component.css'
 })
-export class CodersComponent implements OnInit, OnDestroy {
+export class CodersComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   protected readonly displayedColumns: string[];
   protected readonly dataSource: MatTableDataSource<Coder> = new MatTableDataSource();
@@ -44,15 +45,21 @@ export class CodersComponent implements OnInit, OnDestroy {
   constructor(
     public ds: DataService
   ) {
-    this.dataSource.sort = this.sort;
-    this.dataSource.data = this.ds.coders;
     this.displayedColumns = ['label', 'actions'];
   }
 
   ngOnInit(): void {
-    this.dataSource.connect().next([]);
     this.subscriptions['coders'] = interval(1000)
-      .subscribe(() => this.ds.updateCoders());
+      .subscribe(() => this.ds.updateCoders()
+        .then(() => {
+          this.dataSource.data = this.ds.coders;
+        })
+      );
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.data = this.ds.coders;
+    this.dataSource.sort = this.sort;
   }
 
   ngOnDestroy() {
