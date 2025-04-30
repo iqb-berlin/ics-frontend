@@ -1,12 +1,16 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import {
-  MatCell, MatCellDef,
+  MatCell,
+  MatCellDef,
   MatColumnDef,
   MatHeaderCell,
   MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef,
-  MatRow, MatRowDef,
-  MatTable, MatTableDataSource
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource
 } from '@angular/material/table';
 import { DataService } from '../../services/data.service';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
@@ -67,14 +71,11 @@ export class DatatableComponent implements AfterViewInit {
       if (property === 'code') {
         if (item.code) return item.code  * 1000000;
         if (item.codes && item.codes.length) {
-          const sortPoints = item.codes
+          return item.codes
             .map(current =>
               Math.min(1, parseFloat(current.parameter ?? "0")) * 100 * current.id * 1000
             )
-          const sortPoint = sortPoints
             .reduce((a, b) => a + b);
-          console.log(sortPoint, item.codes, sortPoints)
-          return sortPoint;
         }
         return 0;
       }

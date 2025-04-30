@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
@@ -9,6 +9,7 @@ import { getValues, JSONSchemaToJSONForms } from '../../functions/optionset';
 import { JSONSchema, TaskInstructions } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isTaskInstructions, isServiceInfo } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
 import { download } from '../../functions/download';
+import { distinctUntilChanged, interval, map, Subscription, takeWhile } from 'rxjs';
 
 @Component({
   selector: 'app-optionset',
@@ -21,7 +22,7 @@ import { download } from '../../functions/download';
   templateUrl: './optionset.component.html',
   styleUrl: './optionset.component.css'
 })
-export class OptionsetComponent {
+export class OptionsetComponent implements OnInit, OnDestroy {
   @ViewChild('fileInput') private fileInput: ElementRef | undefined;
   errors: any[] = [];
   controls: JsonFormControl[] = [];
@@ -29,12 +30,24 @@ export class OptionsetComponent {
 
   protected readonly Object = Object;
   protected readonly isServiceInfo = isServiceInfo;
+  private readonly subscriptions: { [key: string]: Subscription } = { };
 
   constructor(
-    protected ds: DataService,
-    private cdr: ChangeDetectorRef
+    protected ds: DataService
   ) {
     this.loadSchema();
+  }
+
+  ngOnInit(): void {
+    this.subscriptions['autosave'] = interval(1000)
+      .pipe(
+        takeWhile(() => this.ds.status === 'create'),
+        map(() => getValues(this.controls)),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+      )
+      .subscribe(values => {
+        this.ds.updateTask({ instructions: values });
+      });
   }
 
   loadSchema(): void {
@@ -48,10 +61,6 @@ export class OptionsetComponent {
         if (!this.instructionsSchema) throw `No schema given for: ${this.ds.task?.type}`;
         const instructions  = isTaskInstructions(this.ds.task.instructions) ? this.ds.task.instructions : {};
         this.controls = JSONSchemaToJSONForms(this.instructionsSchema, instructions);
-      }
-      if (this.ds.task.type === 'code') {
-        if (typeof this.ds.task.instructions !== 'string') throw `Instructions of a Code-Task must contain an coderId`;
-
       }
     } catch (e) {
       this.errors.push(e);
@@ -105,5 +114,13 @@ export class OptionsetComponent {
     const o = JSON.parse(file);
     if (!isTaskInstructions(o)) throw new Error('invalid instructions file!');
     return o;
+  }
+
+  ngOnDestroy(): void {
+    Object.keys(this.subscriptions)
+      .forEach(subscriptionId => {
+        this.subscriptions[subscriptionId].unsubscribe();
+        delete this.subscriptions[subscriptionId];
+      });
   }
 }
