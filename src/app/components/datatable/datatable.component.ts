@@ -63,7 +63,30 @@ export class DatatableComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    console.log('ngAfterViewInit');
+    this.dataSource.sortingDataAccessor = (item, property): string | number => {
+      if (property === 'code') {
+        if (item.code) return item.code  * 1000000;
+        if (item.codes && item.codes.length) {
+          const sortPoints = item.codes
+            .map(current =>
+              Math.min(1, parseFloat(current.parameter ?? "0")) * 100 * current.id * 1000
+            )
+          const sortPoint = sortPoints
+            .reduce((a, b) => a + b);
+          console.log(sortPoint, item.codes, sortPoints)
+          return sortPoint;
+        }
+        return 0;
+      }
+      if (Object.keys(item).includes(property)) {
+        const value = item[property as keyof ResponseRow];
+        if (typeof value === 'string' || typeof value === 'number') {
+          return value;
+        }
+        return JSON.stringify(value);
+      }
+      return 0;
+    }
     this.ds.data$
       .subscribe(data => {
         this.dataSource.sort = this.sort;
