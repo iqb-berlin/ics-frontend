@@ -1,0 +1,12 @@
+{
+ "services": {
+   "iscsLocal": {
+     "name": "Isaac SaS",
+     "url": "http://api.localhost"
+   },
+   "localDefault": {
+     "name": "Autocoder-Service",
+     "url": "http://localhost:3000"
+   }
+ }
+}

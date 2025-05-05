@@ -27,6 +27,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "input": "config",
+                "output": "/config",
+                "glob": "config.json"
               }
             ],
             "styles": [

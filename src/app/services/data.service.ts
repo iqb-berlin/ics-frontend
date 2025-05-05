@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Service, TaskStatus} from '../interfaces/interfaces';
 import { BackendService } from './backend.service';
-import { Services } from '../services';
 import { BehaviorSubject, lastValueFrom, map, Observable, of, tap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { compareEvents } from '../functions/api-helper.functions';
@@ -13,14 +12,15 @@ import {
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 import {StatusPipe} from '../pipe/status.pipe';
+import { ConfigService } from './config.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  readonly services: { [key: string]: Service } = Services;
-  selectedService: keyof typeof Services | null | undefined = null; // undefined as starting value breaks the binding
+  services: { [key: string]: Service } = { };
+  selectedService: keyof typeof this.services | null | undefined = null; // undefined as starting value breaks the binding
   serviceInfo: ServiceInfo | null = null;
   private _data: BehaviorSubject<ResponseRow[]> = new BehaviorSubject<ResponseRow[]>([]);
   coders: Coder[] = [];
@@ -54,26 +54,34 @@ export class DataService {
   }
 
   constructor(
-    private readonly bs: BackendService
+    private readonly bs: BackendService,
+    private readonly cs: ConfigService,
   ) {
-    this.serviceInfo = null;
-    const lastServiceId = localStorage.getItem('csf-service');
-    const service = lastServiceId && (lastServiceId in this.services)  ? lastServiceId : null;
-    this.selectService(service);
+    this.cs.loadConfig()
+      .then(config => {
+        console.log({config});
+        this.services = config.services;
+        this.serviceInfo = null;
+        const lastServiceId = localStorage.getItem('csf-service');
+        const service = lastServiceId && (lastServiceId in this.services)  ? lastServiceId : null;
+        this.selectService(service);
+      });
   }
 
   selectService(serviceId: string | null): Promise<boolean> | boolean {
     this.serviceInfo = null; // important
     this.selectedService = null;
     if (!serviceId) return false;
-    if (!Object.hasOwn(Services, serviceId)) {
+    if (!Object.hasOwn(this.cs.config.services, serviceId)) {
       return false;
     }
     const service = this.services[serviceId];
     return lastValueFrom(this.bs.getInfo(service.url)
       .pipe(
          map(info => {
-          if (!isA<keyof typeof Services>(Object.keys(Services), serviceId)) throw new Error('Unknown ServiceId');
+          if (!isA<keyof typeof this.cs.config.services>(Object.keys(this.cs.config.services), serviceId)) {
+            throw new Error('Unknown ServiceId');
+          }
           this.serviceInfo = info;
           this.selectedService = serviceId;
           localStorage.setItem('csf-service', serviceId);

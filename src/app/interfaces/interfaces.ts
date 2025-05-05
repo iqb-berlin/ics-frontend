@@ -5,6 +5,10 @@ export interface Service {
   readonly url: string;
 }
 
+export interface AppConfig {
+  readonly services: { [key: string]: Service };
+}
+
 export type TaskStatus = TaskEventType | 'draft'
 
 export interface TaskOverview {
