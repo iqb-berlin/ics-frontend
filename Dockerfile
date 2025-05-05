@@ -3,9 +3,9 @@ WORKDIR /app
 COPY package*.json .
 COPY tsconfig.* .
 COPY angular.json .
-COPY src .
+COPY src ./src
 RUN npm install
-RUN npm run build --prod
+RUN npm run build --configuration=production
 
 FROM nginx:stable-alpine AS production
 RUN rm -rf /usr/share/nginx/html/*

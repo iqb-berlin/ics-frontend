@@ -17,7 +17,7 @@ services:
   ics-frontend:
     build:
       context: .
-      target: development
+      target: production
     restart: always
     networks:
       - application-network
