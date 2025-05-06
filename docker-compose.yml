@@ -1,5 +1,6 @@
 services:
   ics-frontend:
+    image: ${REGISTRY_PATH}ics-frontend
     build:
       context: .
       target: development
