@@ -1,6 +1,6 @@
 @if (ds.serviceInfo && ds.task && instructionsSchema) {
   <h3>{{instructionsSchema.$id}}</h3>
-  <p>{{ds.serviceInfo.instructionsText}}</p>
+  <p [innerHTML]="ds.serviceInfo.instructionsText"></p>
   @for (control of controls; track $index) {
     <app-control [control]="control" />
   }
