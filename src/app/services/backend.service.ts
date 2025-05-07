@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, Observable, tap } from 'rxjs';
-import { checkCondition } from '../functions/checkCondition';
+import { checkCondition } from '../functions/check-condition';
 import { ServiceConnection } from '../interfaces/interfaces';
 import {
   Coder,

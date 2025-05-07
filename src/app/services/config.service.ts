@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { catchError, lastValueFrom, Observable, tap } from 'rxjs';
-import { ServiceInfo } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
-import { checkCondition } from '../functions/checkCondition';
-import { isServiceInfo } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
+import { lastValueFrom, tap } from 'rxjs';
+import { checkCondition } from '../functions/check-condition';
 import { HttpClient } from '@angular/common/http';
 import { AppConfig } from '../interfaces/interfaces';
 import { isAppConfig } from '../functions/type-guards';
