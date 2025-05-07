@@ -9,7 +9,7 @@ export class TaskIsReadyPipe implements PipeTransform {
   transform(task: Task): boolean {
     const status = StatusPipe.getStatus(task);
     if (["commit", "start"].includes(status)) return false;
-    if (!task.data.length) return false;
+    if ((task.type === 'code') && (!task.data.length)) return false;
     if (task.type === 'unknown') return false;
     if ((task.type === 'code') && (!task.coder)) return false;
     if ((task.type === 'train') && (!task.instructions)) return false;
