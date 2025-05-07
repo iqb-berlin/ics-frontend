@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, Observable, tap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, startWith, tap } from 'rxjs';
 import { checkCondition } from '../functions/check-condition';
-import { ServiceConnection } from '../interfaces/interfaces';
+import { Service, ServiceConnection } from '../interfaces/interfaces';
 import {
   Coder,
   DataChunk,
@@ -25,12 +25,15 @@ import { isArrayOf } from 'iqbspecs-coding-service/functions/common.typeguards';
   providedIn: 'root'
 })
 export class BackendService {
-  connection$: BehaviorSubject<ServiceConnection | null> = new BehaviorSubject<ServiceConnection | null>(null);
+  private _url: string | null = null;
 
-  private get url(): string {
-    const service = this.connection$.getValue();
-    if (!service) throw new Error('No service connected');
-    return service.url;
+  get url(): string {
+    if (!this._url) throw new Error("No service connected!");
+    return this._url;
+  }
+
+  set url(url: string) {
+    this._url = url;
   }
 
   constructor(
@@ -38,17 +41,13 @@ export class BackendService {
   ) {
   }
 
-  getInfo(url: string): Observable<ServiceInfo> {
-    return this.http.get<ServiceInfo>(url + '/info')
+  getConnection(id: string, url: string): Observable<ServiceConnection> {
+    return this.http.get<ServiceConnection>(url + '/info')
       .pipe(
         checkCondition(isServiceInfo),
-        tap(info => {
-          this.connection$.next({ url, info });
-        }),
-        catchError(e => {
-          this.connection$.next(null);
-          throw e;
-        })
+        map((info: ServiceInfo): ServiceConnection => ({ url, status: 'ok', info })),
+        catchError((e): Observable<ServiceConnection> => of({ url, status: 'error' })),
+        startWith(<ServiceConnection>{ url, status: 'connecting' })
       );
   }
 

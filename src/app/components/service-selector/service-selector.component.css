@@ -1,0 +1,24 @@
+tr td {
+  cursor: pointer;
+}
+
+tr.error td {
+  color: silver;
+  background: white;
+}
+
+tr.selected td {
+  background: grey;
+}
+
+tr.ok:hover {
+  background: silver;
+}
+
+.status.error {
+  color: red;
+}
+
+.status.ok {
+  color: green;
+}

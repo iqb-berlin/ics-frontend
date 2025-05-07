@@ -30,7 +30,9 @@ export interface TaskTab {
 }
 
 export interface ServiceConnection {
-  info: ServiceInfo;
+  info?: ServiceInfo;
   url: string;
+  status: 'ok' | 'error' | 'connecting';
 }
+
 

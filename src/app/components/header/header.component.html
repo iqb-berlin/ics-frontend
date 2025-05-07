@@ -1,18 +1,18 @@
 <span class="section">
-  @if (ds.selectedService) {
+  @if (ds.serviceInfo) {
     <span class="mdc-button mat-mdc-button-base">{{ds.serviceInfo?.id}} ({{ds.serviceInfo?.type}} version {{ds.serviceInfo?.version}})</span>
   }
 </span>
 
 <span class="section">
   <a mat-button href="/start" [disabled]="currentRoute === 'start'">Services</a>
-  @if (ds.selectedService && (currentRoute !== 'start')) {
+  @if (ds.serviceInfo) {
     <a mat-button href="/tasks" [disabled]="currentRoute === 'tasks'">Tasks</a>
     <a mat-button href="/coders" [disabled]="currentRoute === 'coders'">Coders</a>
   }
 </span>
 
-@if (ds.selectedService && (currentRoute === 'task') && ds.task) {
+@if (ds.serviceInfo && (currentRoute === 'task') && ds.task) {
   <span class="section">
     <span class="mdc-button mat-mdc-button-base">Task: {{ds.task.label || ds.task.id}} - {{ds.task | status}}</span>
     @if (ds.task | taskIsReady) {
@@ -33,7 +33,7 @@
   </span>
 }
 
-@if (ds.selectedService && (currentRoute === 'tasks')) {
+@if (ds.serviceInfo && (currentRoute === 'tasks')) {
   <span class="section">
     <span class="mdc-button mat-mdc-button-base">New Task:</span>
     <button mat-button (click)="addTask('train')">Train</button>

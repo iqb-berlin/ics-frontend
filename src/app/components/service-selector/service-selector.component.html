@@ -1,32 +1,52 @@
-<div class="service-selector">
-  <mat-form-field>
-    <mat-label>Service</mat-label>
-    <mat-select (selectionChange)="selectService($event)" [value]="ds.selectedService">
-      @for (service of ds.services  | keyvalue; track $index) {
-        <mat-option [value]="service.key">{{service.value.name}}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-  <a mat-flat-button href="/tasks" [disabled]="!ds.serviceInfo">OK</a>
-</div>
+<mat-card  style="margin: 1em; padding: 1em;">
+  <h1>Coding Service Manager</h1>
 
-@if (ds.serviceInfo) {
-  <table>
-    <tr>
-      <td>Service</td>
-      <td>{{ds.serviceInfo.id}}</td>
-    </tr>
-    <tr>
-      <td>Service type</td>
-      <td>{{ds.serviceInfo.type}}</td>
-    </tr>
-    <tr>
-      <td>Version</td>
-      <td>{{ds.serviceInfo.version}}</td>
-    </tr>
-    <tr>
-      <td>ICS API Version</td>
-      <td>{{ds.serviceInfo.apiVersion}}</td>
-    </tr>
-  </table>
-}
+  @if (ds.serviceInfo) {
+    Connected with {{ds.serviceInfo.id}}.
+  } @else {
+    No service connected.
+  }
+</mat-card>
+
+
+<table mat-table [dataSource]="dataSource" matSort>
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+    <td mat-cell *matCellDef="let element" (click)="selectService(element.info?.id)">{{element.id}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="url">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>URL</th>
+    <td mat-cell *matCellDef="let element" (click)="selectService(element.info?.id)">{{element.url}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="type">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+    <td mat-cell *matCellDef="let element" (click)="selectService(element.info?.id)">{{element.info?.type}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="version">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Version</th>
+    <td mat-cell *matCellDef="let element" (click)="selectService(element.info?.id)">{{element.info?.version}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="api-version">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>ICS API</th>
+    <td mat-cell *matCellDef="let element" (click)="selectService(element.info?.id)">{{element.info?.apiVersion}}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+    <td mat-cell *matCellDef="let element" (click)="selectService(element.info?.id)" [class]="'status ' + element.status">
+      {{element.status}}
+    </td>
+  </ng-container>
+
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr
+    mat-row
+    *matRowDef="let row; columns: displayedColumns;"
+    [class]="row.status + (ds.serviceInfo && (row.info?.id === ds.serviceInfo.id) ? ' selected' : '')"
+  ></tr>
+</table>

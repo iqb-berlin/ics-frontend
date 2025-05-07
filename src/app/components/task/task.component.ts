@@ -18,7 +18,6 @@ import { MatTab, MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
 import { TabType, TaskTab } from '../../interfaces/interfaces';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { DatePipe } from '@angular/common';
-import { BackendService } from '../../services/backend.service';
 import { UploadComponent } from '../upload/upload.component';
 import { MatIcon } from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
@@ -61,8 +60,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly route: ActivatedRoute,
-    protected readonly ds: DataService,
-    protected readonly bs: BackendService,
+    protected readonly ds: DataService
   ) {
   }
 
@@ -77,7 +75,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         filter(params => contains(params, 'id', 'string')),
         map(params => params['id']),
         switchMap(taskId =>
-          this.bs.connection$
+          this.ds.serviceConnected$
             .pipe(
               filter(c => c != null),
               map(() => taskId)
