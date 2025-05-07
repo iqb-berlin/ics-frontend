@@ -1,5 +1,6 @@
 import { AppConfig, Service } from '../interfaces/interfaces';
-import { isMapOf } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { isArrayOf, isMapOf } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { JsonFormControlValueType } from '../interfaces/optionset.interfaces';
 
 export const isArrayOfSameShapedObjects = <T extends object>(thing: unknown): thing is T[] => {
   if (!Array.isArray(thing)) return false;
@@ -23,3 +24,12 @@ export const isAppConfig = (thing: unknown): thing is AppConfig =>
   (typeof thing === 'object') && (thing !== null) &&
   ('services' in thing) && isMapOf(thing.services, isService);
 
+export const isJsonFormControlValueType = (thing: unknown): thing is JsonFormControlValueType =>
+  (thing == null) ||
+  (typeof thing === 'string') ||
+  (typeof thing === 'number') ||
+  (typeof thing === 'boolean') ||
+  (isArrayOf<JsonFormControlValueType>(thing, isJsonFormControlValueType));
+
+export const isNull = (thing: unknown): thing is null =>
+  (typeof thing === 'object') && (thing == null) // typecheck necessary bc (undefined == null) === true

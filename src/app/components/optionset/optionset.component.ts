@@ -60,7 +60,9 @@ export class OptionsetComponent implements OnInit, OnDestroy {
       if (this.ds.task.type === 'train') {
         if (!this.instructionsSchema) throw `No schema given for: ${this.ds.task?.type}`;
         const instructions  = isTaskInstructions(this.ds.task.instructions) ? this.ds.task.instructions : {};
+        console.log(instructions)
         this.controls = JSONSchemaToJSONForms(this.instructionsSchema, instructions);
+        console.log(this.controls)
       }
     } catch (e) {
       this.errors.push(e);

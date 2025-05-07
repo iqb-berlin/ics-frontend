@@ -46,6 +46,7 @@ export interface JsonSchemaProperty {
   enum: string[];
   pattern?: string;
   anyOf?: unknown[];
+  default?: unknown;
 }
 
 export interface JSONSchemaWithProperties {

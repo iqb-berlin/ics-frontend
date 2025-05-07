@@ -5,6 +5,7 @@ import {
 } from '../interfaces/optionset.interfaces';
 import { contains, isMapOf } from 'iqbspecs-coding-service/functions/common.typeguards';
 import { TaskInstructions } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { isJsonFormControlValueType, isNull } from './type-guards';
 
 const getJsonSchemaType = (prop: JsonSchemaProperty): { type: string, optional?: true } => {
   if (prop.type) return { type : prop.type };
@@ -39,24 +40,27 @@ export const chooseControl = (prop: JsonSchemaProperty): string => {
   return 'textarea';
 }
 
-export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, isRequired: boolean = true, value: unknown = undefined): JsonFormControl => ({
-  name: id,
-  label: prop.title || id,
-  value: null,
-  controlElementType: chooseControl(prop),
-  children: [],
-  childrenType: ((prop.type === 'array') && isJsonSchemaProperty(prop.items)) ? propertyToJsonFormControl(id, prop.items) : undefined,
-  validators: {
-    required: isRequired && !getJsonSchemaType(prop).optional,
-    jsonValidate: !['number', 'boolean', 'string', 'array'].includes(prop.type),
-    pattern: prop.pattern || undefined,
+export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, isRequired: boolean = true): JsonFormControl =>
+  setValue({
+    name: id,
+    label: prop.title || id,
+    value: null,
+    controlElementType: chooseControl(prop),
+    children: [],
+    childrenType: ((prop.type === 'array') && isJsonSchemaProperty(prop.items)) ? propertyToJsonFormControl(id, prop.items) : undefined,
+    validators: {
+      required: isRequired && !getJsonSchemaType(prop).optional,
+      jsonValidate: !['number', 'boolean', 'string', 'array'].includes(prop.type),
+      pattern: prop.pattern || undefined,
+    },
+    options: {
+      options: prop.enum || undefined,
+    },
+    fieldType: getJsonSchemaType(prop).type,
+    description: prop.description
   },
-  options: {
-    options: prop.enum || undefined,
-  },
-  fieldType: getJsonSchemaType(prop).type,
-  description: prop.description
-});
+  isJsonFormControlValueType(prop.default) ? prop.default : null
+  );
 
 export const resolveReferences = (prop: JsonSchemaProperty, schema: JSONSchemaWithProperties): JsonSchemaProperty => {
   if (('$ref' in prop) && (typeof prop.$ref === 'string')) {
@@ -77,17 +81,18 @@ export const resolveReferences = (prop: JsonSchemaProperty, schema: JSONSchemaWi
 }
 
 export const setValue = (control: JsonFormControl, value: unknown): JsonFormControl => {
+  if (typeof value === 'undefined') return control;
   switch (control.fieldType) {
     case 'string':
       return {
         ...control,
-        value: (control.validators.required) ? String(value) : (control.value == null ? null : String(control.value))
+        value: (control.validators.required && !value) ? '' : (isNull(value) ? null : String(value))
       };
     case 'integer':
     case 'number':
       return {
         ...control,
-        value: (control.validators.required) ? Number(value) : (control.value == null ? null : Number(control.value))
+        value: (control.validators.required && !value) ? 0 : (isNull(value) ? null : Number(value))
       };
     case 'boolean':
       return {...control, value: Boolean(value) };
@@ -113,7 +118,7 @@ export const JSONSchemaToJSONForms = (schema: unknown, values: TaskInstructions)
         ([id, resolveReferences(prop, schema)])
       )
       .map(([id, prop]: [string, JsonSchemaProperty]): JsonFormControl =>
-        propertyToJsonFormControl(id, prop, (schema.required || []).includes(id), values[id])
+        propertyToJsonFormControl(id, prop, (schema.required || []).includes(id))
       )
       .map(
         control => setValue(control, values[control.name])
