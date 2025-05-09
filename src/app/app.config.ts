@@ -12,10 +12,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([
       errorInterceptor
-    ])),
-    {
-      provide: 'BASE_PATH',
-      useValue: 'http://localhost'
-    }
+    ]))
   ]
 };

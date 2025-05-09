@@ -1,10 +1,9 @@
-import { AppConfig, Service } from '../interfaces/interfaces';
-import { isArrayOf, isMapOf } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { IcsfConfig } from '../interfaces/interfaces';
+import { isArrayOf } from 'iqbspecs-coding-service/functions/common.typeguards';
 import { JsonFormControlValueType } from '../interfaces/optionset.interfaces';
 
 export const isArrayOfSameShapedObjects = <T extends object>(thing: unknown): thing is T[] => {
   if (!Array.isArray(thing)) return false;
-
   return thing
     .every(item =>
       (typeof item === 'object') &&
@@ -15,14 +14,9 @@ export const isArrayOfSameShapedObjects = <T extends object>(thing: unknown): th
   );
 }
 
-export const isService = (thing: unknown): thing is Service =>
+export const isIcsfConfig = (thing: unknown): thing is IcsfConfig =>
   (typeof thing === 'object') && (thing !== null) &&
-  ('name' in thing) && (typeof thing.name === 'string') &&
-  ('url' in thing) && (typeof thing.url === 'string');
-
-export const isAppConfig = (thing: unknown): thing is AppConfig =>
-  (typeof thing === 'object') && (thing !== null) &&
-  ('services' in thing) && isMapOf(thing.services, isService);
+  ('services' in thing) && isArrayOf(thing.services, s => typeof s === 'string');
 
 export const isJsonFormControlValueType = (thing: unknown): thing is JsonFormControlValueType =>
   (thing == null) ||

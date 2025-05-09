@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, map, Observable, of, startWith, tap } from 'rxjs';
+import { catchError, map, Observable, of, startWith } from 'rxjs';
 import { checkCondition } from '../functions/check-condition';
-import { Service, ServiceConnection } from '../interfaces/interfaces';
+import { ServiceConnection } from '../interfaces/interfaces';
 import {
   Coder,
   DataChunk,
@@ -41,7 +41,7 @@ export class BackendService {
   ) {
   }
 
-  getConnection(id: string, url: string): Observable<ServiceConnection> {
+  getConnection(url: string): Observable<ServiceConnection> {
     return this.http.get<ServiceConnection>(url + '/info')
       .pipe(
         checkCondition(isServiceInfo),

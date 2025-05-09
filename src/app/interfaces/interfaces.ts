@@ -1,12 +1,7 @@
 import { TaskEventType, TaskType, ChunkTypes, TaskTypes, ServiceInfo } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 
-export interface Service {
-  readonly name: string;
-  readonly url: string;
-}
-
-export interface AppConfig {
-  readonly services: { [key: string]: Service };
+export interface IcsfConfig {
+  readonly services: string[];
 }
 
 export type TaskStatus = TaskEventType | 'draft'

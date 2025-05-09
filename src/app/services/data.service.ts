@@ -66,11 +66,7 @@ export class DataService {
   ) {
     this.cs.loadConfig()
       .then(config => {
-        // TODO put them in better format in config beforehand
-        const urls = Object.entries(config.services)
-          .map(([id, service]) => ({id, url: service.url}));
-
-        combineLatest(urls.map(url => this.bs.getConnection(url.id, url.url)))
+        combineLatest(config.services.map(url => this.bs.getConnection(url)))
           .subscribe(this._services$)
           .add(() => {
             const lastServiceId = localStorage.getItem('csf-service');
