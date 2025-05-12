@@ -10,7 +10,7 @@ describe('DatatableComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DatatableComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(DatatableComponent);
     component = fixture.componentInstance;

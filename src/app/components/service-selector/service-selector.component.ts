@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { DataService } from '../../services/data.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
@@ -12,9 +11,10 @@ import {
 } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatCard } from '@angular/material/card';
+import { MatTooltip } from '@angular/material/tooltip';
 import { ServiceConnection } from '../../interfaces/interfaces';
-import {MatTooltip} from '@angular/material/tooltip';
-import {ConfigService} from '../../services/config.service';
+import { DataService } from '../../services/data.service';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-service-selector',

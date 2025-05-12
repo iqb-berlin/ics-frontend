@@ -1,4 +1,6 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit, Component, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import {
   MatCell, MatCellDef,
@@ -8,13 +10,12 @@ import {
   MatTable,
   MatTableDataSource
 } from '@angular/material/table';
-import { DataService } from '../../services/data.service';
 import { MatButton } from '@angular/material/button';
 import { interval, Subscription } from 'rxjs';
 import { Coder } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
-import {MatTooltip} from '@angular/material/tooltip';
+import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-coders',
@@ -35,6 +36,7 @@ import { Router } from '@angular/router';
     MatSortHeader
   ],
   templateUrl: './coders.component.html',
+  standalone: true,
   styleUrl: './coders.component.css'
 })
 export class CodersComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -44,8 +46,8 @@ export class CodersComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly subscriptions: { [key: string]: Subscription } = {};
 
   constructor(
-    public readonly ds: DataService,
-    private readonly router: Router,
+    readonly ds: DataService,
+    private readonly router: Router
   ) {
     this.displayedColumns = ['label', 'actions'];
   }

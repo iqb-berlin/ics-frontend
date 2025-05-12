@@ -1,6 +1,7 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DatatableComponent } from '../datatable/datatable.component';
-import { OptionsetComponent } from '../optionset/optionset.component';
+/* eslint-disable implicit-arrow-linebreak */
+import {
+  Component, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   concatMap,
@@ -12,22 +13,26 @@ import {
   Subscription,
   switchMap
 } from 'rxjs';
-import { DataService } from '../../services/data.service';
 import { FormsModule } from '@angular/forms';
 import { MatTab, MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
-import { TabType, TaskTab } from '../../interfaces/interfaces';
-import { StatusPipe } from '../../pipe/status.pipe';
 import { DatePipe } from '@angular/common';
-import { UploadComponent } from '../upload/upload.component';
 import { MatIcon } from '@angular/material/icon';
-import {MatButton, MatIconButton} from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatLabel } from '@angular/material/select';
-import { CoderSelectComponent } from '../coder-select/coder-select.component';
-import { ChunkType, ChunkTypes, DataChunk, Task } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import {
+  ChunkType, ChunkTypes, DataChunk, Task
+} from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguards';
-import {TaskIsReadyPipe} from '../../pipe/task-is-ready.pipe';
+import { CoderSelectComponent } from '../coder-select/coder-select.component';
+import { UploadComponent } from '../upload/upload.component';
+import { StatusPipe } from '../../pipe/status.pipe';
+import { TabType, TaskTab } from '../../interfaces/interfaces';
+import { OptionsetComponent } from '../optionset/optionset.component';
+import { DatatableComponent } from '../datatable/datatable.component';
+import { DataService } from '../../services/data.service';
+import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
 
 @Component({
   selector: 'app-task',
@@ -74,7 +79,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.subscriptions['route'] = this.route.params
       .pipe(
         filter(params => contains(params, 'id', 'string')),
-        map(params => params['id']),
+        map(params => params.id),
         switchMap(taskId =>
           this.ds.serviceConnected$
             .pipe(
@@ -83,33 +88,31 @@ export class TaskComponent implements OnInit, OnDestroy {
             )
         ),
         concatMap(taskId => this.ds.getTask(taskId))
-      ).subscribe(task => {
+      ).subscribe(() => {
         this.subscriptions['polling'] = interval(2000)
           .pipe(
             startWith(0),
             filter(() => !this.tabIndex),
-            switchMap(() => this.ds.task ? this.ds.getTask(this.ds.task.id) : of(null)),
+            switchMap(() => (this.ds.task ? this.ds.getTask(this.ds.task.id) : of(null))),
             filter(t => !!t),
             distinctUntilChanged((t1: Task, t2: Task) => (StatusPipe.getStatus(t1) === StatusPipe.getStatus(t2)) && (t1.data.length === t2.data.length))
           )
-          .subscribe(task => {
-            this.collectTabs(task);
+          .subscribe(newTask => {
+            this.collectTabs(newTask);
           });
       });
-
   }
 
   collectTabs(task: Task): void {
     this.tabs = [
       { id: 'overview', label: 'Task', type: 'overview' },
       { id: 'config', label: 'Config', type: task.type },
-      ...task.data.map((chunk: DataChunk): TaskTab => {
-        return {
+      ...task.data
+        .map((chunk: DataChunk): TaskTab => ({
           type: chunk.type,
-          label: chunk.type + ': ' + chunk.id,
+          label: `${chunk.type}: ${chunk.id}`,
           id: chunk.id
-        }
-      })
+        }))
     ];
     if (StatusPipe.getStatus(task) === 'create') {
       this.tabs.push({ id: 'add', label: task.data.length ? '+' : 'Add input Data', type: 'add' });
@@ -156,7 +159,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   async startCodingJob(): Promise<void> {
     const coderId = this.ds.task?.coder;
     if (!coderId) {
-      throw new Error("Not coder selected"!);
+      throw new Error('Not coder selected'!);
     }
     await this.ds.addTask({
       label: `Coding task with ${coderId}`,

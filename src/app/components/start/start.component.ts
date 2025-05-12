@@ -4,9 +4,10 @@ import { ServiceSelectorComponent } from '../service-selector/service-selector.c
 @Component({
   selector: 'app-start',
   imports: [
-    ServiceSelectorComponent,
+    ServiceSelectorComponent
   ],
   templateUrl: './start.component.html',
+  standalone: true,
   styleUrl: './start.component.css'
 })
 export class StartComponent {

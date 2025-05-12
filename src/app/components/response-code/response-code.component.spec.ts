@@ -10,7 +10,7 @@ describe('ResponseCodeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ResponseCodeComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ResponseCodeComponent);
     component = fixture.componentInstance;

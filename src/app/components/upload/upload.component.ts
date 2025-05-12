@@ -1,7 +1,7 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import {
+  Component, ElementRef, EventEmitter, Output, ViewChild
+} from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { BackendService } from '../../services/backend.service';
-import { DataService } from '../../services/data.service';
 import { inferSchema, initParser } from 'udsv';
 import { ResponseRow, TaskType, DataChunk } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isResponseList, isResponseValueType } from 'iqbspecs-coding-service/functions/iqb.typeguards';
@@ -9,6 +9,8 @@ import { isResponseRowList } from 'iqbspecs-coding-service/functions/ics-api.typ
 import { ResponseStatusList } from 'iqbspecs-coding-service/interfaces/iqb.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 import { Response, ResponseStatusType } from '@iqbspecs/response/response.interface';
+import { DataService } from '../../services/data.service';
+import { BackendService } from '../../services/backend.service';
 
 @Component({
   selector: 'app-upload',
@@ -81,10 +83,11 @@ export class UploadComponent {
     throw new Error(`Unknown File extension: ${fileName}`);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   parseJsonFile(content: string): ResponseRow[] {
     const contentJson: unknown = JSON.parse(content);
     if (isResponseList(contentJson)) {
-      return contentJson.map((row: Response): ResponseRow => ({...row, setId: 'auto'}));
+      return contentJson.map((row: Response): ResponseRow => ({ ...row, setId: 'auto' }));
     }
     if (isResponseRowList(contentJson)) {
       return contentJson;
@@ -92,17 +95,18 @@ export class UploadComponent {
     throw new Error('File does not contain responses');
   }
 
+  // eslint-disable-next-line class-methods-use-this
   private parseCSVFile(content: string, taskType: TaskType): ResponseRow[] {
-    const schema = inferSchema(content, { trim : true });
-    if (!schema.cols.find(col => col.name === 'value')) throw new Error("no value column given");
-    if (!schema.cols.find(col => col.name === 'code') && (taskType === 'train')) throw new Error("no code column given");  // TODO only for training
+    const schema = inferSchema(content, { trim: true });
+    if (!schema.cols.find(col => col.name === 'value')) throw new Error('no value column given');
+    if (!schema.cols.find(col => col.name === 'code') && (taskType === 'train')) throw new Error('no code column given'); // TODO only for training
     const parser = initParser(schema);
-    const typedObjs  = parser.typedObjs(content);
+    const typedObjs = parser.typedObjs(content);
     return typedObjs
       .map((t: object): ResponseRow => ({
         setId: (('setId' in t) && (typeof t.setId === 'string')) ? t.setId : 'auto',
         id: (('id' in t) && (typeof t.id === 'string')) ? t.id : 'auto',
-        status: (('status' in t) && (isA<ResponseStatusType>(ResponseStatusList, t.status)))   ? t.status : 'VALUE_CHANGED',
+        status: (('status' in t) && (isA<ResponseStatusType>(ResponseStatusList, t.status))) ? t.status : 'VALUE_CHANGED',
         value: (('value' in t) && isResponseValueType(t.value)) ? t.value : '',
         subform: (('subform' in t) && (typeof t.subform === 'string')) ? t.subform : undefined,
         score: (('score' in t) && (typeof t.score === 'number')) ? t.score : undefined,

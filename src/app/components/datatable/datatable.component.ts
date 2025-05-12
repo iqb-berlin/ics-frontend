@@ -12,15 +12,15 @@ import {
   MatTable,
   MatTableDataSource
 } from '@angular/material/table';
-import { DataService } from '../../services/data.service';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
-import { ResponseCodeComponent } from '../response-code/response-code.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatCard } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { ResponseCodeComponent } from '../response-code/response-code.component';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-datatable',
@@ -55,10 +55,12 @@ export class DatatableComponent implements AfterViewInit {
   protected readonly settings = {
     allColumns: false
   };
+
   static columnSets = {
-    'all': ['setId', 'id', 'subForm', 'status', 'value', 'code', 'score', 'settings'],
-    'important': ['setId', 'status', 'value', 'code', 'settings']
-  }
+    all: ['setId', 'id', 'subForm', 'status', 'value', 'code', 'score', 'settings'],
+    important: ['setId', 'status', 'value', 'code', 'settings']
+  };
+
   showSettings: boolean = false;
 
   constructor(
@@ -70,12 +72,10 @@ export class DatatableComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.sortingDataAccessor = (item, property): string | number => {
       if (property === 'code') {
-        if (item.code) return item.code  * 1000000;
+        if (item.code) return item.code * 1000000;
         if (item.codes && item.codes.length) {
           return item.codes
-            .map(current =>
-              Math.min(1, parseFloat(current.parameter ?? "0")) * 100 * current.id * 1000
-            )
+            .map(current => Math.min(1, parseFloat(current.parameter ?? '0')) * 100 * current.id * 1000)
             .reduce((a, b) => a + b);
         }
         return 0;
@@ -88,7 +88,7 @@ export class DatatableComponent implements AfterViewInit {
         return JSON.stringify(value);
       }
       return 0;
-    }
+    };
     this.ds.data$
       .subscribe(data => {
         this.dataSource.sort = this.sort;
@@ -98,6 +98,7 @@ export class DatatableComponent implements AfterViewInit {
 
   updateSetting(setting: keyof typeof this.settings, checked: boolean) {
     this.settings[setting] = checked;
+    // eslint-disable-next-line default-case
     switch (setting) {
       case 'allColumns':
         this.displayedColumns = DatatableComponent.columnSets[checked ? 'all' : 'important'];

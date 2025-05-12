@@ -1,7 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TaskStatus } from '../interfaces/interfaces';
-import { TaskEvent, TaskEventType, TaskEventTypes, Task } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import {
+  TaskEvent, TaskEventType, TaskEventTypes, Task
+} from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { TaskStatus } from '../interfaces/interfaces';
 
 @Pipe({
   standalone: true,
@@ -17,6 +19,7 @@ export class StatusPipe implements PipeTransform {
     return (lastEvent && isA<TaskEventType>(TaskEventTypes, lastEvent.status)) ? lastEvent.status : 'draft';
   }
 
+  // eslint-disable-next-line class-methods-use-this
   transform(task: Task): TaskStatus {
     return StatusPipe.getStatus(task);
   }

@@ -1,10 +1,12 @@
-import { TaskEventType, TaskType, ChunkTypes, TaskTypes, ServiceInfo } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import {
+  TaskEventType, TaskType, ChunkTypes, TaskTypes, ServiceInfo
+} from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 
 export interface IcsfConfig {
   readonly services: string[];
 }
 
-export type TaskStatus = TaskEventType | 'draft'
+export type TaskStatus = TaskEventType | 'draft';
 
 export interface TaskOverview {
   readonly id: string;
@@ -29,5 +31,3 @@ export interface ServiceConnection {
   url: string;
   status: 'ok' | 'error' | 'connecting' | 'version-error';
 }
-
-

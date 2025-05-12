@@ -1,15 +1,19 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DataService } from '../../services/data.service';
+import {
+  Component, ElementRef, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
 import { MatError } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
+import { JSONSchema } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
+import { isTaskInstructions, isServiceInfo } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
+import {
+  distinctUntilChanged, interval, map, Subscription, takeWhile
+} from 'rxjs';
+import { DataService } from '../../services/data.service';
 import { JsonFormControl } from '../../interfaces/optionset.interfaces';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { ControlComponent } from '../control/control.component';
 import { getValues, JSONSchemaToJSONForms } from '../../functions/optionset';
-import { JSONSchema, TaskInstructions } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
-import { isTaskInstructions, isServiceInfo } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
 import { download } from '../../functions/download';
-import { distinctUntilChanged, interval, map, Subscription, takeWhile } from 'rxjs';
 
 @Component({
   selector: 'app-optionset',
@@ -25,9 +29,9 @@ import { distinctUntilChanged, interval, map, Subscription, takeWhile } from 'rx
 })
 export class OptionsetComponent implements OnInit, OnDestroy {
   @ViewChild('fileInput') private fileInput: ElementRef | undefined;
-  errors: any[] = [];
+  errors: string[] = [];
   controls: JsonFormControl[] = [];
-  instructionsSchema: JSONSchema | null = null
+  instructionsSchema: JSONSchema | null = null;
 
   protected readonly Object = Object;
   protected readonly isServiceInfo = isServiceInfo;
@@ -59,14 +63,12 @@ export class OptionsetComponent implements OnInit, OnDestroy {
     try {
       this.instructionsSchema = this.ds.serviceInfo?.instructionsSchema || null;
       if (this.ds.task.type === 'train') {
-        if (!this.instructionsSchema) throw `No schema given for: ${this.ds.task?.type}`;
-        const instructions  = isTaskInstructions(this.ds.task.instructions) ? this.ds.task.instructions : {};
-        console.log(instructions)
+        if (!this.instructionsSchema) throw new Error(`No schema given for: ${this.ds.task?.type}`);
+        const instructions = isTaskInstructions(this.ds.task.instructions) ? this.ds.task.instructions : {};
         this.controls = JSONSchemaToJSONForms(this.instructionsSchema, instructions);
-        console.log(this.controls)
       }
     } catch (e) {
-      this.errors.push(e);
+      this.errors.push(String(e));
     }
   }
 
@@ -76,7 +78,7 @@ export class OptionsetComponent implements OnInit, OnDestroy {
   }
 
   download(): void {
-    download(this.ds.task?.instructions).asJSON(this.ds.task?.label + '.instructions.json');
+    download(this.ds.task?.instructions).asJSON(`${this.ds.task?.label}.instructions.json`);
   }
 
   onFileSelected($event: Event) {
@@ -106,17 +108,12 @@ export class OptionsetComponent implements OnInit, OnDestroy {
       throw new Error(`Upload error (1): ${file.name}`);
     }
     const text = new TextDecoder().decode($event.target.result);
-    if (!this.ds.task) throw new Error('No task found.');
-    this.ds.updateTask({ instructions: this.parseFile(text) })
+    const instructions = JSON.parse(text);
+    if (!isTaskInstructions(instructions)) throw new Error('invalid instructions file!');
+    this.ds.updateTask({ instructions })
       .then(() => {
         this.loadSchema();
       });
-  }
-
-  parseFile(file: string): TaskInstructions {
-    const o = JSON.parse(file);
-    if (!isTaskInstructions(o)) throw new Error('invalid instructions file!');
-    return o;
   }
 
   ngOnDestroy(): void {

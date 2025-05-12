@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { DataService } from '../../services/data.service';
 import { MatAnchor, MatButton } from '@angular/material/button';
-import { StatusPipe } from '../../pipe/status.pipe';
-import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TaskTypes, TaskType } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
-import {filter, map} from 'rxjs';
-import {TaskIsReadyPipe} from '../../pipe/task-is-ready.pipe';
+import { filter, map } from 'rxjs';
+import { StatusPipe } from '../../pipe/status.pipe';
+import { DataService } from '../../services/data.service';
+import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
 import { download } from '../../functions/download';
 
 @Component({
@@ -18,10 +18,10 @@ import { download } from '../../functions/download';
     TaskIsReadyPipe
   ],
   templateUrl: './header.component.html',
+  standalone: true,
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-
   protected currentRoute: string = '';
 
   constructor(
@@ -32,7 +32,7 @@ export class HeaderComponent {
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
-        map(event => this.activatedRoute.root.firstChild?.routeConfig?.data?.['id'] || '')
+        map(() => this.activatedRoute.root.firstChild?.routeConfig?.data?.['id'] || '')
       )
       .subscribe(urlId => {
         this.currentRoute = urlId;

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, of, startWith } from 'rxjs';
-import { checkCondition } from '../functions/check-condition';
-import { ServiceConnection } from '../interfaces/interfaces';
+import {
+  catchError, map, Observable, of, startWith
+} from 'rxjs';
 import {
   Coder,
   DataChunk,
@@ -20,8 +20,10 @@ import {
   isTask
 } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
 import { isArrayOf } from 'iqbspecs-coding-service/functions/common.typeguards';
-import {versionSatisfies} from '../functions/version.functions';
-import {ConfigService} from './config.service';
+import { ServiceConnection } from '../interfaces/interfaces';
+import { checkCondition } from '../functions/check-condition';
+import { versionSatisfies } from '../functions/version.functions';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +32,7 @@ export class BackendService {
   private _url: string | null = null;
 
   get url(): string {
-    if (!this._url) throw new Error("No service connected!");
+    if (!this._url) throw new Error('No service connected!');
     return this._url;
   }
 
@@ -45,11 +47,11 @@ export class BackendService {
   }
 
   getConnection(url: string): Observable<ServiceConnection> {
-    return this.http.get<ServiceConnection>(url + '/info')
+    return this.http.get<ServiceConnection>(`${url}/info`)
       .pipe(
         checkCondition(isServiceInfo),
         map((info: ServiceInfo): ServiceConnection => this.checkConnectionVersion({ url, status: 'ok', info })),
-        catchError((e): Observable<ServiceConnection> => of({ url, status: 'error' })),
+        catchError((): Observable<ServiceConnection> => of({ url, status: 'error' })),
         startWith(<ServiceConnection>{ url, status: 'connecting' })
       );
   }
@@ -64,7 +66,7 @@ export class BackendService {
 
   getTasks(): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.url}/tasks`)
-      .pipe(checkCondition(response => isArrayOf(response, isTask)))
+      .pipe(checkCondition(response => isArrayOf(response, isTask)));
   }
 
   getTask(taskId: string): Observable<Task> {

@@ -1,5 +1,6 @@
-import { IcsfConfig } from '../interfaces/interfaces';
+/* eslint-disable implicit-arrow-linebreak */
 import { isArrayOf } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { IcsfConfig } from '../interfaces/interfaces';
 import { JsonFormControlValueType } from '../interfaces/optionset.interfaces';
 
 export const isArrayOfSameShapedObjects = <T extends object>(thing: unknown): thing is T[] => {
@@ -11,8 +12,8 @@ export const isArrayOfSameShapedObjects = <T extends object>(thing: unknown): th
       !Array.isArray(item) &&
       (Object.keys(item).length === Object.keys(thing[0]).length) &&
       Object.keys(item).every(key => key in thing[0])
-  );
-}
+    );
+};
 
 export const isIcsfConfig = (thing: unknown): thing is IcsfConfig =>
   (typeof thing === 'object') && (thing !== null) &&
@@ -26,4 +27,4 @@ export const isJsonFormControlValueType = (thing: unknown): thing is JsonFormCon
   (isArrayOf<JsonFormControlValueType>(thing, isJsonFormControlValueType));
 
 export const isNull = (thing: unknown): thing is null =>
-  (typeof thing === 'object') && (thing == null) // typecheck necessary bc (undefined == null) === true
+  (typeof thing === 'object') && (thing == null); // typecheck necessary bc (undefined == null) === true

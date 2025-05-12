@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DataService } from '../../services/data.service';
-import { BackendService } from '../../services/backend.service';
+import {
+  AfterViewInit, Component, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -15,13 +15,15 @@ import {
   MatTableDataSource
 } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
-import { TaskOverview } from '../../interfaces/interfaces';
 import { Task } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { RouterLink } from '@angular/router';
 import { MatTooltip } from '@angular/material/tooltip';
 import { interval, Subscription, switchMap } from 'rxjs';
-import { StatusPipe } from '../../pipe/status.pipe';
 import { MatButton } from '@angular/material/button';
+import { StatusPipe } from '../../pipe/status.pipe';
+import { TaskOverview } from '../../interfaces/interfaces';
+import { BackendService } from '../../services/backend.service';
+import { DataService } from '../../services/data.service';
 
 @Component({
   imports: [
@@ -42,10 +44,11 @@ import { MatButton } from '@angular/material/button';
     MatButton
   ],
   templateUrl: './tasks.component.html',
+  standalone: true,
   styleUrls: [
     './tasks.component.css',
     '../../task-status.css'
-    ]
+  ]
 })
 export class TasksComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;

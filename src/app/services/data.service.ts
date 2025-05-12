@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-import { ServiceConnection, TaskStatus } from '../interfaces/interfaces';
-import { BackendService } from './backend.service';
-import { BehaviorSubject, combineLatest, lastValueFrom, map, Observable, tap } from 'rxjs';
-import { compareEvents } from '../functions/api-helper.functions';
 import {
   Coder, DataChunk,
   ResponseRow,
   ServiceInfo,
   Task, TaskUpdate
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
-import {StatusPipe} from '../pipe/status.pipe';
+import {
+  BehaviorSubject, combineLatest, lastValueFrom, map, Observable, tap
+} from 'rxjs';
+import { ServiceConnection, TaskStatus } from '../interfaces/interfaces';
+import { BackendService } from './backend.service';
+import { compareEvents } from '../functions/api-helper.functions';
+import { StatusPipe } from '../pipe/status.pipe';
 import { ConfigService } from './config.service';
-
 
 @Injectable({
   providedIn: 'root'
@@ -62,7 +63,7 @@ export class DataService {
 
   constructor(
     private readonly bs: BackendService,
-    private readonly cs: ConfigService,
+    private readonly cs: ConfigService
   ) {
     this.cs.loadConfig()
       .then(config => {
@@ -70,7 +71,7 @@ export class DataService {
           .subscribe(this._services$)
           .add(() => {
             const lastServiceId = localStorage.getItem('csf-service');
-            const service = lastServiceId ? lastServiceId : null;
+            const service = lastServiceId || null;
             this.selectService(service);
           });
       });
@@ -79,7 +80,7 @@ export class DataService {
   selectService(serviceId: string | null): boolean {
     this.serviceInfo = null;
     const services = this._services$.getValue();
-    const service = services.find(service => service.info?.id === serviceId);
+    const service = services.find(serviceConnection => serviceConnection.info?.id === serviceId);
     if (!service) return false;
     if ((service.status === 'error') || (!service.info)) {
       this._serviceConnected$.next(false);
@@ -113,7 +114,7 @@ export class DataService {
   }
 
   async commitTask(): Promise<void> {
-    if (!this.task) return;
+    if (!this.task) return Promise.resolve();
     return lastValueFrom(this.bs.postTask(this.task.id, 'commit')
       .pipe(map(task => {
         this.task = task;
@@ -125,7 +126,7 @@ export class DataService {
   }
 
   async deleteTask(id: string | undefined = this.task?.id): Promise<void> {
-    if (!id) return;
+    if (!id) return Promise.resolve();
     return lastValueFrom(this.bs.deleteTask(id));
   }
 

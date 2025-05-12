@@ -1,3 +1,4 @@
+/* eslint-disable implicit-arrow-linebreak */
 import { map, Observable } from 'rxjs';
 
 export const checkCondition = <T>(conditionFn: (value: unknown) => value is T) =>
@@ -7,10 +8,11 @@ export const checkCondition = <T>(conditionFn: (value: unknown) => value is T) =
         if (!conditionFn(value)) {
           if (Array.isArray(value)) {
             const firstErrorline = value.findIndex(row => !conditionFn([row]));
+            // eslint-disable-next-line no-console
             console.log(value[firstErrorline]);
             throw new Error(`Condition not met: ${conditionFn.name} (row: ${firstErrorline})`);
           }
-          throw new Error('Condition not met: ' + conditionFn.name);
+          throw new Error(`Condition not met: ${conditionFn.name}`);
         }
         return value;
       })

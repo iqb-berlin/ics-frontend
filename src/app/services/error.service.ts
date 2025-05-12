@@ -5,6 +5,5 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ErrorService {
-  constructor() { }
   readonly errors$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 }

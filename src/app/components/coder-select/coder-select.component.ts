@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import {
+  MatFormField, MatLabel, MatOption, MatSelect, MatSelectChange
+} from '@angular/material/select';
 import { DataService } from '../../services/data.service';
-import {MatFormField, MatLabel, MatOption, MatSelect, MatSelectChange} from '@angular/material/select';
 
 @Component({
   selector: 'app-coder-select',

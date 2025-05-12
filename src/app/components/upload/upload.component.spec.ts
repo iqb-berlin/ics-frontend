@@ -10,7 +10,7 @@ describe('UploadComponent', () => {
     await TestBed.configureTestingModule({
       imports: [UploadComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(UploadComponent);
     component = fixture.componentInstance;

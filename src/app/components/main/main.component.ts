@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter } from 'rxjs';
 import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
 import { ErrorService } from '../../services/error.service';
 
 @Component({
@@ -12,11 +12,12 @@ import { ErrorService } from '../../services/error.service';
     RouterOutlet
   ],
   templateUrl: './main.component.html',
+  standalone: true,
   styleUrl: './main.component.css'
 })
 export class MainComponent {
   constructor(
-    public readonly snackBar: MatSnackBar,
+    readonly snackBar: MatSnackBar,
     private readonly es: ErrorService
   ) {
     this.es.errors$
@@ -28,7 +29,7 @@ export class MainComponent {
 
   showError(error: string) {
     this.snackBar.open(error, 'OK', {
-      duration: 10000,
+      duration: 10000
     });
   }
 }

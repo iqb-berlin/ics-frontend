@@ -1,24 +1,25 @@
+/* eslint-disable implicit-arrow-linebreak */
+import { contains, isMapOf } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { TaskInstructions } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import {
   JsonFormControl,
   JsonSchemaProperty,
   JSONSchemaWithProperties
 } from '../interfaces/optionset.interfaces';
-import { contains, isMapOf } from 'iqbspecs-coding-service/functions/common.typeguards';
-import { TaskInstructions } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isJsonFormControlValueType, isNull } from './type-guards';
 
 const getJsonSchemaType = (prop: JsonSchemaProperty): { type: string, optional?: true } => {
-  if (prop.type) return { type : prop.type };
+  if (prop.type) return { type: prop.type };
   if (!prop.type && prop.anyOf) {
     const types = prop.anyOf
-      .map((a: unknown): string => contains(a, 'type', '') ? a.type : '<unsupported>');
+      .map((a: unknown): string => (contains(a, 'type', '') ? a.type : '<unsupported>'));
     // the only multi-type-scenario we support currently: null and a primitive type
     if ((types.length === 2) && types.includes('null') && !types.includes('<unsupported>')) {
-      return { type: types.filter(type => type !== "null")[0], optional: true };
+      return { type: types.filter(type => type !== 'null')[0], optional: true };
     }
   }
-  return {  type: '' };
-}
+  return { type: '' };
+};
 
 export const chooseControl = (prop: JsonSchemaProperty): string => {
   if (prop.enum) {
@@ -36,9 +37,10 @@ export const chooseControl = (prop: JsonSchemaProperty): string => {
       return 'array';
     case 'range':
       return 'range';
+    default:
+      return 'textarea';
   }
-  return 'textarea';
-}
+};
 
 export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, isRequired: boolean = true): JsonFormControl =>
   setValue({
@@ -51,10 +53,10 @@ export const propertyToJsonFormControl = (id: string, prop: JsonSchemaProperty, 
     validators: {
       required: isRequired && !getJsonSchemaType(prop).optional,
       jsonValidate: !['number', 'boolean', 'string', 'array'].includes(prop.type),
-      pattern: prop.pattern || undefined,
+      pattern: prop.pattern || undefined
     },
     options: {
-      options: prop.enum || undefined,
+      options: prop.enum || undefined
     },
     fieldType: getJsonSchemaType(prop).type,
     description: prop.description
@@ -69,16 +71,17 @@ export const resolveReferences = (prop: JsonSchemaProperty, schema: JSONSchemaWi
       .split('/');
     let sel: { [key: string]: any } = schema;
     let step;
+    // eslint-disable-next-line no-cond-assign
     while (step = path.shift()) {
       if (!(step in sel)) throw new Error(`Can not expand path: ${prop.$ref}`);
       if (typeof sel[step] !== 'object') throw new Error(`Can not expand path: ${prop.$ref}`);
       sel = sel[step];
     }
-    if (!isJsonSchemaProperty(sel)) throw `Can not read JSONSchema property (${path}): ${sel}`;
+    if (!isJsonSchemaProperty(sel)) throw new Error(`Can not read JSONSchema property (${path}): ${sel}`);
     return sel;
   }
   return prop;
-}
+};
 
 export const setValue = (control: JsonFormControl, value: unknown): JsonFormControl => {
   if (typeof value === 'undefined') return control;
@@ -86,20 +89,23 @@ export const setValue = (control: JsonFormControl, value: unknown): JsonFormCont
     case 'string':
       return {
         ...control,
+        // eslint-disable-next-line no-nested-ternary
         value: (control.validators.required && !value) ? '' : (isNull(value) ? null : String(value))
       };
     case 'integer':
     case 'number':
       return {
         ...control,
+        // eslint-disable-next-line no-nested-ternary
         value: (control.validators.required && !value) ? 0 : (isNull(value) ? null : Number(value))
       };
     case 'boolean':
-      return {...control, value: Boolean(value) };
+      return { ...control, value: Boolean(value) };
     case 'array':
+      // eslint-disable-next-line no-case-declarations
       const children = (!Array.isArray(value)) ? [] :
         value
-          .map(v => control.childrenType ? setValue(control.childrenType, v) : null)
+          .map(v => (control.childrenType ? setValue(control.childrenType, v) : null))
           .filter(v => !!v);
       return {
         ...control,
@@ -107,12 +113,12 @@ export const setValue = (control: JsonFormControl, value: unknown): JsonFormCont
         value: children.map(child => child.value)
       };
     default:
-      return {...control, value: JSON.stringify(value) };
+      return { ...control, value: JSON.stringify(value) };
   }
-}
+};
 
 export const JSONSchemaToJSONForms = (schema: unknown, values: TaskInstructions): JsonFormControl[] =>
-  isSchemaWithProperties(schema) ?
+  (isSchemaWithProperties(schema) ?
     Object.entries(schema.properties)
       .map(([id, prop]: [string, JsonSchemaProperty]): [string, JsonSchemaProperty] =>
         ([id, resolveReferences(prop, schema)])
@@ -122,8 +128,8 @@ export const JSONSchemaToJSONForms = (schema: unknown, values: TaskInstructions)
       )
       .map(
         control => setValue(control, values[control.name])
-      )
-    : [];
+      ) :
+    []);
 
 const getValue = (control: JsonFormControl): unknown => {
   if (!control.validators.required && control.value == null) return null;
@@ -139,13 +145,13 @@ const getValue = (control: JsonFormControl): unknown => {
       return control.children.map(getValue);
     default:
       try {
-        return JSON.parse((typeof control.value === 'string') ? control.value : '"error"')
+        return JSON.parse((typeof control.value === 'string') ? control.value : '"error"');
       } catch (e) {
         console.error(e);
         return '';
       }
   }
-}
+};
 
 export const getValues = (controls: JsonFormControl[]): object => {
   const fd: { [key: string]: unknown } = {};
@@ -154,7 +160,7 @@ export const getValues = (controls: JsonFormControl[]): object => {
       fd[control.name] = getValue(control);
     });
   return fd;
-}
+};
 
 export const isSchemaWithProperties = (thing: unknown): thing is JSONSchemaWithProperties =>
   (typeof thing === 'object') &&
