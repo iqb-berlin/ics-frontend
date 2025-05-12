@@ -9,6 +9,7 @@ import { isResponseRow } from 'iqbspecs-coding-service/functions/ics-api.typegua
     PercentPipe
   ],
   templateUrl: './response-code.component.html',
+  standalone: true,
   styleUrl: 'response-code.component.css'
 })
 export class ResponseCodeComponent {

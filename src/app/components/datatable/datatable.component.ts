@@ -45,6 +45,7 @@ import { MatIcon } from '@angular/material/icon';
     MatIcon
   ],
   templateUrl: './datatable.component.html',
+  standalone: true,
   styleUrl: './datatable.component.css'
 })
 export class DatatableComponent implements AfterViewInit {

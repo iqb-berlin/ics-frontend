@@ -20,6 +20,7 @@ import { distinctUntilChanged, interval, map, Subscription, takeWhile } from 'rx
     ControlComponent
   ],
   templateUrl: './optionset.component.html',
+  standalone: true,
   styleUrl: './optionset.component.css'
 })
 export class OptionsetComponent implements OnInit, OnDestroy {

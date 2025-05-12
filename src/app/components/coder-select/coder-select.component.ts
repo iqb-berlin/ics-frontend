@@ -11,6 +11,7 @@ import {MatFormField, MatLabel, MatOption, MatSelect, MatSelectChange} from '@an
     MatOption
   ],
   templateUrl: './coder-select.component.html',
+  standalone: true,
   styleUrl: './coder-select.component.css'
 })
 export class CoderSelectComponent implements OnInit {

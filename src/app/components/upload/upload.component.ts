@@ -16,6 +16,7 @@ import { Response, ResponseStatusType } from '@iqbspecs/response/response.interf
     MatButton
   ],
   templateUrl: './upload.component.html',
+  standalone: true,
   styleUrl: './upload.component.css'
 })
 export class UploadComponent {

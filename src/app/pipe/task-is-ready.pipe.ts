@@ -3,6 +3,7 @@ import {Task} from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import {StatusPipe} from './status.pipe';
 
 @Pipe({
+  standalone: true,
   name: 'taskIsReady'
 })
 export class TaskIsReadyPipe implements PipeTransform {

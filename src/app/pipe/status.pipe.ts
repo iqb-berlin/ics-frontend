@@ -4,6 +4,7 @@ import { TaskEvent, TaskEventType, TaskEventTypes, Task } from 'iqbspecs-coding-
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 
 @Pipe({
+  standalone: true,
   name: 'status'
 })
 export class StatusPipe implements PipeTransform {

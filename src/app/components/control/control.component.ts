@@ -31,6 +31,7 @@ import {MatIcon} from '@angular/material/icon';
     MatIconButton
   ],
   templateUrl: './control.component.html',
+  standalone: true,
   styleUrl: './control.component.css'
 })
 export class ControlComponent {
