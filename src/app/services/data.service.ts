@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ServiceConnection, TaskStatus } from '../interfaces/interfaces';
 import { BackendService } from './backend.service';
-import { BehaviorSubject, combineLatest, from, lastValueFrom, map, mergeMap, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, lastValueFrom, map, Observable, tap } from 'rxjs';
 import { compareEvents } from '../functions/api-helper.functions';
 import {
   Coder, DataChunk,
@@ -11,6 +11,7 @@ import {
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import {StatusPipe} from '../pipe/status.pipe';
 import { ConfigService } from './config.service';
+import {versionSatisfies} from '../functions/version.functions';
 
 
 @Injectable({
@@ -75,6 +76,8 @@ export class DataService {
           });
       });
   }
+
+
 
   selectService(serviceId: string | null): boolean {
     this.serviceInfo = null;

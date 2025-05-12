@@ -1,10 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { DataService } from '../../services/data.service';
-import {AsyncPipe, JsonPipe, KeyValuePipe} from '@angular/common';
-import { MatFormField, MatOption, MatSelect, MatLabel, MatSelectChange } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatAnchor, MatIconButton } from '@angular/material/button';
 import {
   MatCell,
   MatCellDef,
@@ -13,23 +10,16 @@ import {
   MatHeaderRow,
   MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource
 } from '@angular/material/table';
-import { MatIcon } from '@angular/material/icon';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
-import { ResponseCodeComponent } from '../response-code/response-code.component';
-import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { MatCard } from '@angular/material/card';
 import { ServiceConnection } from '../../interfaces/interfaces';
+import {MatTooltip} from '@angular/material/tooltip';
+import {ConfigService} from '../../services/config.service';
 
 @Component({
   selector: 'app-service-selector',
   imports: [
-    KeyValuePipe,
-    MatSelect,
-    MatOption,
-    MatFormField,
-    MatLabel,
     FormsModule,
-    MatAnchor,
     MatCell,
     MatCellDef,
     MatColumnDef,
@@ -43,10 +33,10 @@ import { ServiceConnection } from '../../interfaces/interfaces';
     MatTable,
     MatHeaderCellDef,
     MatCard,
-    AsyncPipe,
-    JsonPipe
+    MatTooltip
   ],
   templateUrl: './service-selector.component.html',
+  standalone: true,
   styleUrl: './service-selector.component.css'
 })
 export class ServiceSelectorComponent implements AfterViewInit {
@@ -56,7 +46,8 @@ export class ServiceSelectorComponent implements AfterViewInit {
 
   constructor(
     public ds: DataService,
-    private router: Router
+    private router: Router,
+    protected cs: ConfigService
   ) {
   }
 

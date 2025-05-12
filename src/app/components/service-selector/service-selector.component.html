@@ -31,7 +31,7 @@
   </ng-container>
 
   <ng-container matColumnDef="api-version">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>ICS API</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Frontend version: {{cs.icsVersion}}">ICS API</th>
     <td mat-cell *matCellDef="let element" (click)="selectService(element.info?.id)">{{element.info?.apiVersion}}</td>
   </ng-container>
 

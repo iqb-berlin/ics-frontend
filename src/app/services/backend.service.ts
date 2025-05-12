@@ -20,6 +20,8 @@ import {
   isTask
 } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
 import { isArrayOf } from 'iqbspecs-coding-service/functions/common.typeguards';
+import {versionSatisfies} from '../functions/version.functions';
+import {ConfigService} from './config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +40,7 @@ export class BackendService {
 
   constructor(
     private readonly http: HttpClient,
+    private readonly cs: ConfigService
   ) {
   }
 
@@ -45,10 +48,18 @@ export class BackendService {
     return this.http.get<ServiceConnection>(url + '/info')
       .pipe(
         checkCondition(isServiceInfo),
-        map((info: ServiceInfo): ServiceConnection => ({ url, status: 'ok', info })),
+        map((info: ServiceInfo): ServiceConnection => this.checkConnectionVersion({ url, status: 'ok', info })),
         catchError((e): Observable<ServiceConnection> => of({ url, status: 'error' })),
         startWith(<ServiceConnection>{ url, status: 'connecting' })
       );
+  }
+
+  private checkConnectionVersion(sc: ServiceConnection): ServiceConnection {
+    return {
+      info: sc.info,
+      url: sc.url,
+      status: versionSatisfies(sc.info?.apiVersion || '0.0.0', this.cs.icsVersion) ? sc.status : 'version-error'
+    };
   }
 
   getTasks(): Observable<Task[]> {

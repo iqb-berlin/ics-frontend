@@ -4,15 +4,18 @@ import { checkCondition } from '../functions/check-condition';
 import { HttpClient } from '@angular/common/http';
 import { IcsfConfig } from '../interfaces/interfaces';
 import { isIcsfConfig } from '../functions/type-guards';
+import * as icsPackage from 'iqbspecs-coding-service/package.json';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfigService {
   private _config: IcsfConfig | null = null;
+  readonly icsVersion: string;
   constructor(
     private readonly http: HttpClient,
   ) {
+    this.icsVersion = icsPackage.version;
   }
 
   get config(): IcsfConfig {

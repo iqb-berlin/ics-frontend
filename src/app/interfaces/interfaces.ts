@@ -27,7 +27,7 @@ export interface TaskTab {
 export interface ServiceConnection {
   info?: ServiceInfo;
   url: string;
-  status: 'ok' | 'error' | 'connecting';
+  status: 'ok' | 'error' | 'connecting' | 'version-error';
 }
 
 
