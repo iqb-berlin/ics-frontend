@@ -1,6 +1,6 @@
 @if (ds.task) {
   <mat-tab-group (selectedTabChange)="onTabChange($event)" [(selectedIndex)]="tabIndex">
-    @for (tab of tabs; track tab) {
+    @for (tab of tabs; track tab.id) {
       <mat-tab [label]="tab.label" [bodyClass]="[tab.type, 'tab-body']" [labelClass]="[tab.type, 'tab-label']">
         @if (tab.type === 'overview') {
           @if (editLabel || !ds.task.label) {

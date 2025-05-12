@@ -11,7 +11,6 @@ import {
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import {StatusPipe} from '../pipe/status.pipe';
 import { ConfigService } from './config.service';
-import {versionSatisfies} from '../functions/version.functions';
 
 
 @Injectable({
@@ -19,14 +18,14 @@ import {versionSatisfies} from '../functions/version.functions';
 })
 export class DataService {
   serviceInfo: ServiceInfo | null = null;
-  private _services$: BehaviorSubject<ServiceConnection[]> = new BehaviorSubject<ServiceConnection[]>([]);
-  private _serviceConnected$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly _services$: BehaviorSubject<ServiceConnection[]> = new BehaviorSubject<ServiceConnection[]>([]);
+  private readonly _serviceConnected$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   get serviceConnected$(): Observable<boolean> {
     return this._serviceConnected$.asObservable();
   }
 
-  private _data: BehaviorSubject<ResponseRow[]> = new BehaviorSubject<ResponseRow[]>([]);
+  private readonly _data: BehaviorSubject<ResponseRow[]> = new BehaviorSubject<ResponseRow[]>([]);
   coders: Coder[] = [];
   currentChunk: DataChunk | null = null;
 
@@ -76,8 +75,6 @@ export class DataService {
           });
       });
   }
-
-
 
   selectService(serviceId: string | null): boolean {
     this.serviceInfo = null;
