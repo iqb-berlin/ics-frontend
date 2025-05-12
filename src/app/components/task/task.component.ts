@@ -49,6 +49,7 @@ import {TaskIsReadyPipe} from '../../pipe/task-is-ready.pipe';
     TaskIsReadyPipe
   ],
   templateUrl: './task.component.html',
+  standalone: true,
   styleUrls: [
     './task.component.css',
     '../../task-status.css'
@@ -77,7 +78,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         switchMap(taskId =>
           this.ds.serviceConnected$
             .pipe(
-              filter(c => c != null),
+              filter(c => c),
               map(() => taskId)
             )
         ),
