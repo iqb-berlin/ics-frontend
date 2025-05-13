@@ -10,8 +10,6 @@ down-prod:
 build-prod:
 	docker compose -f docker-compose.yml -f docker-compose.prod.yml build
 
-
-# Push all docker images to 'scm.cms.hu-berlin.de:4567/iqb/studio-lite'
 include .env.ics-frontend
 push-iqb-registry:
 	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-frontend build
