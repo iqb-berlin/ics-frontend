@@ -5,10 +5,10 @@ run-prod:
 	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-frontend up
 
 down-prod:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-frontend down
 
 build-prod:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-frontend build
 
 include .env.ics-frontend
 push-iqb-registry:
