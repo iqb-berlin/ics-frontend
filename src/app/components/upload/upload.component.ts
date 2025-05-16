@@ -86,12 +86,13 @@ export class UploadComponent {
   // eslint-disable-next-line class-methods-use-this
   parseJsonFile(content: string): ResponseRow[] {
     const contentJson: unknown = JSON.parse(content);
-    if (isResponseList(contentJson)) {
-      return contentJson.map((row: Response): ResponseRow => ({ ...row, setId: 'auto' }));
-    }
     if (isResponseRowList(contentJson)) {
       return contentJson;
     }
+    if (isResponseList(contentJson)) {
+      return contentJson.map((row: Response, index: number): ResponseRow => ({ ...row, setId: `auto:${index}` }));
+    }
+
     throw new Error('File does not contain responses');
   }
 
@@ -103,9 +104,9 @@ export class UploadComponent {
     const parser = initParser(schema);
     const typedObjs = parser.typedObjs(content);
     return typedObjs
-      .map((t: object): ResponseRow => ({
-        setId: (('setId' in t) && (typeof t.setId === 'string')) ? t.setId : 'auto',
-        id: (('id' in t) && (typeof t.id === 'string')) ? t.id : 'auto',
+      .map((t: object, index: number): ResponseRow => ({
+        setId: (('setId' in t) && (typeof t.setId === 'string')) ? t.setId : `auto:${index}`,
+        id: (('id' in t) && (typeof t.id === 'string')) ? t.id : `auto:${index}`,
         status: (('status' in t) && (isA<ResponseStatusType>(ResponseStatusList, t.status))) ? t.status : 'VALUE_CHANGED',
         value: (('value' in t) && isResponseValueType(t.value)) ? t.value : '',
         subform: (('subform' in t) && (typeof t.subform === 'string')) ? t.subform : undefined,
