@@ -6,6 +6,7 @@ import { CodersComponent } from './components/coders/coders.component';
 
 export const routes: Routes = [
   { data: { id: 'task' }, path: 'task/:id', component: TaskComponent },
+  { data: { id: 'task' }, path: 'task/:id/:tab', component: TaskComponent },
   { data: { id: 'tasks' }, path: 'tasks', component: TasksComponent },
   { data: { id: 'coders' }, path: 'coders', component: CodersComponent },
   { data: { id: 'start' }, path: '', component: StartComponent },
