@@ -4,8 +4,8 @@ import {
 import { MatButton } from '@angular/material/button';
 import { inferSchema, initParser } from 'udsv';
 import { ResponseRow, TaskType, DataChunk } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
-import { isResponseList, isResponseValueType } from 'iqbspecs-coding-service/functions/iqb.typeguards';
-import { isResponseRowList } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
+import { isResponse, isResponseList, isResponseValueType } from 'iqbspecs-coding-service/functions/iqb.typeguards';
+import { isResponseRow, isResponseRowList } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
 import { ResponseStatusList } from 'iqbspecs-coding-service/interfaces/iqb.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 import { Response, ResponseStatusType } from '@iqbspecs/response/response.interface';
@@ -93,7 +93,19 @@ export class UploadComponent {
       return contentJson.map((row: Response, index: number): ResponseRow => ({ ...row, setId: `auto:${index}` }));
     }
 
-    throw new Error('File does not contain responses');
+    if (!Array.isArray(contentJson)) {
+      throw new Error('JSON import Error: Not an Array.');
+    }
+
+    contentJson
+      .forEach((row, index) => {
+        if (!isResponse(row) && !isResponseRow(row)) {
+          console.log(row);
+          throw new Error(`JSON import Error: Row #${index} is not a valid response.`);
+        }
+      });
+
+    throw new Error('JSON import Error: Unknown');
   }
 
   // eslint-disable-next-line class-methods-use-this
