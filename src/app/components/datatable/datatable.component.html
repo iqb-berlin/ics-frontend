@@ -1,6 +1,18 @@
 @if (showSettings) {
 <mat-card>
-  <mat-checkbox [checked]="settings.allColumns" (change)="updateSetting('allColumns', $event.checked)">Show all columns</mat-checkbox>
+  <mat-checkbox [checked]="settings.allColumns" (change)="updateSetting('allColumns', $event.checked)">
+    Show all columns
+  </mat-checkbox>
+  <mat-card-actions>
+    Special Operations:
+    <button
+      mat-button
+      (click)="splitSet()"
+      matTooltip="Automatically genrates a random sample of 66% of this data chunk.
+        Also generates a new coding task with the rest.
+        Prerequisites: All rows are coded and this is a training task."
+    >Split Set</button>
+  </mat-card-actions>
 </mat-card>
 }
 

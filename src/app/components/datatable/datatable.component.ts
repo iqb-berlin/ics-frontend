@@ -14,13 +14,16 @@ import {
 } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatCard } from '@angular/material/card';
+import { MatCard, MatCardActions } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
-import { MatIconButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { lastValueFrom } from 'rxjs';
+import { MatTooltip } from '@angular/material/tooltip';
 import { ResponseCodeComponent } from '../response-code/response-code.component';
 import { DataService } from '../../services/data.service';
+import { BackendService } from '../../services/backend.service';
 
 @Component({
   selector: 'app-datatable',
@@ -42,7 +45,10 @@ import { DataService } from '../../services/data.service';
     MatCard,
     FormsModule,
     MatIconButton,
-    MatIcon
+    MatIcon,
+    MatButton,
+    MatCardActions,
+    MatTooltip
   ],
   templateUrl: './datatable.component.html',
   standalone: true,
@@ -64,7 +70,8 @@ export class DatatableComponent implements AfterViewInit {
   showSettings: boolean = false;
 
   constructor(
-    public ds: DataService
+    public ds: DataService,
+    private bs: BackendService
   ) {
     this.displayedColumns = DatatableComponent.columnSets.important;
   }
@@ -91,6 +98,7 @@ export class DatatableComponent implements AfterViewInit {
     };
     this.ds.data$
       .subscribe(data => {
+        // console.log('new', data); // TODO why is this called so often
         this.dataSource.sort = this.sort;
         this.dataSource.data = data;
       });
@@ -107,5 +115,34 @@ export class DatatableComponent implements AfterViewInit {
 
   toggleSettings(): void {
     this.showSettings = !this.showSettings;
+  }
+
+  async splitSet(): Promise<void> {
+    if (this.ds.task?.type !== 'train') throw new Error('Not a training task');
+    const data = [...this.ds.data];
+    if (!data.every(r => r.status === 'CODING_COMPLETE')) throw new Error('Not every row is CODING_COMPLETE');
+
+    for (let i = data.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = data[i];
+      data[i] = data[j];
+      data[j] = temp;
+    }
+
+    const sizeTowThirds = Math.round(2 * (data.length / 3));
+    const training = data.slice(0, sizeTowThirds);
+    const control = data.slice(sizeTowThirds);
+
+    await lastValueFrom(this.bs.putTaskData(this.ds.task.id, training));
+
+    if (!this.ds.currentChunk) throw new Error('Something bad happened');
+    await this.ds.deleteChunk(this.ds.currentChunk.id);
+
+    const newCodingtask = await lastValueFrom(this.bs.putTask({
+      type: 'code',
+      label: 'coding task for split data'
+    }));
+
+    await lastValueFrom(this.bs.putTaskData(newCodingtask.id, control));
   }
 }
