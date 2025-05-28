@@ -80,7 +80,7 @@ export class BackendService {
   }
 
   putTaskData(taskId: string, fileContent: ResponseRow[]): Observable<DataChunk> {
-    return this.http.put<DataChunk>(`${this.url}/tasks/${taskId}/data/`, fileContent)
+    return this.http.put<DataChunk>(`${this.url}/tasks/${taskId}/data`, fileContent)
       .pipe(checkCondition(isDataChunk));
   }
 
@@ -104,7 +104,7 @@ export class BackendService {
   }
 
   getCoders(): Observable<Coder[]> {
-    return this.http.get<Task>(`${this.url}/coders/`)
+    return this.http.get<Task>(`${this.url}/coders`)
       .pipe(checkCondition(r => isArrayOf<Coder>(r, isCoder)));
   }
 
