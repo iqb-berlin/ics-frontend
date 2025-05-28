@@ -23,7 +23,7 @@ import { BackendService } from '../../services/backend.service';
 })
 export class UploadComponent {
   @ViewChild('fileInput') private fileInput: ElementRef | undefined;
-  @Output() added = new EventEmitter<DataChunk>();
+  @Output() uploaded = new EventEmitter<DataChunk>();
 
   constructor(
     private bs: BackendService,
@@ -73,7 +73,7 @@ export class UploadComponent {
           return;
         }
         this.ds.task.data.push(chunk);
-        this.added.emit(chunk);
+        this.uploaded.emit(chunk);
       });
   }
 

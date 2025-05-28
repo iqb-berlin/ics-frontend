@@ -109,6 +109,7 @@ export class DataService {
     if (!this.task) return;
     this.currentChunk = this.task.data.find(chunk => chunk.id === chunkId) || null;
     if (!this.currentChunk) throw new Error(`invalid chunk id: ${chunkId}`);
+    console.log('ok', this.currentChunk.id);
     this.bs.getTaskData(this.task.id, this.currentChunk.id)
       .subscribe(this._data);
   }

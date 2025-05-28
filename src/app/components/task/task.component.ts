@@ -1,8 +1,9 @@
 /* eslint-disable implicit-arrow-linebreak */
 import {
+  ChangeDetectorRef,
   Component, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
   concatMap,
   distinctUntilChanged,
@@ -28,7 +29,7 @@ import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguar
 import { CoderSelectComponent } from '../coder-select/coder-select.component';
 import { UploadComponent } from '../upload/upload.component';
 import { StatusPipe } from '../../pipe/status.pipe';
-import { TabType, TaskTab } from '../../interfaces/interfaces';
+import { TaskTab } from '../../interfaces/interfaces';
 import { OptionsetComponent } from '../optionset/optionset.component';
 import { DatatableComponent } from '../datatable/datatable.component';
 import { DataService } from '../../services/data.service';
@@ -66,11 +67,13 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly route: ActivatedRoute,
-    protected readonly ds: DataService
+    private readonly router: Router,
+    protected readonly ds: DataService,
+    private cdr: ChangeDetectorRef
   ) {
   }
 
-  protected tabs: TaskTab[] = [];
+  protected readonly tabs: TaskTab[] = [];
   protected tabIndex: number = 0;
   private readonly subscriptions: { [key: string]: Subscription } = { };
   protected newLabel: string = '';
@@ -78,17 +81,23 @@ export class TaskComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions['route'] = this.route.params
       .pipe(
-        filter(params => contains(params, 'id', 'string')),
-        map(params => params.id),
-        switchMap(taskId =>
+        filter(params => contains(params, 'id', 'string')), // PROBLEM: jetzt wird der task neu geladen, wenn amn nur den tab wechselt...
+        switchMap(params =>
           this.ds.serviceConnected$
             .pipe(
               filter(c => c),
-              map(() => taskId)
+              map(() => params)
             )
         ),
-        concatMap(taskId => this.ds.getTask(taskId))
-      ).subscribe(() => {
+        concatMap(params =>
+          this.ds.getTask(params.id)
+            .pipe(
+              map(() => params)
+            )
+        )
+      ).subscribe(params => {
+        // TODO unsubscribe old poll when switch task
+        console.log('task reload', params.id);
         this.subscriptions['polling'] = interval(2000)
           .pipe(
             startWith(0),
@@ -99,12 +108,36 @@ export class TaskComponent implements OnInit, OnDestroy {
           )
           .subscribe(newTask => {
             this.collectTabs(newTask);
+            if (!contains(params, 'tab', 'string')) return;
+            const tabIndex = this.tabs.findIndex(t => t.id === params.tab);
+            if (!tabIndex) return;
+            this.tabIndex = tabIndex;
+            console.log('HUBERT')
+            this.onTabChange(this.tabs[tabIndex]);
           });
+      });
+    this.subscriptions['tab_change'] = this.route.params
+      .pipe(
+        filter(params => contains(params, 'id', 'string')),
+        distinctUntilChanged((p1: Params, p2: Params) => p1['tab'] === p2['tab']),
+        map((p: Params) => this.tabs.find(t => t.id === p['tab'])),
+        filter(newTab => !!newTab)
+      )
+      .subscribe(newTab => {
+        console.log('tabreload', newTab);
+        if (!newTab) return;
+        // const tabIndex = this.tabs.findIndex((t: TaskTab) => t.id === newTab?.id);
+        // console.log({ newTab, tabIndex, oldTabindex: this.tabIndex * 1, tabs: this.tabs });
+        // if (tabIndex < 0) return;
+        // this.tabIndex = 0;
+        // console.log({ changedTabindex: this.tabIndex });
+
+        this.onTabChange(newTab);
       });
   }
 
   collectTabs(task: Task): void {
-    this.tabs = [
+    const tabs: TaskTab[] = [
       { id: 'overview', label: 'Task', type: 'overview' },
       { id: 'config', label: 'Config', type: task.type },
       ...task.data
@@ -115,17 +148,31 @@ export class TaskComponent implements OnInit, OnDestroy {
         }))
     ];
     if (StatusPipe.getStatus(task) === 'create') {
-      this.tabs.push({ id: 'add', label: task.data.length ? '+' : 'Add input Data', type: 'add' });
+      tabs.push({ id: 'add', label: task.data.length ? '+' : 'Add input Data', type: 'add' });
     }
+
+    this.tabs.splice(0, this.tabs.length, ...tabs);
+    this.cdr.detectChanges();
   }
 
-  onTabChange($event: MatTabChangeEvent) {
-    if (isA<ChunkType>(ChunkTypes, this.tabs[$event.index].type)) {
-      this.ds.getTaskData(this.tabs[$event.index].id);
+  async onTabSelect($event: MatTabChangeEvent): Promise<void> {
+    if (!this.ds.task) return;
+    this.collectTabs(this.ds.task);
+    const tabId = this.tabs[$event.index].id;
+    console.log('onTabSelect', tabId);
+    if (!tabId) return;
+    await this.router.navigate(['task', this.ds.task?.id, tabId]);
+  }
+
+  onTabChange(newTab: TaskTab): void {
+    console.log('onTabChange', newTab);
+    if (isA<ChunkType>(ChunkTypes, newTab.type)) {
+      this.ds.getTaskData(newTab.id);
+      console.log('[onTabChange] - data loaded');
     } else {
       this.ds.getTaskData(null);
     }
-    if (this.tabs[$event.index].type === 'add') {
+    if (newTab.type === 'add') {
       if (this.uploadTab) this.uploadTab.openFileDialog();
     }
   }
@@ -136,13 +183,6 @@ export class TaskComponent implements OnInit, OnDestroy {
         this.subscriptions[subscriptionId].unsubscribe();
         delete this.subscriptions[subscriptionId];
       });
-  }
-
-  changeTab(tabType: TabType, id: string | null): void {
-    if (!this.ds.task) return;
-    this.collectTabs(this.ds.task);
-    this.tabIndex = this.tabs
-      .findIndex((tab: TaskTab) => tab.type === tabType && (id && tab.id === id));
   }
 
   toggleEditLabel(): void {
@@ -174,5 +214,15 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   async delete(): Promise<void> {
     await this.ds.deleteTask();
+  }
+
+  onChunkAdded(chunk: DataChunk): void {
+    if (!this.ds.task) return;
+    this.collectTabs(this.ds.task);
+
+    const tabIndex = this.tabs.findIndex((t: TaskTab) => t.id === chunk.id);
+    if (tabIndex < 0) return;
+
+    this.tabIndex = tabIndex;
   }
 }
