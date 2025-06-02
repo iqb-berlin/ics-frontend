@@ -1,14 +1,26 @@
 run:
-	docker compose up
+	docker compose -f docker-compose.yml up
+
+up:
+	docker compose -f docker-compose.yml up -d
+
+down:
+	docker compose -f docker-compose.yml up
+
+logs:
+	docker compose -f docker-compose.yml logs -f $(SERVICE)
 
 run-prod:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-frontend up
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-is up
+
+up-prod:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-is up -d
 
 down-prod:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-frontend down
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-is down
 
-build-prod:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-frontend build
+logs-prod:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.ics-is logs
 
 include .env.ics-frontend
 push-iqb-registry:
