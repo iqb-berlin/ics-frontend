@@ -62,7 +62,7 @@ export class HeaderComponent {
 
   download(type: 'asCSV' | 'asJSON'): void {
     if (!this.ds.currentChunk) return;
-    download(this.ds.data)[type]([this.ds.currentChunk.type, this.ds.currentChunk.id, 'json'].join('.'));
+    download(this.ds.data$)[type]([this.ds.currentChunk.type, this.ds.currentChunk.id, 'json'].join('.'));
   }
 
   async deleteChunk(): Promise<void> {

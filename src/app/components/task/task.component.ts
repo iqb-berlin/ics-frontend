@@ -1,22 +1,13 @@
 /* eslint-disable implicit-arrow-linebreak */
 import {
-  ChangeDetectorRef,
   Component, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
-  concatMap,
-  distinctUntilChanged,
-  filter,
-  interval,
-  map,
-  of, startWith,
-  Subscription,
-  switchMap
+  concatMap, distinctUntilChanged, filter, interval, map, of, startWith, Subscription, switchMap
 } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { MatTab, MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatFormField } from '@angular/material/form-field';
@@ -41,8 +32,6 @@ import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
     DatatableComponent,
     OptionsetComponent,
     FormsModule,
-    MatTabGroup,
-    MatTab,
     DatePipe,
     UploadComponent,
     MatIcon,
@@ -67,9 +56,8 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly router: Router,
     protected readonly ds: DataService,
-    private cdr: ChangeDetectorRef
+    private readonly location: Location
   ) {
   }
 
@@ -81,7 +69,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions['route'] = this.route.params
       .pipe(
-        filter(params => contains(params, 'id', 'string')), // PROBLEM: jetzt wird der task neu geladen, wenn amn nur den tab wechselt...
+        filter(params => contains(params, 'id', 'string')),
         switchMap(params =>
           this.ds.serviceConnected$
             .pipe(
@@ -97,42 +85,20 @@ export class TaskComponent implements OnInit, OnDestroy {
         )
       ).subscribe(params => {
         // TODO unsubscribe old poll when switch task
-        console.log('task reload', params.id);
         this.subscriptions['polling'] = interval(2000)
           .pipe(
             startWith(0),
             filter(() => !this.tabIndex),
             switchMap(() => (this.ds.task ? this.ds.getTask(this.ds.task.id) : of(null))),
             filter(t => !!t),
-            distinctUntilChanged((t1: Task, t2: Task) => (StatusPipe.getStatus(t1) === StatusPipe.getStatus(t2)) && (t1.data.length === t2.data.length))
+            distinctUntilChanged((t1: Task, t2: Task) =>
+              (StatusPipe.getStatus(t1) === StatusPipe.getStatus(t2)) && (t1.data.length === t2.data.length)
+            )
           )
           .subscribe(newTask => {
             this.collectTabs(newTask);
-            if (!contains(params, 'tab', 'string')) return;
-            const tabIndex = this.tabs.findIndex(t => t.id === params.tab);
-            if (!tabIndex) return;
-            this.tabIndex = tabIndex;
-            console.log('HUBERT')
-            this.onTabChange(this.tabs[tabIndex]);
+            if (contains(params, 'tab', 'string')) this.switchTab(params.tab);
           });
-      });
-    this.subscriptions['tab_change'] = this.route.params
-      .pipe(
-        filter(params => contains(params, 'id', 'string')),
-        distinctUntilChanged((p1: Params, p2: Params) => p1['tab'] === p2['tab']),
-        map((p: Params) => this.tabs.find(t => t.id === p['tab'])),
-        filter(newTab => !!newTab)
-      )
-      .subscribe(newTab => {
-        console.log('tabreload', newTab);
-        if (!newTab) return;
-        // const tabIndex = this.tabs.findIndex((t: TaskTab) => t.id === newTab?.id);
-        // console.log({ newTab, tabIndex, oldTabindex: this.tabIndex * 1, tabs: this.tabs });
-        // if (tabIndex < 0) return;
-        // this.tabIndex = 0;
-        // console.log({ changedTabindex: this.tabIndex });
-
-        this.onTabChange(newTab);
       });
   }
 
@@ -152,29 +118,6 @@ export class TaskComponent implements OnInit, OnDestroy {
     }
 
     this.tabs.splice(0, this.tabs.length, ...tabs);
-    this.cdr.detectChanges();
-  }
-
-  async onTabSelect($event: MatTabChangeEvent): Promise<void> {
-    if (!this.ds.task) return;
-    this.collectTabs(this.ds.task);
-    const tabId = this.tabs[$event.index].id;
-    console.log('onTabSelect', tabId);
-    if (!tabId) return;
-    await this.router.navigate(['task', this.ds.task?.id, tabId]);
-  }
-
-  onTabChange(newTab: TaskTab): void {
-    console.log('onTabChange', newTab);
-    if (isA<ChunkType>(ChunkTypes, newTab.type)) {
-      this.ds.getTaskData(newTab.id);
-      console.log('[onTabChange] - data loaded');
-    } else {
-      this.ds.getTaskData(null);
-    }
-    if (newTab.type === 'add') {
-      if (this.uploadTab) this.uploadTab.openFileDialog();
-    }
   }
 
   ngOnDestroy(): void {
@@ -219,10 +162,19 @@ export class TaskComponent implements OnInit, OnDestroy {
   onChunkAdded(chunk: DataChunk): void {
     if (!this.ds.task) return;
     this.collectTabs(this.ds.task);
+    this.switchTab(chunk.id);
+  }
 
-    const tabIndex = this.tabs.findIndex((t: TaskTab) => t.id === chunk.id);
-    if (tabIndex < 0) return;
-
-    this.tabIndex = tabIndex;
+  switchTab(id: string): void {
+    this.tabIndex = Math.max(this.tabs.findIndex(t => t.id === id), 0);
+    if (isA<ChunkType>(ChunkTypes, this.tabs[this.tabIndex].type)) {
+      this.ds.getTaskData(this.tabs[this.tabIndex].id);
+    } else {
+      this.ds.getTaskData(null);
+    }
+    if (this.tabs[this.tabIndex].type === 'add') {
+      if (this.uploadTab) this.uploadTab.openFileDialog();
+    }
+    this.location.replaceState(`/task/${this.ds.task?.id}/${this.tabs[this.tabIndex].id}`);
   }
 }

@@ -100,7 +100,6 @@ export class UploadComponent {
     contentJson
       .forEach((row, index) => {
         if (!isResponse(row) && !isResponseRow(row)) {
-          console.log(row);
           throw new Error(`JSON import Error: Row #${index} is not a valid response.`);
         }
       });

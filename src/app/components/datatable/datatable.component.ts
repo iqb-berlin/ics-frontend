@@ -98,7 +98,6 @@ export class DatatableComponent implements AfterViewInit {
     };
     this.ds.data$
       .subscribe(data => {
-        // console.log('new', data); // TODO why is this called so often
         this.dataSource.sort = this.sort;
         this.dataSource.data = data;
       });

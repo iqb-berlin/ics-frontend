@@ -18,3 +18,34 @@ td {
 button {
   margin-right: 1em;
 }
+
+.tab-list {
+  display: flex;
+  width: 100%;
+  min-height: 50px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tab {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1 1 auto;   /* Flex-grow if there's space */
+  text-align: center;
+  border-bottom: 1px solid silver;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.tab.active {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: var(--mat-sys-surface-tint)
+}
+
+.overview, .train, .code {
+  padding: 1em;
+}
