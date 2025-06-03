@@ -28,7 +28,7 @@
   <span class="section">
      <span class="mdc-button mat-mdc-button-base">Data: {{ds.data.length}} {{ds.currentChunk.type}} (#{{ds.currentChunk.id.substring(0, 4)}}…)</span>
       <button mat-button (click)="download('asCSV')">Download CSV</button>
-      <button mat-button (click)="download('asCSV')">Download JSON</button>
+      <button mat-button (click)="download('asJSON')">Download JSON</button>
       <button mat-button (click)="deleteChunk()">Delete</button>
   </span>
 }
