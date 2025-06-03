@@ -25,6 +25,8 @@ import { checkCondition } from '../functions/check-condition';
 import { versionSatisfies } from '../functions/version.functions';
 import { ConfigService } from './config.service';
 
+const options = { withCredentials: true };
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,7 +49,7 @@ export class BackendService {
   }
 
   getConnection(url: string): Observable<ServiceConnection> {
-    return this.http.get<ServiceConnection>(`${url}/info`)
+    return this.http.get<ServiceConnection>(`${url}/info`, options)
       .pipe(
         checkCondition(isServiceInfo),
         map((info: ServiceInfo): ServiceConnection => this.checkConnectionVersion({ url, status: 'ok', info })),
@@ -65,54 +67,54 @@ export class BackendService {
   }
 
   getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.url}/tasks`)
+    return this.http.get<Task[]>(`${this.url}/tasks`, options)
       .pipe(checkCondition(response => isArrayOf(response, isTask)));
   }
 
   getTask(taskId: string): Observable<Task> {
-    return this.http.get<Task>(`${this.url}/tasks/${taskId}`)
+    return this.http.get<Task>(`${this.url}/tasks/${taskId}`, options)
       .pipe(checkCondition(isTask));
   }
 
   getTaskData(taskId: string, chunkId: string): Observable<ResponseRow[]> {
-    return this.http.get<ResponseRow[]>(`${this.url}/tasks/${taskId}/data/${chunkId}`)
+    return this.http.get<ResponseRow[]>(`${this.url}/tasks/${taskId}/data/${chunkId}`, options)
       .pipe(checkCondition(isResponseRowList));
   }
 
   putTaskData(taskId: string, fileContent: ResponseRow[]): Observable<DataChunk> {
-    return this.http.put<DataChunk>(`${this.url}/tasks/${taskId}/data`, fileContent)
+    return this.http.put<DataChunk>(`${this.url}/tasks/${taskId}/data`, fileContent, options)
       .pipe(checkCondition(isDataChunk));
   }
 
   postTask(taskId: string, action: TaskAction): Observable<Task> {
-    return this.http.post<Task>(`${this.url}/tasks/${taskId}/${action}`, {})
+    return this.http.post<Task>(`${this.url}/tasks/${taskId}/${action}`, {}, options)
       .pipe(checkCondition(isTask));
   }
 
   putTask(seed: TaskUpdate): Observable<Task> {
-    return this.http.put<Task>(`${this.url}/tasks`, seed)
+    return this.http.put<Task>(`${this.url}/tasks`, seed, options)
       .pipe(checkCondition(isTask));
   }
 
   deleteTask(taskId: string): Observable<void> {
-    return this.http.delete<void>(`${this.url}/tasks/${taskId}`);
+    return this.http.delete<void>(`${this.url}/tasks/${taskId}`, options);
   }
 
   patchTask(taskId: string, update: TaskUpdate): Observable<Task> {
-    return this.http.patch<Task>(`${this.url}/tasks/${taskId}`, update)
+    return this.http.patch<Task>(`${this.url}/tasks/${taskId}`, update, options)
       .pipe(checkCondition(isTask));
   }
 
   getCoders(): Observable<Coder[]> {
-    return this.http.get<Task>(`${this.url}/coders`)
+    return this.http.get<Task>(`${this.url}/coders`, options)
       .pipe(checkCondition(r => isArrayOf<Coder>(r, isCoder)));
   }
 
   deleteCoder(coderId: string): Observable<void> {
-    return this.http.delete<void>(`${this.url}/coders/${coderId}`);
+    return this.http.delete<void>(`${this.url}/coders/${coderId}`, options);
   }
 
   deleteDataChunk(taskId: string, chunkId: string): Observable<void> {
-    return this.http.delete<void>(`${this.url}/tasks/${taskId}/data/${chunkId}`);
+    return this.http.delete<void>(`${this.url}/tasks/${taskId}/data/${chunkId}`, options);
   }
 }
