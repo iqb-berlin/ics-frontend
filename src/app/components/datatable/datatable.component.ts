@@ -119,7 +119,7 @@ export class DatatableComponent implements AfterViewInit {
   async splitSet(): Promise<void> {
     if (this.ds.task?.type !== 'train') throw new Error('Not a training task');
     const data = [...this.ds.data];
-    if (!data.every(r => r.status === 'CODING_COMPLETE')) throw new Error('Not every row is CODING_COMPLETE');
+    if (!data.every(r => 'code' in r)) throw new Error('Not every row is coded');
 
     for (let i = data.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -131,6 +131,8 @@ export class DatatableComponent implements AfterViewInit {
     const sizeTowThirds = Math.round(2 * (data.length / 3));
     const training = data.slice(0, sizeTowThirds);
     const control = data.slice(sizeTowThirds);
+
+    console.log({ training, control });
 
     await lastValueFrom(this.bs.putTaskData(this.ds.task.id, training));
 
