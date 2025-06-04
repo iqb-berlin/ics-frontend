@@ -2,9 +2,10 @@
 import {
   Component, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import {
-  concatMap, distinctUntilChanged, filter, interval, map, of, startWith, Subscription, switchMap
+  exhaustMap, filter, interval, map, merge,
+  startWith, Subscription, switchMap, take
 } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, Location } from '@angular/common';
@@ -16,7 +17,7 @@ import { MatLabel } from '@angular/material/select';
 import {
   ChunkType, ChunkTypes, DataChunk, Task
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
-import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 import { CoderSelectComponent } from '../coder-select/coder-select.component';
 import { UploadComponent } from '../upload/upload.component';
 import { StatusPipe } from '../../pipe/status.pipe';
@@ -62,43 +63,24 @@ export class TaskComponent implements OnInit, OnDestroy {
   }
 
   protected readonly tabs: TaskTab[] = [];
-  protected tabIndex: number = 0;
+  protected tabIndex: number | null = null;
   private readonly subscriptions: { [key: string]: Subscription } = { };
   protected newLabel: string = '';
 
   ngOnInit(): void {
-    this.subscriptions['route'] = this.route.params
+    // TODO unsubscribe old poll when switch task
+    // TODO does not react on navigations correctly
+    this.subscriptions['polling'] = merge(interval(2000), this.route.params)
       .pipe(
-        filter(params => contains(params, 'id', 'string')),
-        switchMap(params =>
-          this.ds.serviceConnected$
-            .pipe(
-              filter(c => c),
-              map(() => params)
-            )
-        ),
-        concatMap(params =>
-          this.ds.getTask(params.id)
-            .pipe(
-              map(() => params)
-            )
-        )
-      ).subscribe(params => {
-        // TODO unsubscribe old poll when switch task
-        this.subscriptions['polling'] = interval(2000)
-          .pipe(
-            startWith(0),
-            filter(() => !this.tabIndex),
-            switchMap(() => (this.ds.task ? this.ds.getTask(this.ds.task.id) : of(null))),
-            filter(t => !!t),
-            distinctUntilChanged((t1: Task, t2: Task) =>
-              (StatusPipe.getStatus(t1) === StatusPipe.getStatus(t2)) && (t1.data.length === t2.data.length)
-            )
-          )
-          .subscribe(newTask => {
-            this.collectTabs(newTask);
-            if (contains(params, 'tab', 'string')) this.switchTab(params.tab);
-          });
+        startWith(-1),
+        exhaustMap(() => this.ds.serviceConnected$.pipe(filter(c => c), take(1))),
+        switchMap(() => this.route.params),
+        filter(params => ('id' in params)),
+        switchMap((params: Params) => this.ds.getTask(params['id']).pipe(map(task => ({ task, tab: params['tab'] }))))
+      )
+      .subscribe(result => {
+        this.collectTabs(result.task);
+        if (this.tabIndex === null) this.switchTab(result.tab || 'overview');
       });
   }
 

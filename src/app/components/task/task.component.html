@@ -4,7 +4,8 @@
       <div class="tab" [class.active]="tabIndex === index" (click)="switchTab(tab.id)">{{tab.label}}</div>
     }
   </div>
-  @if (tabs[tabIndex]; as tab) {
+  @if (tabIndex !== null) {
+    @if (tabs[tabIndex]; as tab) {
     <div [class]="tab.type">
       @if (tab.type === 'overview') {
         @if (editLabel || !ds.task.label) {
@@ -75,5 +76,6 @@
         <app-datatable />
       }
     </div>
+  }
   }
 }
