@@ -40,6 +40,10 @@ button {
   cursor: pointer;
 }
 
+.tab:hover {
+  background: var(--mat-sys-outline-variant);
+}
+
 .tab.active {
   border-bottom-width: 2px;
   border-bottom-style: solid;

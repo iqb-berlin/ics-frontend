@@ -9,11 +9,11 @@ tr.error td {
 }
 
 tr.selected td {
-  background: grey;
+  background: var(--mat-sys-outline-variant);
 }
 
 tr.ok:hover {
-  background: silver;
+  background: var(--mat-sys-outline-variant);
 }
 
 .status.version-error,
