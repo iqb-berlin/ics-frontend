@@ -8,6 +8,7 @@ import { StatusPipe } from '../../pipe/status.pipe';
 import { DataService } from '../../services/data.service';
 import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
 import { download } from '../../functions/download';
+import {ServiceColorPipe} from '../../pipe/service-color.pipe';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +16,8 @@ import { download } from '../../functions/download';
     MatAnchor,
     MatButton,
     StatusPipe,
-    TaskIsReadyPipe
+    TaskIsReadyPipe,
+    ServiceColorPipe
   ],
   templateUrl: './header.component.html',
   standalone: true,

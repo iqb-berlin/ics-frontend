@@ -14,6 +14,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { ServiceConnection } from '../../interfaces/interfaces';
 import { DataService } from '../../services/data.service';
 import { ConfigService } from '../../services/config.service';
+import {ServiceColorPipe} from '../../pipe/service-color.pipe';
 
 @Component({
   selector: 'app-service-selector',
@@ -31,7 +32,8 @@ import { ConfigService } from '../../services/config.service';
     MatSortHeader,
     MatTable,
     MatHeaderCellDef,
-    MatTooltip
+    MatTooltip,
+    ServiceColorPipe
   ],
   templateUrl: './service-selector.component.html',
   standalone: true,
