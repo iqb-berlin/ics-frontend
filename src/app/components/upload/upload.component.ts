@@ -1,5 +1,6 @@
 import {
-  Component, ElementRef, EventEmitter, Output, ViewChild
+  AfterViewInit,
+  Component, ElementRef, EventEmitter, OnInit, Output, ViewChild
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { inferSchema, initParser } from 'udsv';
@@ -21,7 +22,7 @@ import { BackendService } from '../../services/backend.service';
   standalone: true,
   styleUrl: './upload.component.css'
 })
-export class UploadComponent {
+export class UploadComponent implements AfterViewInit {
   @ViewChild('fileInput') private fileInput: ElementRef | undefined;
   @Output() uploaded = new EventEmitter<DataChunk>();
 
@@ -31,7 +32,7 @@ export class UploadComponent {
   ) {
   }
 
-  openFileDialog(): void {
+  ngAfterViewInit(): void {
     if (this.fileInput) this.fileInput.nativeElement.click();
   }
 

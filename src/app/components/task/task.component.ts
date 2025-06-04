@@ -172,9 +172,6 @@ export class TaskComponent implements OnInit, OnDestroy {
     } else {
       this.ds.getTaskData(null);
     }
-    if (this.tabs[this.tabIndex].type === 'add') {
-      if (this.uploadTab) this.uploadTab.openFileDialog();
-    }
     this.location.replaceState(`/task/${this.ds.task?.id}/${this.tabs[this.tabIndex].id}`);
   }
 }
