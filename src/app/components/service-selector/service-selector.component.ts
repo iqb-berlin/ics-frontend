@@ -60,6 +60,6 @@ export class ServiceSelectorComponent implements AfterViewInit {
   }
 
   async selectService(id: string): Promise<void> {
-    if (this.ds.selectService(id)) await this.router.navigate(['tasks']);
+    if (id && this.ds.selectService(id)) await this.router.navigate(['tasks']);
   }
 }
