@@ -102,7 +102,9 @@ export class DatatableComponent implements AfterViewInit {
         this.dataSource.sort = this.sort;
         this.dataSource.data = data;
         this.settings.codeColumn = !!data.find(r => ((!!r.codes?.length) && ('code' in r) && (r.code !== null)));
-        this.setDisplayedColumns();
+        setTimeout(() => {
+          this.setDisplayedColumns();
+        });
       });
   }
 
