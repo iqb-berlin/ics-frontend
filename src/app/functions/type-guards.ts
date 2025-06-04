@@ -20,7 +20,7 @@ export const isIcsfConfig = (thing: unknown): thing is IcsfConfig =>
   ('services' in thing) && isArrayOf(thing.services, s => typeof s === 'string');
 
 export const isJsonFormControlValueType = (thing: unknown): thing is JsonFormControlValueType =>
-  (thing == null) ||
+  (thing === null) ||
   (typeof thing === 'string') ||
   (typeof thing === 'number') ||
   (typeof thing === 'boolean') ||
