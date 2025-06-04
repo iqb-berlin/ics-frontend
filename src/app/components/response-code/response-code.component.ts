@@ -2,11 +2,13 @@ import { Component, Input } from '@angular/core';
 import { PercentPipe } from '@angular/common';
 import { ResponseRow } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isResponseRow } from 'iqbspecs-coding-service/functions/ics-api.typeguards';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-response-code',
   imports: [
-    PercentPipe
+    PercentPipe,
+    MatTooltip
   ],
   templateUrl: './response-code.component.html',
   standalone: true,
@@ -16,6 +18,8 @@ export class ResponseCodeComponent {
   @Input({
     transform: (value: unknown): ResponseRow | undefined => (isResponseRow(value) ? value : undefined)
   }) response: ResponseRow | undefined;
+
+  @Input() prefer: 'codes' | 'code' = 'codes';
 
   // eslint-disable-next-line class-methods-use-this
   color(code: number | string | undefined): string {

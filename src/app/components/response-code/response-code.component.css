@@ -1,14 +1,17 @@
-.text,
 .wrapper {
   width: 100%;
   position: relative;
+  height: 100%;
+  word-break: keep-all;
+  white-space: nowrap;
 }
 
-.text {
-  padding-left: 2px
-}
 
 
 .bar {
-  position: absolute
+  display: inline-block;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  text-align: center;
 }

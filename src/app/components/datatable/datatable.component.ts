@@ -59,12 +59,13 @@ export class DatatableComponent implements AfterViewInit {
   displayedColumns: string[];
   readonly dataSource: MatTableDataSource<ResponseRow> = new MatTableDataSource();
   protected readonly settings = {
-    allColumns: false
+    allColumns: false,
+    codeColumn: false
   };
 
   static columnSets = {
-    all: ['setId', 'id', 'subForm', 'status', 'value', 'code', 'score', 'settings'],
-    important: ['setId', 'status', 'value', 'code', 'settings']
+    all: ['setId', 'id', 'subForm', 'status', 'value', 'code', 'codes', 'score', 'settings'],
+    important: ['setId', 'status', 'value', 'code', 'codes', 'settings']
   };
 
   showSettings: boolean = false;
@@ -100,16 +101,19 @@ export class DatatableComponent implements AfterViewInit {
       .subscribe(data => {
         this.dataSource.sort = this.sort;
         this.dataSource.data = data;
+        this.settings.codeColumn = !!data.find(r => ((!!r.codes?.length) && ('code' in r) && (r.code !== null)));
+        this.setDisplayedColumns();
       });
   }
 
-  updateSetting(setting: keyof typeof this.settings, checked: boolean) {
+  updateSetting(setting: keyof typeof this.settings, checked: boolean): void {
     this.settings[setting] = checked;
-    // eslint-disable-next-line default-case
-    switch (setting) {
-      case 'allColumns':
-        this.displayedColumns = DatatableComponent.columnSets[checked ? 'all' : 'important'];
-    }
+    this.setDisplayedColumns();
+  }
+
+  private setDisplayedColumns(): void {
+    this.displayedColumns = DatatableComponent.columnSets[this.settings.allColumns ? 'all' : 'important']
+      .filter(c => (c !== 'code') || this.settings.codeColumn);
   }
 
   toggleSettings(): void {
@@ -131,8 +135,6 @@ export class DatatableComponent implements AfterViewInit {
     const sizeTowThirds = Math.round(2 * (data.length / 3));
     const training = data.slice(0, sizeTowThirds);
     const control = data.slice(sizeTowThirds);
-
-    console.log({ training, control });
 
     await lastValueFrom(this.bs.putTaskData(this.ds.task.id, training));
 
