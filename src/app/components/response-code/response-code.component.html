@@ -1,16 +1,20 @@
 @if (response) {
-  @if (response.codes) {
+  <div class="wrapper">
+  @if (response.codes && (prefer === 'codes')) {
     @for (code of response.codes; track $index) {
-      <div class="wrapper">
-        <div class="bar" [style.background]="color(code.id)" [style.width]="parseFloat(code.parameter || '1') * 100 + '%'">&nbsp;</div>
-        <div class="text">
-          <b>{{code.id}}</b>: {{code.parameter | percent}}
-        </div>
+      <div
+        class="bar"
+        [style.background]="color(code.id)"
+        [style.width]="parseFloat(code.parameter || '1') * 100 + '%'"
+        matTooltip="Code {{code.id}}: {{code.parameter | percent}}"
+      >
+        <b>{{code.id}}</b>
       </div>
     }
   } @else {
-    <div class="text" [style.background]="color(response.code)">
+    <div class="bar" [style.background]="color(response.code)">
       {{response.code}}
     </div>
   }
+  </div>
 }

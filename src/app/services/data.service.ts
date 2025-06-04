@@ -18,25 +18,29 @@ import { ConfigService } from './config.service';
   providedIn: 'root'
 })
 export class DataService {
-  serviceInfo: ServiceInfo | null = null;
   private readonly _services$: BehaviorSubject<ServiceConnection[]> = new BehaviorSubject<ServiceConnection[]>([]);
   private readonly _serviceConnected$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly _data$: BehaviorSubject<ResponseRow[]> = new BehaviorSubject<ResponseRow[]>([]);
+  private _task: Task | null = null;
+  private _taskStatus: TaskStatus | null = null;
+
+  coders: Coder[] = [];
+  currentChunk: DataChunk | null = null;
+  serviceInfo: ServiceInfo | null = null;
 
   get serviceConnected$(): Observable<boolean> {
     return this._serviceConnected$.asObservable();
   }
 
-  private readonly _data: BehaviorSubject<ResponseRow[]> = new BehaviorSubject<ResponseRow[]>([]);
-  coders: Coder[] = [];
-  currentChunk: DataChunk | null = null;
-
-  private _task: Task | null = null;
-  private _taskStatus: TaskStatus | null = null;
-
   set task(task: Task | null) {
     this._task = task;
-    this.currentChunk = null;
-    if (!this._task) return;
+    if (!this._task) {
+      this.currentChunk = null;
+      return;
+    }
+    if (this.currentChunk && !this._task.data.find(chunk => chunk.id === this.currentChunk?.id)) {
+      this.currentChunk = null;
+    }
     this._task.events.sort(compareEvents('asc'));
     this._taskStatus = StatusPipe.getStatus(this._task);
   }
@@ -50,11 +54,11 @@ export class DataService {
   }
 
   get data(): ResponseRow[] {
-    return this._data.getValue();
+    return this._data$.getValue();
   }
 
   get data$(): Observable<ResponseRow[]> {
-    return this._data.asObservable();
+    return this._data$.asObservable();
   }
 
   get services$(): Observable<ServiceConnection[]> {
@@ -103,14 +107,14 @@ export class DataService {
   getTaskData(chunkId: string | null): void {
     if (!chunkId) {
       this.currentChunk = null;
-      this._data.next([]);
+      this._data$.next([]);
       return;
     }
     if (!this.task) return;
     this.currentChunk = this.task.data.find(chunk => chunk.id === chunkId) || null;
     if (!this.currentChunk) throw new Error(`invalid chunk id: ${chunkId}`);
     this.bs.getTaskData(this.task.id, this.currentChunk.id)
-      .subscribe(this._data);
+      .subscribe(data => this._data$.next(data));
   }
 
   async commitTask(): Promise<void> {

@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component, ElementRef, EventEmitter, Output, ViewChild
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
@@ -21,9 +22,9 @@ import { BackendService } from '../../services/backend.service';
   standalone: true,
   styleUrl: './upload.component.css'
 })
-export class UploadComponent {
+export class UploadComponent implements AfterViewInit {
   @ViewChild('fileInput') private fileInput: ElementRef | undefined;
-  @Output() added = new EventEmitter<DataChunk>();
+  @Output() uploaded = new EventEmitter<DataChunk>();
 
   constructor(
     private bs: BackendService,
@@ -31,7 +32,7 @@ export class UploadComponent {
   ) {
   }
 
-  openFileDialog(): void {
+  ngAfterViewInit(): void {
     if (this.fileInput) this.fileInput.nativeElement.click();
   }
 
@@ -73,7 +74,7 @@ export class UploadComponent {
           return;
         }
         this.ds.task.data.push(chunk);
-        this.added.emit(chunk);
+        this.uploaded.emit(chunk);
       });
   }
 
@@ -100,7 +101,6 @@ export class UploadComponent {
     contentJson
       .forEach((row, index) => {
         if (!isResponse(row) && !isResponseRow(row)) {
-          console.log(row);
           throw new Error(`JSON import Error: Row #${index} is not a valid response.`);
         }
       });

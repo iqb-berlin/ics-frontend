@@ -4,18 +4,10 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
-  concatMap,
-  distinctUntilChanged,
-  filter,
-  interval,
-  map,
-  of, startWith,
-  Subscription,
-  switchMap
+  concatMap, distinctUntilChanged, filter, interval, map, of, startWith, Subscription, switchMap
 } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { MatTab, MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
-import { DatePipe } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatFormField } from '@angular/material/form-field';
@@ -28,7 +20,7 @@ import { contains, isA } from 'iqbspecs-coding-service/functions/common.typeguar
 import { CoderSelectComponent } from '../coder-select/coder-select.component';
 import { UploadComponent } from '../upload/upload.component';
 import { StatusPipe } from '../../pipe/status.pipe';
-import { TabType, TaskTab } from '../../interfaces/interfaces';
+import { TaskTab } from '../../interfaces/interfaces';
 import { OptionsetComponent } from '../optionset/optionset.component';
 import { DatatableComponent } from '../datatable/datatable.component';
 import { DataService } from '../../services/data.service';
@@ -40,8 +32,6 @@ import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
     DatatableComponent,
     OptionsetComponent,
     FormsModule,
-    MatTabGroup,
-    MatTab,
     DatePipe,
     UploadComponent,
     MatIcon,
@@ -66,11 +56,12 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly route: ActivatedRoute,
-    protected readonly ds: DataService
+    protected readonly ds: DataService,
+    private readonly location: Location
   ) {
   }
 
-  protected tabs: TaskTab[] = [];
+  protected readonly tabs: TaskTab[] = [];
   protected tabIndex: number = 0;
   private readonly subscriptions: { [key: string]: Subscription } = { };
   protected newLabel: string = '';
@@ -79,32 +70,40 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.subscriptions['route'] = this.route.params
       .pipe(
         filter(params => contains(params, 'id', 'string')),
-        map(params => params.id),
-        switchMap(taskId =>
+        switchMap(params =>
           this.ds.serviceConnected$
             .pipe(
               filter(c => c),
-              map(() => taskId)
+              map(() => params)
             )
         ),
-        concatMap(taskId => this.ds.getTask(taskId))
-      ).subscribe(() => {
+        concatMap(params =>
+          this.ds.getTask(params.id)
+            .pipe(
+              map(() => params)
+            )
+        )
+      ).subscribe(params => {
+        // TODO unsubscribe old poll when switch task
         this.subscriptions['polling'] = interval(2000)
           .pipe(
             startWith(0),
             filter(() => !this.tabIndex),
             switchMap(() => (this.ds.task ? this.ds.getTask(this.ds.task.id) : of(null))),
             filter(t => !!t),
-            distinctUntilChanged((t1: Task, t2: Task) => (StatusPipe.getStatus(t1) === StatusPipe.getStatus(t2)) && (t1.data.length === t2.data.length))
+            distinctUntilChanged((t1: Task, t2: Task) =>
+              (StatusPipe.getStatus(t1) === StatusPipe.getStatus(t2)) && (t1.data.length === t2.data.length)
+            )
           )
           .subscribe(newTask => {
             this.collectTabs(newTask);
+            if (contains(params, 'tab', 'string')) this.switchTab(params.tab);
           });
       });
   }
 
   collectTabs(task: Task): void {
-    this.tabs = [
+    const tabs: TaskTab[] = [
       { id: 'overview', label: 'Task', type: 'overview' },
       { id: 'config', label: 'Config', type: task.type },
       ...task.data
@@ -115,19 +114,10 @@ export class TaskComponent implements OnInit, OnDestroy {
         }))
     ];
     if (StatusPipe.getStatus(task) === 'create') {
-      this.tabs.push({ id: 'add', label: task.data.length ? '+' : 'Add input Data', type: 'add' });
+      tabs.push({ id: 'add', label: task.data.length ? '+' : 'Add input Data', type: 'add' });
     }
-  }
 
-  onTabChange($event: MatTabChangeEvent) {
-    if (isA<ChunkType>(ChunkTypes, this.tabs[$event.index].type)) {
-      this.ds.getTaskData(this.tabs[$event.index].id);
-    } else {
-      this.ds.getTaskData(null);
-    }
-    if (this.tabs[$event.index].type === 'add') {
-      if (this.uploadTab) this.uploadTab.openFileDialog();
-    }
+    this.tabs.splice(0, this.tabs.length, ...tabs);
   }
 
   ngOnDestroy(): void {
@@ -136,13 +126,6 @@ export class TaskComponent implements OnInit, OnDestroy {
         this.subscriptions[subscriptionId].unsubscribe();
         delete this.subscriptions[subscriptionId];
       });
-  }
-
-  changeTab(tabType: TabType, id: string | null): void {
-    if (!this.ds.task) return;
-    this.collectTabs(this.ds.task);
-    this.tabIndex = this.tabs
-      .findIndex((tab: TaskTab) => tab.type === tabType && (id && tab.id === id));
   }
 
   toggleEditLabel(): void {
@@ -174,5 +157,21 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   async delete(): Promise<void> {
     await this.ds.deleteTask();
+  }
+
+  onChunkAdded(chunk: DataChunk): void {
+    if (!this.ds.task) return;
+    this.collectTabs(this.ds.task);
+    this.switchTab(chunk.id);
+  }
+
+  switchTab(id: string): void {
+    this.tabIndex = Math.max(this.tabs.findIndex(t => t.id === id), 0);
+    if (isA<ChunkType>(ChunkTypes, this.tabs[this.tabIndex].type)) {
+      this.ds.getTaskData(this.tabs[this.tabIndex].id);
+    } else {
+      this.ds.getTaskData(null);
+    }
+    this.location.replaceState(`/task/${this.ds.task?.id}/${this.tabs[this.tabIndex].id}`);
   }
 }

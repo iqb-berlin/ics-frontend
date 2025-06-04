@@ -7,6 +7,6 @@
 }
 
 .row:hover {
-  background: grey;
+  background: var(--mat-sys-outline-variant);
 }
 

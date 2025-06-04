@@ -1,78 +1,79 @@
 @if (ds.task) {
-  <mat-tab-group (selectedTabChange)="onTabChange($event)" [(selectedIndex)]="tabIndex">
-    @for (tab of tabs; track tab.id) {
-      <mat-tab [label]="tab.label" [bodyClass]="[tab.type, 'tab-body']" [labelClass]="[tab.type, 'tab-label']">
-        @if (tab.type === 'overview') {
-          @if (editLabel || !ds.task.label) {
-            <mat-form-field>
-              <mat-label>Label</mat-label>
-              <input matInput [(ngModel)]="newLabel">
-            </mat-form-field>
-            <button mat-icon-button (click)="saveLabel()"><mat-icon>save</mat-icon></button>
-          } @else {
-            <h3>{{ds.task.label}} <button mat-icon-button (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button></h3>
-          }
-          <table>
-            <tr>
-              <td>Id</td>
-              <td>{{ds.task.id}}</td>
-            </tr>
-            <tr>
-              <td>Type</td>
-              <td>{{ds.task.type}}</td>
-            </tr>
-            <tr>
-              <td>Status</td>
-              <td [class]="ds.status">{{ds.status}}</td>
-            </tr>
-          </table>
-
-          <div>
-            @if (ds.task | taskIsReady) {
-              <button mat-flat-button (click)="commit()">Commit{{ds.status !== 'create' ? ' again' : ''}}</button>
-            }
-            @if ((ds.status !== 'start')) {
-              <button mat-flat-button (click)="delete()">Delete</button>
-            }
-            @if (ds.status === 'finish') {
-              <button mat-flat-button (click)="startCodingJob()">Code with this model</button>
-            }
-          </div>
-
-
-          <h3>Events:</h3>
-
-          <table>
-            <thead>
-              <tr>
-                <td>date</td>
-                <td>status</td>
-                <td>message</td>
-              </tr>
-            </thead>
-            <tbody>
-              @for (event of ds.task.events; track $index ) {
-                <tr>
-                  <td>{{event.timestamp * 1000 | date : 'short'}}</td>
-                  <td [class]="event.status">{{event.status}}</td>
-                  <td><pre style="max-height: 7em; overflow-y: scroll">{{event.message}}</pre></td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        } @else if (tab.type === 'train') {
-          <app-optionset />
-        } @else if (tab.type === 'code') {
-          <app-coder-select />
-        } @else if (tab.type === 'unknown') {
-          <div>TaskType is Unknown</div>
-        } @else if (tab.type === 'add') {
-          <app-upload (added)="changeTab($event.type, $event.id)" />
-        } @else {
-          <app-datatable />
-        }
-      </mat-tab>
+  <div class="tab-list">
+    @for (tab of tabs; track tab.id; let index = $index) {
+      <div class="tab" [class.active]="tabIndex === index" (click)="switchTab(tab.id)">{{tab.label}}</div>
     }
-  </mat-tab-group>
-}
+  </div>
+  @if (tabs[tabIndex]; as tab) {
+    <div [class]="tab.type">
+      @if (tab.type === 'overview') {
+        @if (editLabel || !ds.task.label) {
+          <mat-form-field>
+            <mat-label>Label</mat-label>
+            <input matInput [(ngModel)]="newLabel">
+          </mat-form-field>
+          <button mat-icon-button (click)="saveLabel()"><mat-icon>save</mat-icon></button>
+        } @else {
+          <h3>{{ds.task.label}} <button mat-icon-button (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button></h3>
+        }
+        <table>
+          <tr>
+            <td>Id</td>
+            <td>{{ds.task.id}}</td>
+          </tr>
+          <tr>
+            <td>Type</td>
+            <td>{{ds.task.type}}</td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td [class]="ds.status">{{ds.status}}</td>
+          </tr>
+        </table>
 
+        <div>
+          @if (ds.task | taskIsReady) {
+            <button mat-flat-button (click)="commit()">Commit{{ds.status !== 'create' ? ' again' : ''}}</button>
+          }
+          @if ((ds.status !== 'start')) {
+            <button mat-flat-button (click)="delete()">Delete</button>
+          }
+          @if (ds.status === 'finish') {
+            <button mat-flat-button (click)="startCodingJob()">Code with this model</button>
+          }
+        </div>
+
+        <h3>Events:</h3>
+
+        <table>
+          <thead>
+          <tr>
+            <td>date</td>
+            <td>status</td>
+            <td>message</td>
+          </tr>
+          </thead>
+          <tbody>
+            @for (event of ds.task.events; track $index ) {
+              <tr>
+                <td>{{event.timestamp * 1000 | date : 'short'}}</td>
+                <td [class]="event.status">{{event.status}}</td>
+                <td><pre style="max-height: 7em; overflow-y: scroll">{{event.message}}</pre></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else if (tab.type === 'train') {
+        <app-optionset />
+      } @else if (tab.type === 'code') {
+        <app-coder-select />
+      } @else if (tab.type === 'unknown') {
+        <div>TaskType is Unknown</div>
+      } @else if (tab.type === 'add') {
+        <app-upload (uploaded)="onChunkAdded($event)" />
+      } @else {
+        <app-datatable />
+      }
+    </div>
+  }
+}
