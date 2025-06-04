@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component, ElementRef, EventEmitter, OnInit, Output, ViewChild
+  Component, ElementRef, EventEmitter, Output, ViewChild
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { inferSchema, initParser } from 'udsv';
