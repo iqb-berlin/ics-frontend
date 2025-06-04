@@ -1,14 +1,3 @@
-<mat-card  style="margin: 1em; padding: 1em;">
-  <h1>Coding Service Manager</h1>
-
-  @if (ds.serviceInfo) {
-    Connected with {{ds.serviceInfo.id}}.
-  } @else {
-    No service connected.
-  }
-</mat-card>
-
-
 <table mat-table [dataSource]="dataSource" matSort>
   <ng-container matColumnDef="id">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>

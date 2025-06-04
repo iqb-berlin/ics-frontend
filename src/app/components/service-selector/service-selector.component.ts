@@ -10,7 +10,6 @@ import {
   MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource
 } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
-import { MatCard } from '@angular/material/card';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ServiceConnection } from '../../interfaces/interfaces';
 import { DataService } from '../../services/data.service';
@@ -32,7 +31,6 @@ import { ConfigService } from '../../services/config.service';
     MatSortHeader,
     MatTable,
     MatHeaderCellDef,
-    MatCard,
     MatTooltip
   ],
   templateUrl: './service-selector.component.html',

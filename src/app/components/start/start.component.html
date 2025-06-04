@@ -1,1 +1,11 @@
+<mat-card  style="margin: 1em; padding: 1em;">
+  <h1>Coding Service Manager {{cs.version}}</h1>
+
+  @if (ds.serviceInfo) {
+    Connected with {{ds.serviceInfo.id}}.
+  } @else {
+    No service connected.
+  }
+</mat-card>
+
 <app-service-selector />
