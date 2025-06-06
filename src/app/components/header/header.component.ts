@@ -4,13 +4,13 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TaskTypes, TaskType } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 import { filter, map } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { DataService } from '../../services/data.service';
 import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
 import { download } from '../../functions/download';
-import {ServiceColorPipe} from '../../pipe/service-color.pipe';
-import {ConfigService} from '../../services/config.service';
-import {AsyncPipe} from '@angular/common';
+import { ServiceColorPipe } from '../../pipe/service-color.pipe';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-header',
@@ -66,9 +66,9 @@ export class HeaderComponent {
     await this.router.navigate(['tasks/']);
   }
 
-  download(type: 'asCSV' | 'asJSON'): void {
+  download(type: 'csv' | 'json'): void {
     if (!this.ds.currentChunk) return;
-    download(this.ds.data$)[type]([this.ds.currentChunk.type, this.ds.currentChunk.id, 'json'].join('.'));
+    download(this.ds.data)[type]([this.ds.currentChunk.type, this.ds.currentChunk.id, type].join('.'));
   }
 
   async deleteChunk(): Promise<void> {

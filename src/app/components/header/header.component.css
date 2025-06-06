@@ -16,6 +16,12 @@ a[disabled] {
   display: inline-block;
 }
 
+.section .mdc-button {
+  max-width: 16em;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .section.right {
   float: right;
   margin-right: 1em;

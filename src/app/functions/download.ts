@@ -27,6 +27,6 @@ const toCSVBlob = <T extends object>(data: unknown, delimiter = ','): Blob => {
 };
 
 export const download = (data: unknown) => ({
-  asJSON: (filename: string) => downloadFile(toJSONBlob(data), filename),
-  asCSV: (filename: string) => downloadFile(toCSVBlob(data), filename)
+  json: (filename: string) => downloadFile(toJSONBlob(data), filename),
+  csv: (filename: string) => downloadFile(toCSVBlob(data), filename)
 });
