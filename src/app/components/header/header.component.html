@@ -42,3 +42,11 @@
     <button mat-button (click)="addTask('code')">Code</button>
   </span>
 }
+
+@if (cs.config$ | async; as config ) {
+  @if (config.userlink) {
+    <span class="section right">
+      <a mat-button [href]="config.userlink">User</a>
+    </span>
+  }
+}

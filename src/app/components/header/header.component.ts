@@ -9,6 +9,8 @@ import { DataService } from '../../services/data.service';
 import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
 import { download } from '../../functions/download';
 import {ServiceColorPipe} from '../../pipe/service-color.pipe';
+import {ConfigService} from '../../services/config.service';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +19,8 @@ import {ServiceColorPipe} from '../../pipe/service-color.pipe';
     MatButton,
     StatusPipe,
     TaskIsReadyPipe,
-    ServiceColorPipe
+    ServiceColorPipe,
+    AsyncPipe
   ],
   templateUrl: './header.component.html',
   standalone: true,
@@ -29,7 +32,8 @@ export class HeaderComponent {
   constructor(
     protected readonly ds: DataService,
     private readonly router: Router,
-    private readonly activatedRoute: ActivatedRoute
+    private readonly activatedRoute: ActivatedRoute,
+    protected readonly cs: ConfigService
   ) {
     this.router.events
       .pipe(

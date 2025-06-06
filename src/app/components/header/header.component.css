@@ -13,4 +13,10 @@ a[disabled] {
   border-left: 2px solid silver;
   margin-left: 1em;
   padding-left: 1em;
+  display: inline-block;
+}
+
+.section.right {
+  float: right;
+  margin-right: 1em;
 }
