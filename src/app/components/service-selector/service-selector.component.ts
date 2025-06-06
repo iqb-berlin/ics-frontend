@@ -11,10 +11,11 @@ import {
 } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatTooltip } from '@angular/material/tooltip';
+import { MatAnchor, MatButton } from '@angular/material/button';
 import { ServiceConnection } from '../../interfaces/interfaces';
 import { DataService } from '../../services/data.service';
 import { ConfigService } from '../../services/config.service';
-import {ServiceColorPipe} from '../../pipe/service-color.pipe';
+import { ServiceColorPipe } from '../../pipe/service-color.pipe';
 
 @Component({
   selector: 'app-service-selector',
@@ -33,7 +34,9 @@ import {ServiceColorPipe} from '../../pipe/service-color.pipe';
     MatTable,
     MatHeaderCellDef,
     MatTooltip,
-    ServiceColorPipe
+    ServiceColorPipe,
+    MatAnchor,
+    MatButton
   ],
   templateUrl: './service-selector.component.html',
   standalone: true,
@@ -41,7 +44,7 @@ import {ServiceColorPipe} from '../../pipe/service-color.pipe';
 })
 export class ServiceSelectorComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
-  displayedColumns: string[] = ['id', 'url', 'type', 'version', 'api-version', 'status'];
+  displayedColumns: string[] = ['id', 'url', 'type', 'version', 'api-version', 'status', 'actions'];
   readonly dataSource: MatTableDataSource<ServiceConnection> = new MatTableDataSource();
 
   constructor(
@@ -61,5 +64,9 @@ export class ServiceSelectorComponent implements AfterViewInit {
 
   async selectService(id: string): Promise<void> {
     if (id && this.ds.selectService(id)) await this.router.navigate(['tasks']);
+  }
+
+  tryConnection(element: ServiceConnection): void {
+    this.ds.tryServiceConnection(element.url);
   }
 }

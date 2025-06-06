@@ -31,6 +31,16 @@
     </td>
   </ng-container>
 
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+    <td mat-cell *matCellDef="let element" [class]="'status ' + element.status">
+      @if (element.status === 'error') {
+        <button mat-flat-button (click)="tryConnection(element)">Retry</button>
+        <a mat-flat-button target="_blank" [href]="element.url + '/info'">Login</a>
+      }
+    </td>
+  </ng-container>
+
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr
