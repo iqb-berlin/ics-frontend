@@ -3,14 +3,12 @@ import { MatCard } from '@angular/material/card';
 import { ServiceSelectorComponent } from '../service-selector/service-selector.component';
 import { ConfigService } from '../../services/config.service';
 import { DataService } from '../../services/data.service';
-import {JsonPipe} from '@angular/common';
 
 @Component({
   selector: 'app-start',
   imports: [
     ServiceSelectorComponent,
-    MatCard,
-    JsonPipe
+    MatCard
   ],
   templateUrl: './start.component.html',
   standalone: true,

@@ -36,10 +36,18 @@ button {
   color: darkred;
 }
 
+.progress {
+  color: seagreen;
+}
+
 .finish {
-  color: green;
+  color: darkgreen;
+}
+
+.warning {
+  color: orange;
 }
 
 .abort {
-  color: orange;
+  color: darkkhaki;
 }

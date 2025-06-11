@@ -57,7 +57,7 @@
           <tbody>
             @for (event of ds.task.events; track $index ) {
               <tr>
-                <td>{{event.timestamp * 1000 | date : 'short'}}</td>
+                <td>{{event.timestamp  | date : 'dd.MM.yy, hh:mm:ss'}}</td>
                 <td [class]="event.status">{{event.status}}</td>
                 <td><pre style="max-height: 7em; overflow-y: scroll">{{event.message}}</pre></td>
               </tr>
