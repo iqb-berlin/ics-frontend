@@ -4,6 +4,7 @@ import {
 
 export interface IcsfConfig {
   readonly services: string[];
+  readonly userlink?: string;
 }
 
 export type TaskStatus = TaskEventType | 'draft';

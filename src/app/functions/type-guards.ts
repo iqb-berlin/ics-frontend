@@ -17,7 +17,8 @@ export const isArrayOfSameShapedObjects = <T extends object>(thing: unknown): th
 
 export const isIcsfConfig = (thing: unknown): thing is IcsfConfig =>
   (typeof thing === 'object') && (thing !== null) &&
-  ('services' in thing) && isArrayOf(thing.services, s => typeof s === 'string');
+  ('services' in thing) && isArrayOf(thing.services, s => typeof s === 'string') &&
+  (!('userlink' in thing) || (typeof thing.userlink === 'string'));
 
 export const isJsonFormControlValueType = (thing: unknown): thing is JsonFormControlValueType =>
   (thing === null) ||

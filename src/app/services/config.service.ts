@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { lastValueFrom, tap } from 'rxjs';
+import {BehaviorSubject, filter, lastValueFrom, Observable, tap} from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as icsPackage from 'iqbspecs-coding-service/package.json';
 import * as frontendPackage from '../../../package.json';
@@ -11,7 +11,7 @@ import { isIcsfConfig } from '../functions/type-guards';
   providedIn: 'root'
 })
 export class ConfigService {
-  private _config: IcsfConfig | null = null;
+  private _config$: BehaviorSubject<IcsfConfig | null> = new BehaviorSubject<IcsfConfig | null>(null);
   readonly icsVersion: string;
   readonly version: string;
   constructor(
@@ -21,9 +21,9 @@ export class ConfigService {
     this.version = frontendPackage.version;
   }
 
-  get config(): IcsfConfig {
-    if (!this._config) throw new Error('No config provided');
-    return this._config;
+  get config$(): Observable<IcsfConfig> {
+    return this._config$.asObservable()
+      .pipe(filter(entry => entry !== null));
   }
 
   async loadConfig(): Promise<IcsfConfig> {
@@ -32,7 +32,7 @@ export class ConfigService {
         .pipe(
           checkCondition(isIcsfConfig),
           tap(config => {
-            this._config = config;
+            this._config$.next(config);
           })
         )
     );

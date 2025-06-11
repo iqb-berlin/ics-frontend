@@ -72,12 +72,29 @@ export class DataService {
     this.cs.loadConfig()
       .then(config => {
         combineLatest(config.services.map(url => this.bs.getConnection(url)))
-          .subscribe(this._services$)
-          .add(() => {
-            const lastServiceId = localStorage.getItem('csf-service');
-            const service = lastServiceId || null;
-            this.selectService(service);
+          .subscribe({
+            next: v => this._services$.next(v),
+            complete: () => {
+              const lastServiceId = localStorage.getItem('csf-service');
+              const service = lastServiceId || null;
+              this.selectService(service);
+            }
           });
+      });
+  }
+
+  tryServiceConnection(url: string): void {
+    this.bs.getConnection(url)
+      .subscribe(connection => {
+        const services = this._services$.getValue();
+        const index = services.findIndex(service => service.url === url);
+        if (index >= 0) {
+          services[index] = connection;
+        } else {
+          services.push(connection);
+        }
+        this._services$.next(services);
+        if (connection.info?.id) this.selectService(connection.info.id);
       });
   }
 

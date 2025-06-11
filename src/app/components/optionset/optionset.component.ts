@@ -78,7 +78,7 @@ export class OptionsetComponent implements OnInit, OnDestroy {
   }
 
   download(): void {
-    download(this.ds.task?.instructions).asJSON(`${this.ds.task?.label}.instructions.json`);
+    download(this.ds.task?.instructions).json(`${this.ds.task?.label}.instructions.json`);
   }
 
   onFileSelected($event: Event) {
