@@ -10,8 +10,9 @@ import { TaskStatus } from '../interfaces/interfaces';
   name: 'status'
 })
 export class StatusPipe implements PipeTransform {
-  static getLastEvent(task: Task): TaskEvent | undefined {
-    return task.events[task.events.length - 1];
+  static getLastEvent(task: Task, skipTypes: TaskEventType[] = ['progress', 'warning']): TaskEvent | undefined {
+    const events = task.events.filter(et => !skipTypes.includes(et.status));
+    return events[events.length - 1];
   }
 
   static getStatus(task: Task): TaskStatus {

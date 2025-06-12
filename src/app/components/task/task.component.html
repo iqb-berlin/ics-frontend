@@ -17,6 +17,12 @@
         } @else {
           <h3>{{ds.task.label}} <button mat-icon-button (click)="toggleEditLabel()"><mat-icon>edit</mat-icon></button></h3>
         }
+        @let progress = ds.task | taskProgress;
+        <mat-progress-bar
+          [mode]="progress === 'unknown' ?  'indeterminate' : 'determinate'"
+          [value]="typeof progress === 'number' ? progress : 0"
+        ></mat-progress-bar>
+
         <table>
           <tr>
             <td>Id</td>

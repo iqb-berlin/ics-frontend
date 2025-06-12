@@ -18,6 +18,7 @@ import {
   ChunkType, ChunkTypes, DataChunk, Task
 } from 'iqbspecs-coding-service/interfaces/ics-api.interfaces';
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
+import { MatProgressBar } from '@angular/material/progress-bar';
 import { CoderSelectComponent } from '../coder-select/coder-select.component';
 import { UploadComponent } from '../upload/upload.component';
 import { StatusPipe } from '../../pipe/status.pipe';
@@ -26,6 +27,7 @@ import { OptionsetComponent } from '../optionset/optionset.component';
 import { DatatableComponent } from '../datatable/datatable.component';
 import { DataService } from '../../services/data.service';
 import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
+import { TaskProgressPipe } from '../../pipe/task-progress.pipe';
 
 @Component({
   selector: 'app-task',
@@ -42,7 +44,9 @@ import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
     CoderSelectComponent,
     MatButton,
     MatIconButton,
-    TaskIsReadyPipe
+    TaskIsReadyPipe,
+    TaskProgressPipe,
+    MatProgressBar
   ],
   templateUrl: './task.component.html',
   standalone: true,
