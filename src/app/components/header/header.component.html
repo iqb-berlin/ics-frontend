@@ -1,7 +1,11 @@
 <span class="section">
   @if (ds.serviceInfo) {
-    <span class="mdc-button mat-mdc-button-base" [style.color]="ds.serviceInfo.id | serviceColor">
-      {{ds.serviceInfo.id}} ({{ds.serviceInfo.type}} version {{ds.serviceInfo.version}})
+    <span
+      class="mdc-button mat-mdc-button-base"
+      [style.color]="ds.serviceInfo.id | serviceColor"
+      matTooltip="{{ds.serviceInfo.type}} version {{ds.serviceInfo.version}}"
+    >
+      {{ds.serviceInfo.id}}
     </span>
   }
 </span>

@@ -5,6 +5,7 @@ import { TaskTypes, TaskType } from 'iqbspecs-coding-service/interfaces/ics-api.
 import { isA } from 'iqbspecs-coding-service/functions/common.typeguards';
 import { filter, map } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { MatTooltip } from '@angular/material/tooltip';
 import { StatusPipe } from '../../pipe/status.pipe';
 import { DataService } from '../../services/data.service';
 import { TaskIsReadyPipe } from '../../pipe/task-is-ready.pipe';
@@ -20,7 +21,8 @@ import { ConfigService } from '../../services/config.service';
     StatusPipe,
     TaskIsReadyPipe,
     ServiceColorPipe,
-    AsyncPipe
+    AsyncPipe,
+    MatTooltip
   ],
   templateUrl: './header.component.html',
   standalone: true,
