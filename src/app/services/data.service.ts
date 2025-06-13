@@ -8,6 +8,7 @@ import {
 import {
   BehaviorSubject, combineLatest, lastValueFrom, map, Observable, tap
 } from 'rxjs';
+import { Router } from '@angular/router';
 import { ServiceConnection, TaskStatus } from '../interfaces/interfaces';
 import { BackendService } from './backend.service';
 import { compareEvents } from '../functions/api-helper.functions';
@@ -67,7 +68,8 @@ export class DataService {
 
   constructor(
     private readonly bs: BackendService,
-    private readonly cs: ConfigService
+    private readonly cs: ConfigService,
+    private readonly router: Router
   ) {
     this.cs.loadConfig()
       .then(config => {
@@ -143,7 +145,8 @@ export class DataService {
   }
 
   async addTask(seed: TaskUpdate): Promise<void> {
-    this.task = await lastValueFrom(this.bs.putTask(seed));
+    const task = await lastValueFrom(this.bs.putTask(seed));
+    await this.router.navigate(['task', task.id]);
   }
 
   async deleteTask(id: string | undefined = this.task?.id): Promise<void> {
