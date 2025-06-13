@@ -14,14 +14,16 @@
   <a mat-button href="/start" [disabled]="currentRoute === 'start'">Services</a>
   @if (ds.serviceInfo) {
     <a mat-button href="/tasks" [disabled]="currentRoute === 'tasks'">Tasks</a>
-    <a mat-button href="/coders" [disabled]="currentRoute === 'coders'">Coders</a>
+    @if (ds.serviceInfo.mode === 'train+code') {
+      <a mat-button href="/coders" [disabled]="currentRoute === 'coders'">Coders</a>
+    }
   }
 </span>
 
 @if (ds.serviceInfo && (currentRoute === 'task') && ds.task) {
   <span class="section">
     <span class="mdc-button mat-mdc-button-base">Task: {{ds.task.label || ds.task.id}} - {{ds.task | status}}</span>
-    @if (ds.task | taskIsReady) {
+    @if (ds.task | taskIsReady : ds.serviceInfo.mode) {
       <button mat-button (click)="commit()">Commit{{ds.status !== 'create' ? ' again' : ''}}</button>
     }
     @if ((ds.status !== 'start')) {
@@ -42,7 +44,9 @@
 @if (ds.serviceInfo && (currentRoute === 'tasks')) {
   <span class="section">
     <span class="mdc-button mat-mdc-button-base">New Task:</span>
-    <button mat-button (click)="addTask('train')">Train</button>
+    @if (ds.serviceInfo.mode !== 'direct') {
+      <button mat-button (click)="addTask('train')">Train</button>
+    }
     <button mat-button (click)="addTask('code')">Code</button>
   </span>
 }

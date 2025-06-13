@@ -11,7 +11,8 @@
       <mat-error>{{ e }}</mat-error>
     }
   }
-  <button mat-flat-button type="submit" [disabled]="(ds.task | status) !== 'create'" (click)="submit()">Save</button>
+  @let taskStatus = ds.task | status;
+  <button mat-flat-button type="submit" [disabled]="['commit', 'start'].includes(taskStatus)" (click)="submit()">Save</button>
   <button type="button" mat-flat-button (click)="fileInput.click()">Upload</button>
   <button mat-flat-button type="submit" (click)="download()">Download</button>
   <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file" accept="application/json">

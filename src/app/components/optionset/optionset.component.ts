@@ -46,7 +46,7 @@ export class OptionsetComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions['autosave'] = interval(1000)
       .pipe(
-        takeWhile(() => this.ds.status === 'create'),
+        takeWhile(() => !['commit', 'start'].includes(this.ds.status || '')),
         map(() => getValues(this.controls)),
         distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
       )
@@ -62,11 +62,9 @@ export class OptionsetComponent implements OnInit, OnDestroy {
     if (!this.ds.task) return;
     try {
       this.instructionsSchema = this.ds.serviceInfo?.instructionsSchema || null;
-      if (this.ds.task.type === 'train') {
-        if (!this.instructionsSchema) throw new Error(`No schema given for: ${this.ds.task?.type}`);
-        const instructions = isTaskInstructions(this.ds.task.instructions) ? this.ds.task.instructions : {};
-        this.controls = JSONSchemaToJSONForms(this.instructionsSchema, instructions);
-      }
+      if (!this.instructionsSchema) throw new Error(`No schema given for: ${this.ds.task?.type}`);
+      const instructions = isTaskInstructions(this.ds.task.instructions) ? this.ds.task.instructions : {};
+      this.controls = JSONSchemaToJSONForms(this.instructionsSchema, instructions);
     } catch (e) {
       this.errors.push(String(e));
     }

@@ -39,13 +39,13 @@
         </table>
 
         <div>
-          @if (ds.task | taskIsReady) {
+          @if (ds.task | taskIsReady : ds.serviceInfo?.mode) {
             <button mat-flat-button (click)="commit()">Commit{{ds.status !== 'create' ? ' again' : ''}}</button>
           }
           @if ((ds.status !== 'start')) {
             <button mat-flat-button (click)="delete()">Delete</button>
           }
-          @if (ds.status === 'finish') {
+          @if (ds.status === 'finish' && ds.serviceInfo?.mode !== 'direct') {
             <button mat-flat-button (click)="startCodingJob()">Code with this model</button>
           }
         </div>
@@ -70,7 +70,7 @@
             }
           </tbody>
         </table>
-      } @else if (tab.type === 'train') {
+      } @else if ((tab.type === 'train') || ((tab.type === 'code') && (ds.serviceInfo?.mode === 'direct'))) {
         <app-optionset />
       } @else if (tab.type === 'code') {
         <app-coder-select />
