@@ -45,7 +45,7 @@
           @if ((ds.status !== 'start')) {
             <button mat-flat-button (click)="delete()">Delete</button>
           }
-          @if (ds.status === 'finish' && ds.serviceInfo?.mode !== 'direct') {
+          @if (ds.status === 'finish' && ds.serviceInfo?.mode !== 'direct' && ds.task.type === 'train') {
             <button mat-flat-button (click)="startCodingJob()">Code with this model</button>
           }
         </div>

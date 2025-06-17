@@ -14,7 +14,7 @@
   <a mat-button href="/start" [disabled]="currentRoute === 'start'">Services</a>
   @if (ds.serviceInfo) {
     <a mat-button href="/tasks" [disabled]="currentRoute === 'tasks'">Tasks</a>
-    @if (ds.serviceInfo.mode === 'train+code') {
+    @if (ds.serviceInfo.mode !== 'direct') {
       <a mat-button href="/coders" [disabled]="currentRoute === 'coders'">Coders</a>
     }
   }
