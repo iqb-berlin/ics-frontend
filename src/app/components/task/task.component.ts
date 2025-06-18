@@ -2,7 +2,7 @@
 import {
   Component, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
   exhaustMap, filter, interval, map, merge,
   startWith, Subscription, switchMap, take
@@ -62,7 +62,8 @@ export class TaskComponent implements OnInit, OnDestroy {
   constructor(
     private readonly route: ActivatedRoute,
     protected readonly ds: DataService,
-    private readonly location: Location
+    private readonly location: Location,
+    private readonly router: Router
   ) {
   }
 
@@ -143,6 +144,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   async delete(): Promise<void> {
     await this.ds.deleteTask();
+    await this.router.navigate(['tasks']);
   }
 
   onChunkAdded(chunk: DataChunk): void {

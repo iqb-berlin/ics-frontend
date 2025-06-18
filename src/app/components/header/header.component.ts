@@ -53,8 +53,6 @@ export class HeaderComponent {
       type,
       label: `new ${type} task`
     });
-    if (!this.ds.task) return;
-    await this.router.navigate(['task', this.ds.task.id]);
   }
 
   async commit(): Promise<void> {
