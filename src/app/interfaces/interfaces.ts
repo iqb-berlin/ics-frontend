@@ -5,6 +5,7 @@ import {
 export interface IcsfConfig {
   readonly services: string[];
   readonly userlink?: string;
+  readonly withCredentials?: boolean;
 }
 
 export type TaskStatus = TaskEventType | 'draft';

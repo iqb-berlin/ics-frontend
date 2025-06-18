@@ -25,7 +25,7 @@ import { checkCondition } from '../functions/check-condition';
 import { versionSatisfies } from '../functions/version.functions';
 import { ConfigService } from './config.service';
 
-const options = { withCredentials: true };
+let options = { withCredentials: true };
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +46,10 @@ export class BackendService {
     private readonly http: HttpClient,
     private readonly cs: ConfigService
   ) {
+    this.cs.config$
+      .subscribe(config => {
+        options = { withCredentials: config.withCredentials ?? true };
+      });
   }
 
   getConnection(url: string): Observable<ServiceConnection> {
